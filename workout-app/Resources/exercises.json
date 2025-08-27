@@ -1,0 +1,162 @@
+[
+  {
+    "id": "barbell_squat",
+    "forceId": "push",
+    "levelId": "beginner",
+    "mechanicId": "compound",
+    "equipmentId": "barbell",
+    "categoryId": "strength",
+    "primaryMuscleId": "quadriceps",
+    "secondaryMuscles": ["calves", "glutes", "hamstrings", "lower_back"],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Barbell squat"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Squat barre"
+      }
+    ]
+  },
+  {
+    "id": "pushups",
+    "forceId": "push",
+    "levelId": "beginner",
+    "mechanicId": "compound",
+    "equipmentId": "body_only",
+    "categoryId": "strength",
+    "primaryMuscleId": "chest",
+    "secondaryMuscles": ["shoulders", "triceps"],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Pushups"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Pushups"
+      }
+    ]
+  },
+  {
+    "id": "squats",
+    "forceId": "push",
+    "levelId": "beginner",
+    "mechanicId": "compound",
+    "equipmentId": "body_only",
+    "categoryId": "stretching",
+    "primaryMuscleId": "quadriceps",
+    "secondaryMuscles": ["abductors", "glutes", "hamstrings"],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Squats"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Squats"
+      }
+    ]
+  },
+  {
+    "id": "plank",
+    "forceId": "static",
+    "levelId": "beginner",
+    "mechanicId": "isolation",
+    "equipmentId": "body_only",
+    "categoryId": "strength",
+    "primaryMuscleId": "abdominals",
+    "secondaryMuscles": [],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Plank"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Planche"
+      }
+    ]
+  },
+  {
+    "id": "crunches",
+    "forceId": "pull",
+    "levelId": "beginner",
+    "mechanicId": "isolation",
+    "equipmentId": "body_only",
+    "categoryId": "strength",
+    "primaryMuscleId": "abdominals",
+    "secondaryMuscles": [],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Crunches"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Abdominaux"
+      }
+    ]
+  },
+  {
+    "id": "mountain_climber",
+    "forceId": "pull",
+    "levelId": "beginner",
+    "mechanicId": "compound",
+    "equipmentId": "body_only",
+    "categoryId": "strength",
+    "primaryMuscleId": "quadriceps",
+    "secondaryMuscles": ["chest", "hamstrings", "shoulders"],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Mountain climber"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Mouvement du grimpeur"
+      }
+    ]
+  },
+  {
+    "id": "russian_twist",
+    "forceId": "pull",
+    "levelId": "intermediate",
+    "mechanicId": "compound",
+    "equipmentId": "body_only",
+    "categoryId": "strength",
+    "primaryMuscleId": "abdominals",
+    "secondaryMuscles": ["lower_back"],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Russian twist"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Torsion russe"
+      }
+    ]
+  },
+  {
+    "id": "cat_stretch",
+    "forceId": "static",
+    "levelId": "beginner",
+    "mechanicId": "isolation",
+    "equipmentId": "body_only",
+    "categoryId": "stretching",
+    "primaryMuscleId": "lower_back",
+    "secondaryMuscles": ["middle_back", "traps"],
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Cat stretch"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Étirement de chat"
+      }
+    ]
+  }
+]

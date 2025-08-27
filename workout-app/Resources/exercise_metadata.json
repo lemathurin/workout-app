@@ -1,0 +1,132 @@
+{
+  "equipment": [
+    { "id": "body_only", "translations": { "en": "body only", "fr": "corp" } },
+    { "id": "cable", "translations": { "en": "cable", "fr": "câble" } },
+    {
+      "id": "barbell",
+      "translations": { "en": "barbell", "fr": "barre d'haltères" }
+    },
+    {
+      "id": "kettlebell",
+      "translations": { "en": "kettlebell", "fr": "kettlebell" }
+    },
+    {
+      "id": "medicine_ball",
+      "translations": { "en": "medicine ball", "fr": "médecine ball" }
+    },
+    {
+      "id": "exercise_ball",
+      "translations": { "en": "exercise ball", "fr": "ballon d'exercice" }
+    },
+    {
+      "id": "dumbbell",
+      "translations": { "en": "dumbbell", "fr": "haltères" }
+    },
+    { "id": "machine", "translations": { "en": "machine", "fr": "machine" } },
+    { "id": "bands", "translations": { "en": "bands", "fr": "bandes" } },
+    {
+      "id": "foam_roll",
+      "translations": { "en": "foam roll", "fr": "rouleau de massage" }
+    },
+    {
+      "id": "e_z_curl_bar",
+      "translations": { "en": "e-z curl bar", "fr": "e-z curl bar" }
+    }
+  ],
+  "levels": [
+    {
+      "id": "beginner",
+      "translations": { "en": "beginner", "fr": "débutant" }
+    },
+    {
+      "id": "intermediate",
+      "translations": { "en": "intermediate", "fr": "intermédiaire" }
+    },
+    { "id": "expert", "translations": { "en": "expert", "fr": "expert" } }
+  ],
+  "forces": [
+    { "id": "pull", "translations": { "en": "pull", "fr": "traction" } },
+    { "id": "static", "translations": { "en": "static", "fr": "statique" } },
+    { "id": "push", "translations": { "en": "push", "fr": "poussée" } }
+  ],
+  "categories": [
+    { "id": "strength", "translations": { "en": "strength", "fr": "force" } },
+    {
+      "id": "stretching",
+      "translations": { "en": "stretching", "fr": "étirement" }
+    },
+    {
+      "id": "plyometrics",
+      "translations": { "en": "plyometrics", "fr": "plyométrie" }
+    },
+    {
+      "id": "powerlifting",
+      "translations": { "en": "powerlifting", "fr": "powerlifting" }
+    },
+    {
+      "id": "olympic_weightlifting",
+      "translations": {
+        "en": "olympic weightlifting",
+        "fr": "haltérophilie olympique"
+      }
+    },
+    {
+      "id": "strongman",
+      "translations": { "en": "strongman", "fr": "strongman" }
+    },
+    { "id": "cardio", "translations": { "en": "cardio", "fr": "cardio" } }
+  ],
+  "mechanics": [
+    { "id": "compound", "translations": { "en": "compound", "fr": "composé" } },
+    {
+      "id": "isolation",
+      "translations": { "en": "isolation", "fr": "isolation" }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "quadriceps",
+      "translations": { "en": "quadriceps", "fr": "quadriceps" }
+    },
+    {
+      "id": "shoulders",
+      "translations": { "en": "shoulders", "fr": "épaules" }
+    },
+    {
+      "id": "abdominals",
+      "translations": { "en": "abdominals", "fr": "abdominaux" }
+    },
+    { "id": "chest", "translations": { "en": "chest", "fr": "poitrine" } },
+    {
+      "id": "hamstrings",
+      "translations": { "en": "hamstrings", "fr": "ischio-jambiers" }
+    },
+    { "id": "triceps", "translations": { "en": "triceps", "fr": "triceps" } },
+    { "id": "biceps", "translations": { "en": "biceps", "fr": "biceps" } },
+    { "id": "lats", "translations": { "en": "lats", "fr": "lats" } },
+    {
+      "id": "middle_back",
+      "translations": { "en": "middle back", "fr": "milieu du dos" }
+    },
+    { "id": "calves", "translations": { "en": "calves", "fr": "mollets" } },
+    {
+      "id": "lower_back",
+      "translations": { "en": "lower back", "fr": "bas du dos" }
+    },
+    {
+      "id": "forearms",
+      "translations": { "en": "forearms", "fr": "avant-bras" }
+    },
+    { "id": "glutes", "translations": { "en": "glutes", "fr": "fessiers" } },
+    { "id": "traps", "translations": { "en": "traps", "fr": "trapèzes" } },
+    {
+      "id": "adductors",
+      "translations": { "en": "adductors", "fr": "adducteurs" }
+    },
+    {
+      "id": "abductors",
+      "translations": { "en": "abductors", "fr": "abducteurs" }
+    },
+    { "id": "neck", "translations": { "en": "neck", "fr": "cou" } }
+  ]
+}
