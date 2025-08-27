@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selection: Tab = .home
     
     enum Tab {
@@ -26,6 +27,9 @@ struct ContentView: View {
                     }
                     .tag(Tab.catalog)
             }
+        }
+        .task {
+            await DataLoader.shared.loadInitialData(modelContext: modelContext)
         }
     }
 }
