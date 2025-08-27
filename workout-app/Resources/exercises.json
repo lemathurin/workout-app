@@ -20,7 +20,7 @@
     ]
   },
   {
-    "id": "pushups",
+    "id": "pushup",
     "forceId": "push",
     "levelId": "beginner",
     "mechanicId": "compound",
@@ -31,16 +31,16 @@
     "translations": [
       {
         "languageCode": "en",
-        "name": "Pushups"
+        "name": "Pushup"
       },
       {
         "languageCode": "fr",
-        "name": "Pushups"
+        "name": "Pushup"
       }
     ]
   },
   {
-    "id": "squats",
+    "id": "squat",
     "forceId": "push",
     "levelId": "beginner",
     "mechanicId": "compound",
@@ -51,11 +51,11 @@
     "translations": [
       {
         "languageCode": "en",
-        "name": "Squats"
+        "name": "Squat"
       },
       {
         "languageCode": "fr",
-        "name": "Squats"
+        "name": "Squat"
       }
     ]
   },
@@ -80,7 +80,7 @@
     ]
   },
   {
-    "id": "crunches",
+    "id": "crunch",
     "forceId": "pull",
     "levelId": "beginner",
     "mechanicId": "isolation",
@@ -91,11 +91,11 @@
     "translations": [
       {
         "languageCode": "en",
-        "name": "Crunches"
+        "name": "Crunch"
       },
       {
         "languageCode": "fr",
-        "name": "Abdominaux"
+        "name": "Abdominal"
       }
     ]
   },
