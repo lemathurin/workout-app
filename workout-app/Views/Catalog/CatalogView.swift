@@ -41,37 +41,4 @@ struct CatalogView: View {
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Exercise.self, configurations: config)
-    
-    // Add sample data for preview
-    let sampleExercise1 = Exercise(
-        id: "pushup",
-        forceId: "push",
-        levelId: "beginner",
-        mechanicId: "compound",
-        equipmentId: "body_only",
-        categoryId: "strength",
-        primaryMuscleId: "chest",
-        secondaryMuscles: ["shoulders", "triceps"],
-        translations: [ExerciseTranslation(languageCode: "en", name: "Push-up")]
-    )
-    
-    let sampleExercise2 = Exercise(
-        id: "squat",
-        forceId: "push",
-        levelId: "beginner",
-        mechanicId: "compound",
-        equipmentId: "body_only",
-        categoryId: "strength",
-        primaryMuscleId: "quadriceps",
-        secondaryMuscles: ["glutes", "hamstrings"],
-        translations: [ExerciseTranslation(languageCode: "en", name: "Squat")]
-    )
-    
-    container.mainContext.insert(sampleExercise1)
-    container.mainContext.insert(sampleExercise2)
-    
-    return CatalogView()
-        .modelContainer(container)
 }
