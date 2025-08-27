@@ -14,33 +14,25 @@ struct CatalogView: View {
                     .padding(.horizontal)
                 
                 List(exercises, id: \.id) { exercise in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(exercise.getName())
-                            .font(.headline)
-                        
-                        HStack {
-                            Text("Level: \(exercise.levelId)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                    NavigationLink(destination: ExerciseDetailView(exercise: exercise)) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(exercise.getName())
+                                .font(.headline)
                             
-                            Spacer()
-                            
-                            Text("Category: \(exercise.categoryId)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Text("Level: \(exercise.levelId)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Spacer()
+                                
+                                Text("Category: \(exercise.categoryId)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
-                        
-                        if !exercise.secondaryMuscles.isEmpty {
-                            Text("Muscles: \(exercise.primaryMuscleId), \(exercise.secondaryMuscles.joined(separator: ", "))")
-                                .font(.caption2)
-//                            .foregroundColor(.tertiary)
-                        } else {
-                            Text("Muscle: \(exercise.primaryMuscleId)")
-                                .font(.caption2)
-//                            .foregroundColor(.tertiary)
-                        }
+                        .padding(.vertical, 2)
                     }
-                    .padding(.vertical, 2)
                 }
             }
             .navigationTitle("Exercise Catalog")
