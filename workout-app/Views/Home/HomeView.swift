@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var isDeleting = false
     @Environment(\.modelContext) private var modelContext
     @StateObject private var dataManager = DataManager.shared
+    @Query private var routines: [Routine]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -31,6 +32,26 @@ struct HomeView: View {
                         .font(.largeTitle)
                         .fontDesign(.rounded)
                         .fontWeight(.semibold)
+                    
+                    // Routines Section
+                    if !routines.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Your Routines")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                            
+                            LazyVStack(spacing: 12) {
+                                ForEach(routines) { routine in
+                                    RoutineCard(routine: routine)
+                                        .padding(.horizontal)
+                                }
+                            }
+                        }
+                    }
                     
                     // Delete all data button
                     Button("Delete All Data") {

@@ -20,6 +20,7 @@ class DataLoader {
         print("Loading initial data...")
         await loadMetadata(modelContext: modelContext)
         await loadExercises(modelContext: modelContext)
+        await loadRoutines(modelContext: modelContext)
         print("Data loading completed")
     }
     
@@ -190,5 +191,110 @@ class DataLoader {
         } catch {
             print("Error saving exercises: \(error)")
         }
+    }
+    
+    @MainActor
+    private func loadRoutines(modelContext: ModelContext) async {
+        guard let url = Bundle.main.url(forResource: "routines", withExtension: "json") else {
+            print("Could not find routines.json file")
+            return
+        }
+        
+        guard let data = try? Data(contentsOf: url) else {
+            print("Could not read routines.json file")
+            return
+        }
+        
+        guard let routinesArray = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
+            print("Could not parse routines.json")
+            return
+        }
+        
+        print("Loading \(routinesArray.count) routines...")
+        
+        for routineData in routinesArray {
+            if let jsonId = routineData["id"] as? String,
+               let translationsArray = routineData["translations"] as? [[String: Any]],
+               let stepsArray = routineData["steps"] as? [[String: Any]] {
+                
+                // Parse translations
+                var routineTranslations: [RoutineTranslation] = []
+                for translationData in translationsArray {
+                    if let languageCode = translationData["languageCode"] as? String,
+                       let name = translationData["name"] as? String,
+                       let description = translationData["description"] as? String {
+                        routineTranslations.append(RoutineTranslation(
+                            languageCode: languageCode,
+                            name: name,
+                            routineDescription: description
+                        ))
+                    }
+                }
+                
+                // Parse steps
+                let routineSteps = parseSteps(stepsArray)
+                
+                // Create routine (system routine with translations)
+                let routine = Routine(translations: routineTranslations, steps: routineSteps, isSystemRoutine: true)
+                
+                // Override the auto-generated UUID with the JSON ID for system routines
+                routine.id = jsonId
+                
+                modelContext.insert(routine)
+            }
+        }
+        
+        do {
+            try modelContext.save()
+            print("Routines saved successfully")
+        } catch {
+            print("Error saving routines: \(error)")
+        }
+    }
+    
+    private func parseSteps(_ stepsArray: [[String: Any]]) -> [RoutineStep] {
+        var steps: [RoutineStep] = []
+        
+        for stepData in stepsArray {
+            if let typeString = stepData["type"] as? String,
+               let stepType = StepType(rawValue: typeString) {
+                
+                switch stepType {
+                case .exercise:
+                    if let exerciseId = stepData["exerciseId"] as? String,
+                       let duration = stepData["duration"] as? Int {
+                        let step = RoutineStep(
+                            type: .exercise,
+                            exerciseId: exerciseId,
+                            duration: duration
+                        )
+                        steps.append(step)
+                    }
+                    
+                case .rest:
+                    if let duration = stepData["duration"] as? Int {
+                        let step = RoutineStep(
+                            type: .rest,
+                            duration: duration
+                        )
+                        steps.append(step)
+                    }
+                    
+                case .repeats:
+                    if let count = stepData["count"] as? Int,
+                       let nestedStepsArray = stepData["steps"] as? [[String: Any]] {
+                        let nestedSteps = parseSteps(nestedStepsArray)
+                        let step = RoutineStep(
+                            type: .repeats,
+                            count: count,
+                            steps: nestedSteps
+                        )
+                        steps.append(step)
+                    }
+                }
+            }
+        }
+        
+        return steps
     }
 }

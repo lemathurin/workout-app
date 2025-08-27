@@ -1,0 +1,58 @@
+[
+  {
+    "id": "core_crusher",
+    "translations": [
+      {
+        "languageCode": "en",
+        "name": "Core Crusher",
+        "description": "An intense core workout for advanced practitioners"
+      },
+      {
+        "languageCode": "fr",
+        "name": "Core Crusher",
+        "description": "Un entraînement de core intense pour les pratiquants avancés"
+      }
+    ],
+    "steps": [
+      {
+        "type": "exercise",
+        "exerciseId": "russian_twist",
+        "duration": 30
+      },
+      {
+        "type": "rest",
+        "duration": 15
+      },
+      {
+        "type": "repeats",
+        "count": 2,
+        "steps": [
+          {
+            "type": "exercise",
+            "exerciseId": "plank",
+            "duration": 45
+          },
+          {
+            "type": "rest",
+            "duration": 30
+          }
+        ]
+      },
+      {
+        "type": "exercise",
+        "exerciseId": "russian_twist",
+        "duration": 30
+      }
+    ],
+    "metadata": {
+      "createdAt": "2025-08-15T10:00:00Z",
+      "updatedAt": "2025-08-15T10:00:00Z",
+      "equipment": ["body_only"],
+      "level": "beginner",
+      "categories": ["strength"],
+      "totalDuration": "225",
+      "exerciseCount": "4",
+      "targetMuscles": ["abdominals", "lower_back"]
+    }
+  }
+]
