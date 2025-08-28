@@ -255,7 +255,7 @@ class DataLoader {
     private func parseSteps(_ stepsArray: [[String: Any]]) -> [RoutineStep] {
         var steps: [RoutineStep] = []
         
-        for stepData in stepsArray {
+        for (index, stepData) in stepsArray.enumerated() {
             if let typeString = stepData["type"] as? String,
                let stepType = StepType(rawValue: typeString) {
                 
@@ -266,7 +266,8 @@ class DataLoader {
                         let step = RoutineStep(
                             type: .exercise,
                             exerciseId: exerciseId,
-                            duration: duration
+                            duration: duration,
+                            order: index + 1
                         )
                         steps.append(step)
                     }
@@ -275,7 +276,8 @@ class DataLoader {
                     if let duration = stepData["duration"] as? Int {
                         let step = RoutineStep(
                             type: .rest,
-                            duration: duration
+                            duration: duration,
+                            order: index + 1
                         )
                         steps.append(step)
                     }
@@ -287,7 +289,8 @@ class DataLoader {
                         let step = RoutineStep(
                             type: .repeats,
                             count: count,
-                            steps: nestedSteps
+                            steps: nestedSteps,
+                            order: index + 1
                         )
                         steps.append(step)
                     }

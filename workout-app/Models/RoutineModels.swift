@@ -71,13 +71,15 @@ class RoutineStep {
     var duration: Int
     var count: Int?
     var steps: [RoutineStep]?
+    var order: Int
     
-    init(type: StepType, exerciseId: String? = nil, duration: Int = 0, count: Int? = nil, steps: [RoutineStep]? = nil) {
+    init(type: StepType, exerciseId: String? = nil, duration: Int = 0, count: Int? = nil, steps: [RoutineStep]? = nil, order: Int = 0) {
         self.type = type
         self.exerciseId = exerciseId
         self.duration = duration
         self.count = count
         self.steps = steps
+        self.order = order
     }
     
     /// Calculates duration for this step, including nested steps for repeats

@@ -28,7 +28,7 @@ struct RoutineDetailView: View {
                         .padding(.horizontal)
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        ForEach(Array(routine.steps.enumerated()), id: \.offset) { index, step in
+                        ForEach(routine.steps.sorted(by: { $0.order < $1.order }), id: \.self) { step in
                             StepView(step: step, exercises: exercises, indentLevel: 0)
                         }
                     }
@@ -56,26 +56,26 @@ struct StepView: View {
                     Text("  ")
                 }
                 
-                // Step content
+                // Step content with order number
                 switch step.type {
                 case .exercise:
                     if let exerciseId = step.exerciseId {
                         let exerciseName = getExerciseName(for: exerciseId)
-                        Text("- \(exerciseName) - \(step.duration) seconds")
+                        Text("\(step.order). \(exerciseName) - \(step.duration) seconds")
                     } else {
-                        Text("- Unknown exercise - \(step.duration) seconds")
+                        Text("\(step.order). Unknown exercise - \(step.duration) seconds")
                     }
                     
                 case .rest:
-                    Text("- rest - \(step.duration) seconds")
+                    Text("\(step.order). Rest - \(step.duration) seconds")
                         .foregroundColor(.secondary)
                     
                 case .repeats:
                     if let count = step.count {
-                        Text("- repeat - \(count) times")
+                        Text("\(step.order). Repeat \(count) times:")
                             .foregroundColor(.blue)
                     } else {
-                        Text("- repeat")
+                        Text("\(step.order). Repeat:")
                             .foregroundColor(.blue)
                     }
                 }
@@ -85,7 +85,7 @@ struct StepView: View {
             
             // Nested steps for repeats
             if step.type == .repeats, let nestedSteps = step.steps {
-                ForEach(Array(nestedSteps.enumerated()), id: \.offset) { index, nestedStep in
+                ForEach(nestedSteps.sorted(by: { $0.order < $1.order }), id: \.self) { nestedStep in
                     StepView(step: nestedStep, exercises: exercises, indentLevel: indentLevel + 1)
                 }
             }
