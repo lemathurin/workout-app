@@ -14,6 +14,12 @@ class DataManager: ObservableObject {
         // Delete all exercises
         try modelContext.delete(model: Exercise.self)
         
+        // Delete all routines
+        try modelContext.delete(model: Routine.self)
+        try modelContext.delete(model: RoutineStep.self)
+        try modelContext.delete(model: RoutineMetadata.self)
+        try modelContext.delete(model: RoutineTranslation.self)
+        
         // Delete all related metadata
         try modelContext.delete(model: Equipment.self)
         try modelContext.delete(model: Level.self)
