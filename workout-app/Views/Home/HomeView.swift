@@ -20,7 +20,7 @@ struct HomeView: View {
                 Spacer()
                 
                  NavigationLink("New Routine") {
-                     // routine creation view
+                     RoutineEditView()
                  }
             }
             .padding(.horizontal)
