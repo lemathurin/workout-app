@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct NewStepSheet: View {
     @Binding var sheetDetent: PresentationDetent
@@ -185,8 +186,7 @@ private struct ExercisePickerView: View {
     let onBack: () -> Void
     let onDone: () -> Void
     
-    // Placeholder: wire to your real exercise data later
-    private let sample = ["Push Ups", "Squats", "Plank", "Burpees"]
+    @Query private var exercises: [Exercise]
     
     var body: some View {
         VStack(spacing: 12) {
@@ -195,17 +195,16 @@ private struct ExercisePickerView: View {
                 Spacer()
                 Text("Choose Exercise").font(.headline)
                 Spacer()
-                // Spacer to balance Back
                 Color.clear.frame(width: 60, height: 1)
             }
             .padding(.horizontal)
             
-            List(sample, id: \.self) { name in
+            List(exercises, id: \.id) { exercise in
                 Button {
-                    selectedName = name
+                    selectedName = exercise.getName()
                     onDone()
                 } label: {
-                    Text(name)
+                    Text(exercise.getName())
                 }
             }
         }
