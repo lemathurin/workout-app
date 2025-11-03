@@ -3,6 +3,7 @@ import SwiftUI
 struct RoutineEditView: View {
     @State private var showingNewStepSheet: Bool = false
     @Environment(\.dismiss) private var dismiss
+    @State private var sheetDetent: PresentationDetent = .medium
     
     var body: some View {
         VStack {
@@ -14,8 +15,8 @@ struct RoutineEditView: View {
             .buttonStyle(.bordered)
         }
         .sheet(isPresented: $showingNewStepSheet) {
-            NewStepSheet()
-                .presentationDetents([.medium])
+            NewStepSheet(sheetDetent: $sheetDetent)
+                .presentationDetents([.medium, .large], selection: $sheetDetent)
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {

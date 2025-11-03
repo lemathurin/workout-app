@@ -1,17 +1,18 @@
 import SwiftUI
 
 struct NewStepSheet: View {
+    @Binding var sheetDetent: PresentationDetent
     @State private var selectedStepType: StepType = .exercise
     @Environment(\.dismiss) private var dismiss
     
-    enum FlowStep: Hashable { case chooseKind, exerciseMode, timed, reps, restMode, restTimed }
+    enum FlowStep: Hashable { case chooseKind, exerciseMode, timed, reps, restMode, restTimed, exercisePicker }
     enum ExerciseMode { case timed, reps, open }
     enum RestMode { case timed, open }
     
     @State private var flow: FlowStep = .chooseKind
     @State private var exerciseModeSelection: ExerciseMode?
     @State private var timerSeconds: Int = 60
-    @State private var showingExercisePicker = false
+    // Removed nested sheet trigger; we’ll use inline picker
     @State private var selectedExerciseName: String?
     @State private var restModeSelection: RestMode?
     @State private var restSeconds: Int = 30
@@ -36,19 +37,28 @@ struct NewStepSheet: View {
                         onBack: { flow = .chooseKind },
                         onSelectTimed: { exerciseModeSelection = .timed; flow = .timed },
                         onSelectReps: { exerciseModeSelection = .reps; flow = .reps },
-                        onSelectOpen: { exerciseModeSelection = .open; showingExercisePicker = true }
+                        onSelectOpen: { exerciseModeSelection = .open; sheetDetent = .large; flow = .exercisePicker }
                     )
                 case .timed:
                     TimedView(
                         seconds: $timerSeconds,
                         onBack: { flow = .exerciseMode },
-                        onNext: { showingExercisePicker = true }
+                        onNext: { sheetDetent = .large; flow = .exercisePicker }
                     )
                 case .reps:
                     RepsView(
                         reps: $repsCount,
                         onBack: { flow = .exerciseMode },
-                        onNext: { showingExercisePicker = true }
+                        onNext: { sheetDetent = .large; flow = .exercisePicker }
+                    )
+                case .exercisePicker:
+                    ExercisePickerView(
+                        selectedName: $selectedExerciseName,
+                        onBack: { sheetDetent = .medium; flow = .exerciseMode },
+                        onDone: {
+                            sheetDetent = .medium
+                            dismiss()
+                        }
                     )
                 case .restMode:
                     RestModeView(
@@ -62,25 +72,18 @@ struct NewStepSheet: View {
                         onBack: { flow = .restMode },
                         onNext: { dismiss() }
                     )
+                default:
+                    EmptyView()
                 }
             }
             .navigationTitle("New Step")
-            .sheet(isPresented: $showingExercisePicker) {
-                ExercisePickerView(
-                    selectedName: $selectedExerciseName,
-                    onDone: {
-                        showingExercisePicker = false
-                        dismiss()
-                    }
-                )
-                .presentationDetents([.large])
-            }
+            // Removed nested .sheet for exercise picker
         }
     }
 }
 
 #Preview {
-    NewStepSheet()
+    NewStepSheet(sheetDetent: .constant(.medium))
 }
 
 // Subviews used in the flow
@@ -109,7 +112,7 @@ private struct ExerciseModeView: View {
     let onSelectTimed: () -> Void
     let onSelectReps: () -> Void
     let onSelectOpen: () -> Void
-
+    
     var body: some View {
         VStack(spacing: 16) {
             Text("Exercise type").font(.headline)
@@ -179,14 +182,24 @@ private struct RepsView: View {
 
 private struct ExercisePickerView: View {
     @Binding var selectedName: String?
+    let onBack: () -> Void
     let onDone: () -> Void
-    @Environment(\.dismiss) private var dismiss
     
     // Placeholder: wire to your real exercise data later
     private let sample = ["Push Ups", "Squats", "Plank", "Burpees"]
     
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 12) {
+            HStack {
+                Button("Back") { onBack() }
+                Spacer()
+                Text("Choose Exercise").font(.headline)
+                Spacer()
+                // Spacer to balance Back
+                Color.clear.frame(width: 60, height: 1)
+            }
+            .padding(.horizontal)
+            
             List(sample, id: \.self) { name in
                 Button {
                     selectedName = name
@@ -195,17 +208,11 @@ private struct ExercisePickerView: View {
                     Text(name)
                 }
             }
-            .navigationTitle("Choose Exercise")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Back") { dismiss() }
-                }
-            }
         }
     }
 }
 
-// Subviews used in the flow
+// Subviews used in the rest flow
 private struct RestModeView: View {
     let onBack: () -> Void
     let onSelectTimed: () -> Void
