@@ -38,7 +38,6 @@ struct RoutineEditView: View {
                     .padding(.top, 8)
             } else {
                 List {
-                    // KEY FIX: Remove Section wrapper - just use ForEach directly
                     ForEach(addedStepSummaries, id: \.id) { step in
                         HStack {
                             Text(step.summary)
@@ -66,13 +65,20 @@ struct RoutineEditView: View {
                                     .imageScale(.medium)
                             }
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .cornerRadius(10)
+                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .listRowBackground(Color.clear)
                     }
                     .onMove { indices, newOffset in
                         addedStepSummaries.move(fromOffsets: indices, toOffset: newOffset)
                     }
                 }
-                .listStyle(.insetGrouped)
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color(UIColor.systemGroupedBackground))
                 // Bind edit mode (avoid constant .active which can cause diff thrashing)
                 .environment(\.editMode, $editMode)
             }
