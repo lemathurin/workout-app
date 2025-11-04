@@ -1,13 +1,26 @@
 import SwiftUI
 
 struct RoutineEditView: View {
+    // Add a stable, identifiable row model
+    private struct StepItem: Identifiable, Equatable {
+        let id: UUID
+        var summary: String
+        init(id: UUID = UUID(), summary: String) {
+            self.id = id
+            self.summary = summary
+        }
+    }
+
+    // Replace [String] with identifiable items
+    @State private var addedStepSummaries: [StepItem] = []
     @State private var showingNewStepSheet: Bool = false
     @Environment(\.dismiss) private var dismiss
     @State private var sheetDetent: PresentationDetent = .medium
-    @State private var addedStepSummaries: [String] = []
     @State private var showingEditSheet: Bool = false
-    @State private var editingStepIndex: Int?
+    // Track the item by ID instead of index to avoid index becoming stale during moves
+    @State private var editingStepID: UUID?
     @State private var selectedEditAction: StepEditAction?
+    @State private var editMode: EditMode = .active
     
     var body: some View {
         VStack {
@@ -25,24 +38,24 @@ struct RoutineEditView: View {
                     .padding(.top, 8)
             } else {
                 List {
-                    // Use index-based identity to support duplicates
-                    ForEach(Array(addedStepSummaries.enumerated()), id: \.offset) { index, summary in
+                    // KEY FIX: Remove Section wrapper - just use ForEach directly
+                    ForEach(addedStepSummaries, id: \.id) { step in
                         HStack {
-                            Text(summary)
+                            Text(step.summary)
                             Spacer()
                             Menu {
                                 Button("Change Type") {
-                                    editingStepIndex = index
+                                    editingStepID = step.id
                                     selectedEditAction = .changeType
                                     showingEditSheet = true
                                 }
                                 Button("Change Duration/Reps") {
-                                    editingStepIndex = index
+                                    editingStepID = step.id
                                     selectedEditAction = .changeAmount
                                     showingEditSheet = true
                                 }
                                 Button(role: .destructive) {
-                                    editingStepIndex = index
+                                    editingStepID = step.id
                                     selectedEditAction = .delete
                                     showingEditSheet = true
                                 } label: {
@@ -53,33 +66,35 @@ struct RoutineEditView: View {
                                     .imageScale(.medium)
                             }
                         }
+                        .padding(.vertical, 4)
                     }
                     .onMove { indices, newOffset in
                         addedStepSummaries.move(fromOffsets: indices, toOffset: newOffset)
                     }
                 }
                 .listStyle(.insetGrouped)
-                // Force edit mode active so grabbers are visible
-                .environment(\.editMode, .constant(.active))
+                // Bind edit mode (avoid constant .active which can cause diff thrashing)
+                .environment(\.editMode, $editMode)
             }
         }
         .sheet(isPresented: $showingNewStepSheet) {
             NewStepSheet(
                 sheetDetent: $sheetDetent,
                 onAddSummary: { summary in
-                    addedStepSummaries.append(summary)
+                    addedStepSummaries.append(.init(summary: summary))
                 }
             )
             .presentationDetents([.medium, .large], selection: $sheetDetent)
         }
         .sheet(isPresented: $showingEditSheet) {
-            if let idx = editingStepIndex, let action = selectedEditAction {
+            if let id = editingStepID, let action = selectedEditAction,
+               let idx = addedStepSummaries.firstIndex(where: { $0.id == id }) {
                 EditStepSheet(
                     sheetDetent: $sheetDetent,
-                    initialSummary: addedStepSummaries[idx],
+                    initialSummary: addedStepSummaries[idx].summary,
                     action: action,
                     onUpdateSummary: { updated in
-                        addedStepSummaries[idx] = updated
+                        addedStepSummaries[idx].summary = updated
                     },
                     onDelete: {
                         addedStepSummaries.remove(at: idx)
@@ -96,7 +111,8 @@ struct RoutineEditView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Save") { }
+                // Optional: let users toggle edit mode; start active but avoid constant binding
+                EditButton()
             }
         }
     }
