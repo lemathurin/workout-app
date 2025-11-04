@@ -21,10 +21,18 @@ struct RoutineEditView: View {
                     .foregroundColor(.secondary)
                     .padding(.top, 8)
             } else {
-                List(addedStepSummaries, id: \.self) { summary in
-                    Text(summary)
+                List {
+                    // Use index-based identity to support duplicates
+                    ForEach(Array(addedStepSummaries.enumerated()), id: \.offset) { _, summary in
+                        Text(summary)
+                    }
+                    .onMove { indices, newOffset in
+                        addedStepSummaries.move(fromOffsets: indices, toOffset: newOffset)
+                    }
                 }
                 .listStyle(.insetGrouped)
+                // Force edit mode active so grabbers are visible
+                .environment(\.editMode, .constant(.active))
             }
         }
         .sheet(isPresented: $showingNewStepSheet) {
