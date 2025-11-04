@@ -5,6 +5,9 @@ struct RoutineEditView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var sheetDetent: PresentationDetent = .medium
     @State private var addedStepSummaries: [String] = []
+    @State private var showingEditSheet: Bool = false
+    @State private var editingStepIndex: Int?
+    @State private var selectedEditAction: StepEditAction?
     
     var body: some View {
         VStack {
@@ -23,8 +26,33 @@ struct RoutineEditView: View {
             } else {
                 List {
                     // Use index-based identity to support duplicates
-                    ForEach(Array(addedStepSummaries.enumerated()), id: \.offset) { _, summary in
-                        Text(summary)
+                    ForEach(Array(addedStepSummaries.enumerated()), id: \.offset) { index, summary in
+                        HStack {
+                            Text(summary)
+                            Spacer()
+                            Menu {
+                                Button("Change Type") {
+                                    editingStepIndex = index
+                                    selectedEditAction = .changeType
+                                    showingEditSheet = true
+                                }
+                                Button("Change Duration/Reps") {
+                                    editingStepIndex = index
+                                    selectedEditAction = .changeAmount
+                                    showingEditSheet = true
+                                }
+                                Button(role: .destructive) {
+                                    editingStepIndex = index
+                                    selectedEditAction = .delete
+                                    showingEditSheet = true
+                                } label: {
+                                    Text("Delete")
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis.circle")
+                                    .imageScale(.medium)
+                            }
+                        }
                     }
                     .onMove { indices, newOffset in
                         addedStepSummaries.move(fromOffsets: indices, toOffset: newOffset)
@@ -43,6 +71,22 @@ struct RoutineEditView: View {
                 }
             )
             .presentationDetents([.medium, .large], selection: $sheetDetent)
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            if let idx = editingStepIndex, let action = selectedEditAction {
+                EditStepSheet(
+                    sheetDetent: $sheetDetent,
+                    initialSummary: addedStepSummaries[idx],
+                    action: action,
+                    onUpdateSummary: { updated in
+                        addedStepSummaries[idx] = updated
+                    },
+                    onDelete: {
+                        addedStepSummaries.remove(at: idx)
+                    }
+                )
+                .presentationDetents([.medium, .large], selection: $sheetDetent)
+            }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
