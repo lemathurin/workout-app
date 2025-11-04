@@ -5,6 +5,7 @@ struct NewStepSheet: View {
     @Binding var sheetDetent: PresentationDetent
     @State private var selectedStepType: StepType = .exercise
     @Environment(\.dismiss) private var dismiss
+    let onAddSummary: (String) -> Void
     
     enum FlowStep: Hashable { case chooseKind, exerciseMode, timed, reps, restMode, restTimed, exercisePicker }
     enum ExerciseMode { case timed, reps, open }
@@ -13,7 +14,6 @@ struct NewStepSheet: View {
     @State private var flow: FlowStep = .chooseKind
     @State private var exerciseModeSelection: ExerciseMode?
     @State private var timerSeconds: Int = 60
-    // Removed nested sheet trigger; we’ll use inline picker
     @State private var selectedExerciseName: String?
     @State private var restModeSelection: RestMode?
     @State private var restSeconds: Int = 30
@@ -57,6 +57,16 @@ struct NewStepSheet: View {
                         selectedName: $selectedExerciseName,
                         onBack: { sheetDetent = .medium; flow = .exerciseMode },
                         onDone: {
+                            if let name = selectedExerciseName, let mode = exerciseModeSelection {
+                                switch mode {
+                                case .timed:
+                                    onAddSummary("Exercise: \(name) – \(timerSeconds) sec")
+                                case .reps:
+                                    onAddSummary("Exercise: \(name) – \(repsCount) reps")
+                                case .open:
+                                    onAddSummary("Exercise: \(name) – Open")
+                                }
+                            }
                             sheetDetent = .medium
                             dismiss()
                         }
@@ -65,26 +75,25 @@ struct NewStepSheet: View {
                     RestModeView(
                         onBack: { flow = .chooseKind },
                         onSelectTimed: { restModeSelection = .timed; flow = .restTimed },
-                        onSelectOpen: { restModeSelection = .open; dismiss() }
+                        onSelectOpen: { restModeSelection = .open; onAddSummary("Rest – Open"); dismiss() }
                     )
                 case .restTimed:
                     RestTimedView(
                         seconds: $restSeconds,
                         onBack: { flow = .restMode },
-                        onNext: { dismiss() }
+                        onNext: { onAddSummary("Rest – \(restSeconds) sec"); dismiss() }
                     )
                 default:
                     EmptyView()
                 }
             }
             .navigationTitle("New Step")
-            // Removed nested .sheet for exercise picker
         }
     }
 }
 
 #Preview {
-    NewStepSheet(sheetDetent: .constant(.medium))
+    NewStepSheet(sheetDetent: .constant(.medium), onAddSummary: { _ in })
 }
 
 // Subviews used in the flow
