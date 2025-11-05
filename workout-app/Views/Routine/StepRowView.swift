@@ -107,6 +107,12 @@ struct StepRowView: View {
         RepeatGroupView(
             times: 5,
             steps: [
+            ]
+        )
+
+        RepeatGroupView(
+            times: 5,
+            steps: [
                 .init(
                     name: "Push ups",
                     detail: "10 reps",
@@ -210,18 +216,32 @@ struct RepeatGroupView: View {
 
             Divider()
 
-            ForEach(steps.indices, id: \.self) { idx in
-                let s = steps[idx]
-                StepRowView(
-                    stepName: s.name,
-                    stepDetail: s.detail,
-                    onChangeType: s.onChangeType,
-                    onChangeAmount: s.onChangeAmount,
-                    onDelete: s.onDelete,
-                    embedded: true
-                )
-                if idx < steps.count - 1 {
-                    Divider()
+            if steps.isEmpty {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
+                        .foregroundColor(Color.secondary)
+                    Text("drag step here")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+                }
+                .frame(height: 50)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 10)
+            } else {
+                ForEach(steps.indices, id: \.self) { idx in
+                    let s = steps[idx]
+                    StepRowView(
+                        stepName: s.name,
+                        stepDetail: s.detail,
+                        onChangeType: s.onChangeType,
+                        onChangeAmount: s.onChangeAmount,
+                        onDelete: s.onDelete,
+                        embedded: true
+                    )
+                    if idx < steps.count - 1 {
+                        Divider()
+                    }
                 }
             }
         }
