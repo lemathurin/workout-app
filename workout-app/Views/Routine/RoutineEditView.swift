@@ -22,6 +22,42 @@ struct RoutineEditView: View {
     @State private var selectedEditAction: StepEditAction?
     @State private var editMode: EditMode = .active
     
+    // Derive display name and detail from the summary string
+    private func nameAndDetail(from summary: String) -> (name: String, detail: String) {
+        // Exercise: <name> – <Open | N sec | N reps>
+        if summary.hasPrefix("Exercise: ") {
+            let afterPrefix = summary.dropFirst("Exercise: ".count)
+            if let sep = afterPrefix.range(of: " – ") {
+                let name = String(afterPrefix[..<sep.lowerBound])
+                let suffix = String(afterPrefix[sep.upperBound...])
+                if suffix == "Open" {
+                    return (name, "Open")
+                } else if suffix.hasSuffix(" sec") {
+                    let valueStr = suffix.replacingOccurrences(of: " sec", with: "")
+                    return (name, "\(valueStr) seconds")
+                } else if suffix.hasSuffix(" reps") {
+                    return (name, suffix) // e.g. "10 reps"
+                }
+                return (name, suffix)
+            } else {
+                return (String(afterPrefix), "")
+            }
+        }
+        // Rest – <Open | N sec>
+        if summary.hasPrefix("Rest – ") {
+            let suffix = summary.dropFirst("Rest – ".count)
+            if suffix == "Open" {
+                return ("Rest", "Open")
+            } else if suffix.hasSuffix(" sec") {
+                let valueStr = suffix.replacingOccurrences(of: " sec", with: "")
+                return ("Rest", "\(valueStr) seconds")
+            }
+            return ("Rest", String(suffix))
+        }
+        // Fallback
+        return (summary, "tap to edit")
+    }
+    
     var body: some View {
         VStack {
             Button(action: {
@@ -39,38 +75,26 @@ struct RoutineEditView: View {
             } else {
                 List {
                     ForEach(addedStepSummaries, id: \.id) { step in
-                        HStack {
-                            Text(step.summary)
-                            Spacer()
-                            Menu {
-                                Button("Change Type") {
-                                    editingStepID = step.id
-                                    selectedEditAction = .changeType
-                                    showingEditSheet = true
-                                }
-                                Button("Change Duration/Reps") {
-                                    editingStepID = step.id
-                                    selectedEditAction = .changeAmount
-                                    showingEditSheet = true
-                                }
-                                Button(role: .destructive) {
-                                    editingStepID = step.id
-                                    selectedEditAction = .delete
-                                    showingEditSheet = true
-                                } label: {
-                                    Text("Delete")
-                                }
-                            } label: {
-                                Image(systemName: "ellipsis.circle")
-                                    .imageScale(.medium)
+                        let parts = nameAndDetail(from: step.summary)
+                        StepRowView(
+                            stepName: parts.name,
+                            stepDetail: parts.detail,
+                            onChangeType: {
+                                editingStepID = step.id
+                                selectedEditAction = .changeType
+                                showingEditSheet = true
+                            },
+                            onChangeAmount: {
+                                editingStepID = step.id
+                                selectedEditAction = .changeAmount
+                                showingEditSheet = true
+                            },
+                            onDelete: {
+                                editingStepID = step.id
+                                selectedEditAction = .delete
+                                showingEditSheet = true
                             }
-                        }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .background(Color(UIColor.secondarySystemGroupedBackground))
-                        .cornerRadius(10)
-                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                        .listRowBackground(Color.clear)
+                        )
                     }
                     .onMove { indices, newOffset in
                         addedStepSummaries.move(fromOffsets: indices, toOffset: newOffset)
@@ -79,7 +103,6 @@ struct RoutineEditView: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .background(Color(UIColor.systemGroupedBackground))
-                // Bind edit mode (avoid constant .active which can cause diff thrashing)
                 .environment(\.editMode, $editMode)
             }
         }
