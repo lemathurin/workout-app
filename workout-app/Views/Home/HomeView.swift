@@ -3,8 +3,7 @@ import SwiftData
 
 struct HomeView: View {
     @State private var showingSettings = false
-    @State private var showingNewRoutineModal = false
-    @State private var newRoutineName = ""
+    
     @State private var isDeleting = false
     @State private var navigateToRoutineEdit = false
     @Environment(\.modelContext) private var modelContext
@@ -23,7 +22,7 @@ struct HomeView: View {
                 Spacer()
                 
                 Button("New Routine") {
-                    showingNewRoutineModal = true
+                navigateToRoutineEdit = true
                 }
             }
             .padding(.horizontal)
@@ -68,40 +67,7 @@ struct HomeView: View {
             }
                 }
         .sheet(isPresented: $showingSettings) { SettingsView() }
-        .sheet(isPresented: $showingNewRoutineModal) {
-            NavigationView {
-                VStack(spacing: 20) {
-                    Text("Create New Routine")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.top)
-                    
-                    TextField("Routine Name", text: $newRoutineName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                    
-                    Spacer()
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Cancel") {
-                            showingNewRoutineModal = false
-                            newRoutineName = ""
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Continue") {
-                            showingNewRoutineModal = false
-                            newRoutineName = ""
-                            navigateToRoutineEdit = true
-                        }
-                        .disabled(newRoutineName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    }
-                }
-            }
-        }
+        
         .navigationDestination(isPresented: $navigateToRoutineEdit) {
             RoutineEditView() // Navigate to RoutineEditView
         }
