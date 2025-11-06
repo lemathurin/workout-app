@@ -2,118 +2,127 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct RoutineEditView: View {
-@State private var list1 = ["Item 1-1", "Item 1-2", "Item 1-3"]
-@State private var list2 = ["Item 2-1", "Item 2-2", "Item 2-3"]
-@State private var list3 = ["Item 3-1", "Item 3-2", "Item 3-3"]
-
-struct DragPayload: Codable {
-let value: String
-let source: String
-}
-
-private func makeJSONItemProvider(value: String, source: String) -> NSItemProvider {
-        let payload = DragPayload(value: value, source: source)
-        let encoder = JSONEncoder()
-        guard let data = try? encoder.encode(payload) else {
-            return NSItemProvider()
-        }
-        let provider = NSItemProvider()
-        provider.registerDataRepresentation(
-            forTypeIdentifier: UTType.json.identifier,
-            visibility: .all
-        ) { completion in
-            completion(data, nil)
-            return nil
-        }
-        return provider
+    struct StepSummary: Identifiable, Codable, Equatable {
+        let id: UUID
+        var name: String
+        var detail: String
     }
 
-    private func decodeDraggedString(from providers: [NSItemProvider],
-                                     onDecoded: @escaping (DragPayload) -> Void) {
-        guard let provider = providers.first else { return }
-        provider.loadItem(forTypeIdentifier: UTType.json.identifier, options: nil) { item, error in
-            guard let data = item as? Data,
-                  let payload = try? JSONDecoder().decode(DragPayload.self, from: data) else {
-                return
-            }
-            DispatchQueue.main.async {
-                onDecoded(payload)
-            }
-        }
-    }
+    @State private var steps: [StepSummary] = [
+        .init(id: UUID(), name: "Alternating Cable Shoulder Press", detail: "30 sec"),
+        .init(id: UUID(), name: "Plank", detail: "10 reps"),
+        .init(id: UUID(), name: "Rest", detail: "Open"),
+        .init(id: UUID(), name: "Russian Twists", detail: "30 sec"),
+        .init(id: UUID(), name: "Barbell Bench Press", detail: "45 sec")
+    ]
 
-    private func removePayloadFromSource(_ payload: DragPayload) {
-        switch payload.source {
-        case "list1":
-            if let idx = list1.firstIndex(of: payload.value) { list1.remove(at: idx) }
-        case "list2":
-            if let idx = list2.firstIndex(of: payload.value) { list2.remove(at: idx) }
-        case "list3":
-            if let idx = list3.firstIndex(of: payload.value) { list3.remove(at: idx) }
-        default:
-            break
-        }
-    }
+    @State private var draggingItem: StepSummary? = nil
 
     var body: some View {
-        VStack {
-            Text("List 1")
-            List {
-                ForEach(list1, id: \.self) { item in
-                    Text(item)
-                        .onDrag {
-                            makeJSONItemProvider(value: item, source: "list1")
-                        }
+            ForEach(steps) { s in
+                StepRowView(
+                    stepName: s.name,
+                    stepDetail: s.detail,
+                    onChangeType: { /* hook to your editor */ },
+                    onChangeAmount: { /* hook to your editor */ },
+                    onDelete: { removeStep(id: s.id) }
+                )
+                .contentShape(Rectangle())
+                .onDrag {
+                    draggingItem = s
+                    return NSItemProvider(object: s.id.uuidString as NSString)
                 }
-                .onMove { from, to in
-                    list1.move(fromOffsets: from, toOffset: to)
-                }
-                .onInsert(of: [UTType.json]) { index, providers in
-                    decodeDraggedString(from: providers) { payload in
-                        removePayloadFromSource(payload)
-                        list1.insert(payload.value, at: index)
-                    }
-                }
+                .onDrop(
+                    of: [.text],
+                    delegate: StepReorderDropDelegate(
+                        draggingItem: $draggingItem,
+                        steps: $steps,
+                        targetStep: s
+                    )
+                )
             }
 
-            Text("List 2")
-            List {
-                ForEach(list2, id: \.self) { item in
-                    Text(item)
-                        .onDrag {
-                            makeJSONItemProvider(value: item, source: "list2")
-                        }
-                }
-                .onMove { from, to in
-                    list2.move(fromOffsets: from, toOffset: to)
-                }
-                .onInsert(of: [UTType.json]) { index, providers in
-                    decodeDraggedString(from: providers) { payload in
-                        removePayloadFromSource(payload)
-                        list2.insert(payload.value, at: index)
-                    }
-                }
-            }
+            // End-of-list drop zone
+            Rectangle()
+                .fill(Color.clear)
+                .frame(height: 16)
+                .onDrop(
+                    of: [.text],
+                    delegate: EndDropDelegate(
+                        draggingItem: $draggingItem,
+                        steps: $steps
+                    )
+                )
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+    }
 
-            Text("List 3")
-            List {
-                ForEach(list3, id: \.self) { item in
-                    Text(item)
-                        .onDrag {
-                            makeJSONItemProvider(value: item, source: "list3")
-                        }
-                }
-                .onMove { from, to in
-                    list3.move(fromOffsets: from, toOffset: to)
-                }
-                .onInsert(of: [UTType.json]) { index, providers in
-                    decodeDraggedString(from: providers) { payload in
-                        removePayloadFromSource(payload)
-                        list3.insert(payload.value, at: index)
-                    }
+    private func removeStep(id: UUID) {
+        steps.removeAll { $0.id == id }
+    }
+}
+
+// MARK: - Drop Delegates
+
+private struct StepReorderDropDelegate: DropDelegate {
+    @Binding var draggingItem: RoutineEditView.StepSummary?
+    @Binding var steps: [RoutineEditView.StepSummary]
+    let targetStep: RoutineEditView.StepSummary
+
+    func dropEntered(info: DropInfo) {
+        guard let draggingItem = draggingItem else { return }
+        
+        if draggingItem != targetStep {
+            let fromIndex = steps.firstIndex(of: draggingItem)
+            let toIndex = steps.firstIndex(of: targetStep)
+            
+            if let fromIndex = fromIndex, let toIndex = toIndex, fromIndex != toIndex {
+                withAnimation {
+                    steps.move(
+                        fromOffsets: IndexSet(integer: fromIndex),
+                        toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex
+                    )
                 }
             }
         }
-        .environment(\.editMode, .constant(.active))
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingItem = nil
+        return true
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal {
+        DropProposal(operation: .move)
+    }
+}
+
+private struct EndDropDelegate: DropDelegate {
+    @Binding var draggingItem: RoutineEditView.StepSummary?
+    @Binding var steps: [RoutineEditView.StepSummary]
+
+    func performDrop(info: DropInfo) -> Bool {
+        guard let draggingItem = draggingItem,
+              let fromIndex = steps.firstIndex(of: draggingItem) else {
+            return false
         }
+
+        withAnimation {
+            steps.move(
+                fromOffsets: IndexSet(integer: fromIndex),
+                toOffset: steps.count
+            )
+        }
+        
+        self.draggingItem = nil
+        return true
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal {
+        DropProposal(operation: .move)
+    }
+}
+
+#Preview {
+    RoutineEditView()
 }
