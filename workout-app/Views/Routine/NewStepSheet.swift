@@ -6,6 +6,7 @@ struct NewStepSheet: View {
     @State private var selectedStepType: StepType = .exercise
     @Environment(\.dismiss) private var dismiss
     let onAddSummary: (String) -> Void
+    let onStartRepeatFlow: () -> Void
     
     enum FlowStep: Hashable { case chooseKind, exerciseMode, timed, reps, restMode, restTimed, exercisePicker }
     enum ExerciseMode { case timed, reps, open }
@@ -29,7 +30,10 @@ struct NewStepSheet: View {
                             selectedStepType = kind
                             if kind == .exercise { flow = .exerciseMode }
                             else if kind == .rest { flow = .restMode }
-                            else if kind == .repeats { dismiss() }
+                            else if kind == .repeats {
+                                onStartRepeatFlow()
+                                dismiss()
+                            }
                         },
                         onCancel: { dismiss() }
                     )
@@ -93,7 +97,7 @@ struct NewStepSheet: View {
 }
 
 #Preview {
-    NewStepSheet(sheetDetent: .constant(.medium), onAddSummary: { _ in })
+    NewStepSheet(sheetDetent: .constant(.medium), onAddSummary: { _ in }, onStartRepeatFlow: {})
 }
 
 // Subviews used in the flow
