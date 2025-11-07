@@ -19,6 +19,8 @@ struct RoutineEditView: View {
     @State private var draggingItem: StepSummary? = nil
 
     var body: some View {
+    ScrollView {
+        LazyVStack(spacing: 0) {
             ForEach(steps) { s in
                 StepRowView(
                     stepName: s.name,
@@ -53,9 +55,9 @@ struct RoutineEditView: View {
                         steps: $steps
                     )
                 )
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
+        }
     }
+}
 
     private func removeStep(id: UUID) {
         steps.removeAll { $0.id == id }
