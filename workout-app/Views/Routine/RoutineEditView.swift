@@ -364,11 +364,11 @@ private struct RepeatGroupDropDelegate: DropDelegate {
                 }
             }
             
-            // Add to beginning of this repeat
+            // Add to end of this repeat (changed from insert at 0)
             guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
                   case .repeatGroup(var group) = items[groupIndex] else { return }
             
-            group.steps.insert(draggingItem, at: 0)
+            group.steps.append(draggingItem)  // Changed from insert(draggingItem, at: 0)
             items[groupIndex] = .repeatGroup(group)
             draggingFromRepeat = repeatGroupId
         }
