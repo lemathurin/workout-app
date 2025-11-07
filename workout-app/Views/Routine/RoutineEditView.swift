@@ -143,6 +143,7 @@ struct RoutineEditView: View {
         }
         .padding(.horizontal, 16)
     }
+    .background(Color(UIColor.systemGroupedBackground))
 }
     
     private func removeItem(id: UUID) {
