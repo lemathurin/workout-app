@@ -6,6 +6,7 @@ struct StepRowView: View {
     let onChangeType: () -> Void
     let onChangeAmount: () -> Void
     let onDelete: () -> Void
+    let onRemoveFromRepeat: (() -> Void)?
 
     // Render flat when used inside a RepeatGroupView
     var embedded: Bool = false
@@ -30,6 +31,11 @@ struct StepRowView: View {
                 }
                 Button { onChangeAmount() } label: {
                     Label("Change amount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                }
+                if embedded, let onRemoveFromRepeat = onRemoveFromRepeat {
+                    Button { onRemoveFromRepeat() } label: {
+                        Label("Remove from repeat", systemImage: "arrow.up.right.square")
+                    }
                 }
                 Button(role: .destructive) { onDelete() } label: {
                     Label("Remove step", systemImage: "trash")
@@ -73,35 +79,40 @@ struct StepRowView: View {
             stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
             stepName: "Altenating Cable Shoulder Press",
             stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
             stepName: "Barbell Bech Press",
             stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
             stepName: "Plank",
             stepDetail: "10 reps",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
-            stepName: "Russian Twists",
-            stepDetail: "10 reps",
+            stepName: "Alternating Cable Shoulder Press",
+            stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
 
         StepRowView(
@@ -109,28 +120,32 @@ struct StepRowView: View {
             stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
             stepName: "Altenating Cable Shoulder Press",
             stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
             stepName: "Barbell Bech Press",
             stepDetail: "30 seconds",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
         StepRowView(
             stepName: "Plank",
             stepDetail: "10 reps",
             onChangeType: {},
             onChangeAmount: {},
-            onDelete: {}
+            onDelete: {},
+            onRemoveFromRepeat: nil
         )
     }
     .listStyle(.plain)

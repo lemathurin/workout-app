@@ -9,7 +9,9 @@ struct RepeatGroupView: View {
     let onStepDelete: (UUID) -> Void
     let onGroupDelete: () -> Void
     let onGroupDrop: () -> any DropDelegate
-    
+    let onRemoveFromRepeat: (UUID) -> Void
+    let isDraggingStep: Bool
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
@@ -22,9 +24,9 @@ struct RepeatGroupView: View {
                 Text("\(repeatCount) times")
                     .font(.callout)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Menu {
                     Button { /* change repeat count */ } label: {
                         Label("Change repeat count", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
@@ -42,23 +44,19 @@ struct RepeatGroupView: View {
             }
             .padding(.vertical, 15)
             .padding(.horizontal, 17)
-            .contentShape(Rectangle())
-            .onDrop(
-                of: [.text],
-                delegate: onGroupDrop()
-            )
-            
+
             // Steps inside repeat
             ForEach(steps) { step in
                 Divider()
                     .padding(.leading, 17)
-                
+
                 StepRowView(
                     stepName: step.name,
                     stepDetail: step.detail,
                     onChangeType: { },
                     onChangeAmount: { },
                     onDelete: { onStepDelete(step.id) },
+                    onRemoveFromRepeat: { onRemoveFromRepeat(step.id) },
                     embedded: true
                 )
                 .onDrag {
@@ -72,8 +70,16 @@ struct RepeatGroupView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                .fill(isDraggingStep ? Color.blue.opacity(0.1) : Color(UIColor.secondarySystemGroupedBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isDraggingStep ? Color.blue : Color.clear, lineWidth: 2)
         )
         .cornerRadius(20)
+        .onDrop(
+            of: [.text],
+            delegate: onGroupDrop()
+        )
     }
 }
