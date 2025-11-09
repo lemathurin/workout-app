@@ -339,24 +339,28 @@ private struct RepeatStepDropDelegate: DropDelegate {
                         return false
                     }
                 }
-                
-                // Now insert into target repeat
-                guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
-                      case .repeatGroup(var group) = items[groupIndex] else { return }
-                
-                if let toIdx = group.steps.firstIndex(where: { $0.id == targetStep.id }) {
-                    group.steps.insert(draggingItem, at: toIdx)
-                } else {
-                    group.steps.append(draggingItem)
-                }
-                
-                items[groupIndex] = .repeatGroup(group)
-                draggingFromRepeat = repeatGroupId
+
+                // Insertion will happen in performDrop
             }
         }
     }
     
     func performDrop(info: DropInfo) -> Bool {
+        // If moving from outside or another repeat, insert now
+        if let draggingItem = draggingItem, draggingFromRepeat != repeatGroupId {
+            guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
+                  case .repeatGroup(var group) = items[groupIndex] else { return true }
+
+            if let toIdx = group.steps.firstIndex(where: { $0.id == targetStep.id }) {
+                group.steps.insert(draggingItem, at: toIdx)
+            } else {
+                group.steps.append(draggingItem)
+            }
+
+            items[groupIndex] = .repeatGroup(group)
+            self.draggingFromRepeat = repeatGroupId
+        }
+
         draggingItem = nil
         draggingFromRepeat = nil
         draggingRepeat = nil
