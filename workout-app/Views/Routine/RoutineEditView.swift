@@ -328,26 +328,27 @@ private struct RepeatStepDropDelegate: DropDelegate {
                 items[groupIndex] = .repeatGroup(group)
             } else {
                 // Moving from outside or another repeat into this repeat
-                // Remove from source first
-                if let sourceRepeatId = draggingFromRepeat {
-                    removeStepFromRepeat(repeatId: sourceRepeatId, stepId: draggingItem.id)
-                } else {
-                    items.removeAll { item in
-                        if case .step(let s) = item, s.id == draggingItem.id {
-                            return true
-                        }
-                        return false
-                    }
-                }
-
-                // Insertion will happen in performDrop
+                // Removal and insertion will happen in performDrop
             }
         }
     }
     
     func performDrop(info: DropInfo) -> Bool {
-        // If moving from outside or another repeat, insert now
+        // If moving from outside or another repeat, remove from source and insert now
         if let draggingItem = draggingItem, draggingFromRepeat != repeatGroupId {
+            // Remove from source
+            if let sourceRepeatId = draggingFromRepeat {
+                removeStepFromRepeat(repeatId: sourceRepeatId, stepId: draggingItem.id)
+            } else {
+                items.removeAll { item in
+                    if case .step(let s) = item, s.id == draggingItem.id {
+                        return true
+                    }
+                    return false
+                }
+            }
+
+            // Insert into target repeat
             guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
                   case .repeatGroup(var group) = items[groupIndex] else { return true }
 
