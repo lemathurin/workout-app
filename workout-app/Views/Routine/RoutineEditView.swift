@@ -43,6 +43,7 @@ struct RoutineEditView: View {
     @State private var draggingItem: StepSummary? = nil
     @State private var draggingFromRepeat: UUID? = nil
     @State private var draggingRepeat: RepeatGroup? = nil
+    @State private var hoveredRepeatId: UUID? = nil
     
     var body: some View {
     ScrollView {
@@ -58,22 +59,23 @@ struct RoutineEditView: View {
                         onDelete: { removeItem(id: item.id) },
                         onRemoveFromRepeat: nil
                     )
-                    .onDrag {
-                        draggingItem = step
-                        draggingFromRepeat = nil
-                        draggingRepeat = nil
-                        return NSItemProvider(object: step.id.uuidString as NSString)
-                    }
-                    .onDrop(
-                        of: [.text],
-                        delegate: ItemDropDelegate(
-                            draggingItem: $draggingItem,
-                            draggingFromRepeat: $draggingFromRepeat,
-                            draggingRepeat: $draggingRepeat,
-                            items: $items,
-                            targetItem: item
-                        )
-                    )
+                     .onDrag {
+                         draggingItem = step
+                         draggingFromRepeat = nil
+                         draggingRepeat = nil
+                         return NSItemProvider(object: step.id.uuidString as NSString)
+                     }
+                     .onDrop(
+                         of: [.text],
+                         delegate: ItemDropDelegate(
+                             draggingItem: $draggingItem,
+                             draggingFromRepeat: $draggingFromRepeat,
+                             draggingRepeat: $draggingRepeat,
+                             items: $items,
+                             hoveredRepeatId: $hoveredRepeatId,
+                             targetItem: item
+                         )
+                     )
                     
                 case .repeatGroup(let group):
                     RepeatGroupView(
@@ -105,13 +107,14 @@ struct RoutineEditView: View {
                                 draggingItem: $draggingItem,
                                 draggingFromRepeat: $draggingFromRepeat,
                                 items: $items,
+                                hoveredRepeatId: $hoveredRepeatId,
                                 repeatGroupId: group.id
                             )
                         },
                         onRemoveFromRepeat: { stepId in
                             moveStepOutOfRepeat(repeatId: group.id, stepId: stepId)
                         },
-                        isDraggingStep: draggingItem != nil
+                        isHighlighted: hoveredRepeatId == group.id
                     )
                     .onDrag {
                         draggingItem = nil
@@ -126,6 +129,7 @@ struct RoutineEditView: View {
                             draggingFromRepeat: $draggingFromRepeat,
                             draggingRepeat: $draggingRepeat,
                             items: $items,
+                            hoveredRepeatId: $hoveredRepeatId,
                             targetItem: item
                         )
                     )
@@ -173,28 +177,28 @@ struct RoutineEditView: View {
               case .repeatGroup(var group) = items[repeatIndex],
               let stepIndex = group.steps.firstIndex(where: { $0.id == stepId }) else { return }
 
-        let step = group.steps[stepIndex]
-        group.steps.remove(at: stepIndex)
+        let step = group.steps.remove(at: stepIndex)
 
         if group.steps.isEmpty {
             items.remove(at: repeatIndex)
-            items.insert(.step(step), at: repeatIndex)
         } else {
             items[repeatIndex] = .repeatGroup(group)
-            items.insert(.step(step), at: repeatIndex + 1)
         }
+
+        // Insert after the repeat group
+        let insertIndex = repeatIndex + (group.steps.isEmpty ? 0 : 1)
+        items.insert(.step(step), at: insertIndex)
     }
 }
-
-// MARK: - Drop Delegates
 
 private struct ItemDropDelegate: DropDelegate {
     @Binding var draggingItem: RoutineEditView.StepSummary?
     @Binding var draggingFromRepeat: UUID?
     @Binding var draggingRepeat: RoutineEditView.RepeatGroup?
     @Binding var items: [RoutineEditView.StepItem]
+    @Binding var hoveredRepeatId: UUID?
     let targetItem: RoutineEditView.StepItem
-    
+
     func dropEntered(info: DropInfo) {
         withAnimation {
             // Handle dragging entire repeat group
@@ -266,6 +270,7 @@ private struct ItemDropDelegate: DropDelegate {
         draggingItem = nil
         draggingFromRepeat = nil
         draggingRepeat = nil
+        hoveredRepeatId = nil
         return true
     }
     
@@ -380,10 +385,17 @@ private struct RepeatGroupDropDelegate: DropDelegate {
     @Binding var draggingItem: RoutineEditView.StepSummary?
     @Binding var draggingFromRepeat: UUID?
     @Binding var items: [RoutineEditView.StepItem]
+    @Binding var hoveredRepeatId: UUID?
     let repeatGroupId: UUID
 
     func dropEntered(info: DropInfo) {
-        // No longer add the step here - just visual feedback
+        hoveredRepeatId = repeatGroupId
+    }
+
+    func dropExited(info: DropInfo) {
+        if hoveredRepeatId == repeatGroupId {
+            hoveredRepeatId = nil
+        }
     }
 
     func performDrop(info: DropInfo) -> Bool {
@@ -413,6 +425,7 @@ private struct RepeatGroupDropDelegate: DropDelegate {
 
         self.draggingItem = nil
         self.draggingFromRepeat = nil
+        self.hoveredRepeatId = nil
         return true
     }
 

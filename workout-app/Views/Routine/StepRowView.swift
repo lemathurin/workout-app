@@ -33,7 +33,11 @@ struct StepRowView: View {
                     Label("Change amount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                 }
                 if embedded, let onRemoveFromRepeat = onRemoveFromRepeat {
-                    Button { onRemoveFromRepeat() } label: {
+                    Button {
+                        Task { @MainActor in
+                            onRemoveFromRepeat()
+                        }
+                    } label: {
                         Label("Remove from repeat", systemImage: "arrow.up.right.square")
                     }
                 }

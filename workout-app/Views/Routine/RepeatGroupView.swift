@@ -10,7 +10,7 @@ struct RepeatGroupView: View {
     let onGroupDelete: () -> Void
     let onGroupDrop: () -> any DropDelegate
     let onRemoveFromRepeat: (UUID) -> Void
-    let isDraggingStep: Bool
+    let isHighlighted: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -70,11 +70,11 @@ struct RepeatGroupView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isDraggingStep ? Color.blue.opacity(0.1) : Color(UIColor.secondarySystemGroupedBackground))
+                .fill(isHighlighted ? Color.blue.opacity(0.1) : Color(UIColor.secondarySystemGroupedBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(isDraggingStep ? Color.blue : Color.clear, lineWidth: 2)
+                .stroke(isHighlighted ? Color.blue : Color.clear, lineWidth: 2)
         )
         .cornerRadius(20)
         .onDrop(
