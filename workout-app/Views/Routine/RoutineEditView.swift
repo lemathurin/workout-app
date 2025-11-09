@@ -389,7 +389,10 @@ private struct RepeatGroupDropDelegate: DropDelegate {
     let repeatGroupId: UUID
 
     func dropEntered(info: DropInfo) {
-        hoveredRepeatId = repeatGroupId
+        // Don't highlight if dragging from the same repeat group
+        if draggingFromRepeat != repeatGroupId {
+            hoveredRepeatId = repeatGroupId
+        }
     }
 
     func dropExited(info: DropInfo) {
@@ -400,6 +403,9 @@ private struct RepeatGroupDropDelegate: DropDelegate {
 
     func performDrop(info: DropInfo) -> Bool {
         guard let draggingItem = draggingItem else { return false }
+
+        // Don't perform drop if dragging from the same repeat group
+        if draggingFromRepeat == repeatGroupId { return false }
 
         withAnimation {
             // Remove from source
