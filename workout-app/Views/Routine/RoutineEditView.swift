@@ -47,99 +47,145 @@ struct RoutineEditView: View {
     
     var body: some View {
     ScrollView {
-        LazyVStack(spacing: 12) {
-            ForEach(items) { item in
-                switch item {
-                case .step(let step):
-                    StepRowView(
-                        stepName: step.name,
-                        stepDetail: step.detail,
-                        onChangeType: { },
-                        onChangeAmount: { },
-                        onDelete: { removeItem(id: item.id) },
-                        onRemoveFromRepeat: nil
+        LazyVStack(spacing: 0) {
+            // Top drop zone
+            Rectangle()
+                .fill(Color.pink)
+                .frame(height: 30)
+                .onDrop(
+                    of: [.text],
+                    delegate: InsertAtTopDelegate(
+                        draggingItem: $draggingItem,
+                        draggingFromRepeat: $draggingFromRepeat,
+                        draggingRepeat: $draggingRepeat,
+                        items: $items
                     )
-                     .onDrag {
-                         draggingItem = step
-                         draggingFromRepeat = nil
-                         draggingRepeat = nil
-                         return NSItemProvider(object: step.id.uuidString as NSString)
-                     }
-                     .onDrop(
-                         of: [.text],
-                         delegate: ItemDropDelegate(
-                             draggingItem: $draggingItem,
-                             draggingFromRepeat: $draggingFromRepeat,
-                             draggingRepeat: $draggingRepeat,
-                             items: $items,
-                             hoveredRepeatId: $hoveredRepeatId,
-                             targetItem: item
-                         )
-                     )
-                    
-                case .repeatGroup(let group):
-                    RepeatGroupView(
-                        repeatCount: group.repeatCount,
-                        steps: group.steps,
-                        repeatId: group.id,
-                        onStepDrag: { step in
-                            draggingItem = step
-                            draggingFromRepeat = group.id
-                            draggingRepeat = nil
-                            return NSItemProvider(object: step.id.uuidString as NSString)
-                        },
-                        onStepDrop: { targetStep in
-                            RepeatStepDropDelegate(
+                )
+
+            ForEach(items) { item in
+                VStack(spacing: 0) {
+                    // Insert before drop zone
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: 12)
+                        .onDrop(
+                            of: [.text],
+                            delegate: InsertBeforeDropDelegate(
                                 draggingItem: $draggingItem,
                                 draggingFromRepeat: $draggingFromRepeat,
                                 draggingRepeat: $draggingRepeat,
                                 items: $items,
-                                repeatGroupId: group.id,
-                                targetStep: targetStep
+                                targetItem: item
                             )
-                        },
-                        onStepDelete: { stepId in
-                            removeStepFromRepeat(repeatId: group.id, stepId: stepId)
-                        },
-                        onGroupDelete: { removeItem(id: item.id) },
-                        onGroupDrop: {
-                            RepeatGroupDropDelegate(
+                        )
+
+                    switch item {
+                    case .step(let step):
+                        StepRowView(
+                            stepName: step.name,
+                            stepDetail: step.detail,
+                            onChangeType: { },
+                            onChangeAmount: { },
+                            onDelete: { removeItem(id: item.id) },
+                            onRemoveFromRepeat: nil
+                        )
+                          .onDrag {
+                              draggingItem = step
+                              draggingFromRepeat = nil
+                              draggingRepeat = nil
+                              return NSItemProvider(object: step.id.uuidString as NSString)
+                          }
+                          .onDrop(
+                              of: [.text],
+                              delegate: ItemDropDelegate(
+                                  draggingItem: $draggingItem,
+                                  draggingFromRepeat: $draggingFromRepeat,
+                                  draggingRepeat: $draggingRepeat,
+                                  items: $items,
+                                  hoveredRepeatId: $hoveredRepeatId,
+                                  targetItem: item
+                              )
+                          )
+
+                    case .repeatGroup(let group):
+                        RepeatGroupView(
+                            repeatCount: group.repeatCount,
+                            steps: group.steps,
+                            repeatId: group.id,
+                            onStepDrag: { step in
+                                draggingItem = step
+                                draggingFromRepeat = group.id
+                                draggingRepeat = nil
+                                return NSItemProvider(object: step.id.uuidString as NSString)
+                            },
+                            onStepDrop: { targetStep in
+                                RepeatStepDropDelegate(
+                                    draggingItem: $draggingItem,
+                                    draggingFromRepeat: $draggingFromRepeat,
+                                    draggingRepeat: $draggingRepeat,
+                                    items: $items,
+                                    repeatGroupId: group.id,
+                                    targetStep: targetStep
+                                )
+                            },
+                            onStepDelete: { stepId in
+                                removeStepFromRepeat(repeatId: group.id, stepId: stepId)
+                            },
+                            onGroupDelete: { removeItem(id: item.id) },
+                            onGroupDrop: {
+                                RepeatGroupDropDelegate(
+                                    draggingItem: $draggingItem,
+                                    draggingFromRepeat: $draggingFromRepeat,
+                                    items: $items,
+                                    hoveredRepeatId: $hoveredRepeatId,
+                                    repeatGroupId: group.id
+                                )
+                            },
+                            onRemoveFromRepeat: { stepId in
+                                moveStepOutOfRepeat(repeatId: group.id, stepId: stepId)
+                            },
+                            isHighlighted: hoveredRepeatId == group.id
+                        )
+                        .onDrag {
+                            draggingItem = nil
+                            draggingFromRepeat = nil
+                            draggingRepeat = group
+                            return NSItemProvider(object: group.id.uuidString as NSString)
+                        }
+                        .onDrop(
+                            of: [.text],
+                            delegate: ItemDropDelegate(
                                 draggingItem: $draggingItem,
                                 draggingFromRepeat: $draggingFromRepeat,
+                                draggingRepeat: $draggingRepeat,
                                 items: $items,
                                 hoveredRepeatId: $hoveredRepeatId,
-                                repeatGroupId: group.id
+                                targetItem: item
                             )
-                        },
-                        onRemoveFromRepeat: { stepId in
-                            moveStepOutOfRepeat(repeatId: group.id, stepId: stepId)
-                        },
-                        isHighlighted: hoveredRepeatId == group.id
-                    )
-                    .onDrag {
-                        draggingItem = nil
-                        draggingFromRepeat = nil
-                        draggingRepeat = group
-                        return NSItemProvider(object: group.id.uuidString as NSString)
-                    }
-                    .onDrop(
-                        of: [.text],
-                        delegate: ItemDropDelegate(
-                            draggingItem: $draggingItem,
-                            draggingFromRepeat: $draggingFromRepeat,
-                            draggingRepeat: $draggingRepeat,
-                            items: $items,
-                            hoveredRepeatId: $hoveredRepeatId,
-                            targetItem: item
                         )
-                    )
+                    }
+
+                    // Insert after drop zone
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: 12)
+                        .onDrop(
+                            of: [.text],
+                            delegate: InsertAfterDropDelegate(
+                                draggingItem: $draggingItem,
+                                draggingFromRepeat: $draggingFromRepeat,
+                                draggingRepeat: $draggingRepeat,
+                                items: $items,
+                                targetItem: item
+                            )
+                        )
                 }
             }
-            
+
             // End-of-list drop zone
             Rectangle()
-                .fill(Color.clear)
-                .frame(height: 16)
+                .fill(Color.pink)
+                .frame(height: 60)
                 .onDrop(
                     of: [.text],
                     delegate: EndDropDelegate(
@@ -442,6 +488,250 @@ private struct RepeatGroupDropDelegate: DropDelegate {
 
     func dropUpdated(info: DropInfo) -> DropProposal {
         DropProposal(operation: .move)
+    }
+
+    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == repeatId }),
+              case .repeatGroup(var group) = items[index] else { return }
+
+        group.steps.removeAll { $0.id == stepId }
+
+        if group.steps.isEmpty {
+            items.remove(at: index)
+        } else {
+            items[index] = .repeatGroup(group)
+        }
+    }
+}
+
+private struct InsertAtTopDelegate: DropDelegate {
+    @Binding var draggingItem: RoutineEditView.StepSummary?
+    @Binding var draggingFromRepeat: UUID?
+    @Binding var draggingRepeat: RoutineEditView.RepeatGroup?
+    @Binding var items: [RoutineEditView.StepItem]
+
+    func dropEntered(info: DropInfo) {
+        withAnimation {
+            // Handle dragging entire repeat group
+            if let draggingRepeat = draggingRepeat {
+                guard let currentIndex = items.firstIndex(where: { item in
+                    if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
+                        return true
+                    }
+                    return false
+                }) else { return }
+
+                if currentIndex != 0 {
+                    items.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: 0)
+                }
+                return
+            }
+
+            // Handle dragging individual step
+            guard let draggingItem = draggingItem else { return }
+
+            if let repeatId = draggingFromRepeat {
+                // Remove from repeat and insert at top
+                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                draggingFromRepeat = nil
+
+                items.insert(.step(draggingItem), at: 0)
+            } else {
+                // Move within main list
+                guard let currentIndex = items.firstIndex(where: { item in
+                    if case .step(let s) = item, s.id == draggingItem.id {
+                        return true
+                    }
+                    return false
+                }) else { return }
+
+                if currentIndex != 0 {
+                    items.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: 0)
+                }
+            }
+        }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingItem = nil
+        draggingFromRepeat = nil
+        draggingRepeat = nil
+        return true
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal {
+        if draggingItem != nil || draggingRepeat != nil {
+            return DropProposal(operation: .move)
+        }
+        return DropProposal(operation: .forbidden)
+    }
+
+    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == repeatId }),
+              case .repeatGroup(var group) = items[index] else { return }
+
+        group.steps.removeAll { $0.id == stepId }
+
+        if group.steps.isEmpty {
+            items.remove(at: index)
+        } else {
+            items[index] = .repeatGroup(group)
+        }
+    }
+}
+
+private struct InsertBeforeDropDelegate: DropDelegate {
+    @Binding var draggingItem: RoutineEditView.StepSummary?
+    @Binding var draggingFromRepeat: UUID?
+    @Binding var draggingRepeat: RoutineEditView.RepeatGroup?
+    @Binding var items: [RoutineEditView.StepItem]
+    let targetItem: RoutineEditView.StepItem
+
+    func dropEntered(info: DropInfo) {
+        withAnimation {
+            // Handle dragging entire repeat group
+            if let draggingRepeat = draggingRepeat {
+                guard let currentIndex = items.firstIndex(where: { item in
+                    if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
+                        return true
+                    }
+                    return false
+                }) else { return }
+
+                guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else { return }
+
+                if currentIndex != targetIndex {
+                    items.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: targetIndex)
+                }
+                return
+            }
+
+            // Handle dragging individual step
+            guard let draggingItem = draggingItem else { return }
+
+            if let repeatId = draggingFromRepeat {
+                // Remove from repeat and insert before target
+                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                draggingFromRepeat = nil
+
+                if let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) {
+                    items.insert(.step(draggingItem), at: targetIndex)
+                }
+            } else {
+                // Move within main list
+                guard let currentIndex = items.firstIndex(where: { item in
+                    if case .step(let s) = item, s.id == draggingItem.id {
+                        return true
+                    }
+                    return false
+                }) else { return }
+
+                guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else { return }
+
+                if currentIndex != targetIndex {
+                    items.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: targetIndex)
+                }
+            }
+        }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingItem = nil
+        draggingFromRepeat = nil
+        draggingRepeat = nil
+        return true
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal {
+        if draggingItem != nil || draggingRepeat != nil {
+            return DropProposal(operation: .move)
+        }
+        return DropProposal(operation: .forbidden)
+    }
+
+    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == repeatId }),
+              case .repeatGroup(var group) = items[index] else { return }
+
+        group.steps.removeAll { $0.id == stepId }
+
+        if group.steps.isEmpty {
+            items.remove(at: index)
+        } else {
+            items[index] = .repeatGroup(group)
+        }
+    }
+}
+
+private struct InsertAfterDropDelegate: DropDelegate {
+    @Binding var draggingItem: RoutineEditView.StepSummary?
+    @Binding var draggingFromRepeat: UUID?
+    @Binding var draggingRepeat: RoutineEditView.RepeatGroup?
+    @Binding var items: [RoutineEditView.StepItem]
+    let targetItem: RoutineEditView.StepItem
+
+    func dropEntered(info: DropInfo) {
+        withAnimation {
+            // Handle dragging entire repeat group
+            if let draggingRepeat = draggingRepeat {
+                guard let currentIndex = items.firstIndex(where: { item in
+                    if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
+                        return true
+                    }
+                    return false
+                }) else { return }
+
+                guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else { return }
+
+                let newIndex = targetIndex + 1
+                if currentIndex != newIndex {
+                    items.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: newIndex)
+                }
+                return
+            }
+
+            // Handle dragging individual step
+            guard let draggingItem = draggingItem else { return }
+
+            if let repeatId = draggingFromRepeat {
+                // Remove from repeat and insert after target
+                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                draggingFromRepeat = nil
+
+                if let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) {
+                    items.insert(.step(draggingItem), at: targetIndex + 1)
+                }
+            } else {
+                // Move within main list
+                guard let currentIndex = items.firstIndex(where: { item in
+                    if case .step(let s) = item, s.id == draggingItem.id {
+                        return true
+                    }
+                    return false
+                }) else { return }
+
+                guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else { return }
+
+                let newIndex = targetIndex + 1
+                if currentIndex != newIndex {
+                    items.move(fromOffsets: IndexSet(integer: currentIndex), toOffset: newIndex)
+                }
+            }
+        }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingItem = nil
+        draggingFromRepeat = nil
+        draggingRepeat = nil
+        return true
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal {
+        if draggingItem != nil || draggingRepeat != nil {
+            return DropProposal(operation: .move)
+        }
+        return DropProposal(operation: .forbidden)
     }
 
     private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
