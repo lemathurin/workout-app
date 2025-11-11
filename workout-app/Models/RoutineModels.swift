@@ -115,6 +115,27 @@ enum StepType: String, Codable, CaseIterable {
     case repeats = "repeats"
 }
 
+/// Semantic representation of a step's type and mode.
+/// Captures both the category (exercise/rest) AND the mode (timed/reps/open) with associated values.
+/// 
+/// Example usage:
+/// ```
+/// let timedExercise = StepMode.exerciseTimed(seconds: 30)
+/// let restWithDuration = StepMode.restTimed(seconds: 60)
+/// let repsExercise = StepMode.exerciseReps(count: 10)
+/// ```
+enum StepMode: Codable, Equatable {
+    case exerciseTimed(seconds: Int)
+    case exerciseReps(count: Int)
+    case exerciseOpen
+    case restTimed(seconds: Int)
+    case restOpen
+}
+
+// Exercise and Rest mode variants for editing logic
+enum ExerciseMode { case timed, reps, open }
+enum RestMode { case timed, open }
+
 @Model
 class RoutineMetadata {
     var createdAt: Date
