@@ -7,6 +7,9 @@ struct RepeatGroupView: View {
     let onStepDrag: (RoutineEditView.StepSummary) -> NSItemProvider
     let onStepDrop: (RoutineEditView.StepSummary) -> any DropDelegate
     let onStepDelete: (UUID) -> Void
+    let onStepChangeType: (UUID) -> Void
+    let onStepChangeAmount: (UUID) -> Void
+    let onGroupChangeCount: () -> Void
     let onGroupDelete: () -> Void
     let onGroupDrop: () -> any DropDelegate
     let onRemoveFromRepeat: (UUID) -> Void
@@ -28,7 +31,7 @@ struct RepeatGroupView: View {
                 Spacer()
 
                 Menu {
-                    Button { /* change repeat count */ } label: {
+                    Button { onGroupChangeCount() } label: {
                         Label("Change repeat count", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                     }
                     Button(role: .destructive) { onGroupDelete() } label: {
@@ -53,8 +56,8 @@ struct RepeatGroupView: View {
                 StepRowView(
                     stepName: step.name,
                     stepMode: step.mode,
-                    onChangeType: { },
-                    onChangeAmount: { },
+                    onChangeType: { onStepChangeType(step.id) },
+                    onChangeAmount: { onStepChangeAmount(step.id) },
                     onDelete: { onStepDelete(step.id) },
                     onRemoveFromRepeat: { onRemoveFromRepeat(step.id) },
                     embedded: true

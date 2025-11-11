@@ -45,6 +45,14 @@ struct RoutineEditView: View {
     @State private var draggingRepeat: RepeatGroup? = nil
     @State private var hoveredRepeatId: UUID? = nil
     
+    @State private var editingStepId: UUID? = nil
+    @State private var editingRepeatId: UUID? = nil
+    @State private var editAction: StepEditAction? = nil
+    @State private var sheetDetent: PresentationDetent = .medium
+    
+    @State private var editingRepeatCountId: UUID? = nil
+    @State private var repeatCountSheetDetent: PresentationDetent = .medium
+    
     var body: some View {
     ScrollView {
         LazyVStack(spacing: 0) {
@@ -84,8 +92,16 @@ struct RoutineEditView: View {
                         StepRowView(
                             stepName: step.name,
                             stepMode: step.mode,
-                            onChangeType: { },
-                            onChangeAmount: { },
+                            onChangeType: {
+                                editingStepId = step.id
+                                editingRepeatId = nil
+                                editAction = .changeType
+                            },
+                            onChangeAmount: {
+                                editingStepId = step.id
+                                editingRepeatId = nil
+                                editAction = .changeAmount
+                            },
                             onDelete: { removeItem(id: item.id) },
                             onRemoveFromRepeat: nil
                         )
@@ -130,6 +146,19 @@ struct RoutineEditView: View {
                             },
                             onStepDelete: { stepId in
                                 removeStepFromRepeat(repeatId: group.id, stepId: stepId)
+                            },
+                            onStepChangeType: { stepId in
+                                editingStepId = stepId
+                                editingRepeatId = group.id
+                                editAction = .changeType
+                            },
+                            onStepChangeAmount: { stepId in
+                                editingStepId = stepId
+                                editingRepeatId = group.id
+                                editAction = .changeAmount
+                            },
+                            onGroupChangeCount: {
+                                editingRepeatCountId = group.id
                             },
                             onGroupDelete: { removeItem(id: item.id) },
                             onGroupDrop: {
@@ -199,7 +228,99 @@ struct RoutineEditView: View {
         .padding(.horizontal, 16)
     }
     .background(Color(UIColor.systemGroupedBackground))
+    .sheet(isPresented: .constant(editingStepId != nil && editAction != nil)) {
+        if let stepId = editingStepId,
+           let action = editAction {
+            if let repeatId = editingRepeatId {
+                // Step is inside a repeat group
+                if let repeatIndex = items.firstIndex(where: { $0.id == repeatId }),
+                   case .repeatGroup(let group) = items[repeatIndex],
+                   let stepIndex = group.steps.firstIndex(where: { $0.id == stepId }) {
+                    let step = group.steps[stepIndex]
+                    EditStepSheet(
+                        sheetDetent: $sheetDetent,
+                        stepName: step.name,
+                        stepMode: step.mode,
+                        action: action,
+                        onUpdateSummary: { newMode in
+                            updateStepInRepeat(repeatId: repeatId, stepId: stepId, newMode: newMode)
+                            editingStepId = nil
+                            editAction = nil
+                        },
+                        onDelete: {
+                            removeStepFromRepeat(repeatId: repeatId, stepId: stepId)
+                            editingStepId = nil
+                            editAction = nil
+                        }
+                    )
+                }
+            } else {
+                // Step is at top level
+                if let itemIndex = items.firstIndex(where: { $0.id == stepId }),
+                   case .step(let step) = items[itemIndex] {
+                    EditStepSheet(
+                        sheetDetent: $sheetDetent,
+                        stepName: step.name,
+                        stepMode: step.mode,
+                        action: action,
+                        onUpdateSummary: { newMode in
+                            updateTopLevelStep(stepId: stepId, newMode: newMode)
+                            editingStepId = nil
+                            editAction = nil
+                        },
+                        onDelete: {
+                            removeItem(id: stepId)
+                            editingStepId = nil
+                            editAction = nil
+                        }
+                    )
+                }
+            }
+        }
+    }
+    .sheet(isPresented: .constant(editingRepeatCountId != nil)) {
+        if let repeatId = editingRepeatCountId,
+           let repeatIndex = items.firstIndex(where: { $0.id == repeatId }),
+           case .repeatGroup(let group) = items[repeatIndex] {
+            RepeatCountEditSheet(
+                sheetDetent: $repeatCountSheetDetent,
+                currentCount: group.repeatCount,
+                onSave: { newCount in
+                    updateRepeatCount(repeatId: repeatId, newCount: newCount)
+                    editingRepeatCountId = nil
+                },
+                onCancel: {
+                    editingRepeatCountId = nil
+                }
+            )
+        }
+    }
 }
+    
+    private func updateRepeatCount(repeatId: UUID, newCount: Int) {
+        if let index = items.firstIndex(where: { $0.id == repeatId }),
+           case .repeatGroup(var group) = items[index] {
+            group.repeatCount = newCount
+            items[index] = .repeatGroup(group)
+        }
+    }
+    
+    private func updateTopLevelStep(stepId: UUID, newMode: StepMode) {
+        if let index = items.firstIndex(where: { $0.id == stepId }),
+           case .step(var step) = items[index] {
+            step.mode = newMode
+            items[index] = .step(step)
+        }
+    }
+    
+    private func updateStepInRepeat(repeatId: UUID, stepId: UUID, newMode: StepMode) {
+        if let repeatIndex = items.firstIndex(where: { $0.id == repeatId }),
+           case .repeatGroup(var group) = items[repeatIndex],
+           let stepIndex = group.steps.firstIndex(where: { $0.id == stepId }) {
+            group.steps[stepIndex].mode = newMode
+            items[repeatIndex] = .repeatGroup(group)
+        }
+    }
     
     private func removeItem(id: UUID) {
         items.removeAll { $0.id == id }
@@ -827,6 +948,62 @@ private struct EndDropDelegate: DropDelegate {
             items.remove(at: index)
         } else {
             items[index] = .repeatGroup(group)
+        }
+    }
+}
+
+private struct RepeatCountEditSheet: View {
+    @Binding var sheetDetent: PresentationDetent
+    let currentCount: Int
+    let onSave: (Int) -> Void
+    let onCancel: () -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedCount: Int
+    
+    private let options = Array(2...50)
+    
+    init(
+        sheetDetent: Binding<PresentationDetent>,
+        currentCount: Int,
+        onSave: @escaping (Int) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        _sheetDetent = sheetDetent
+        self.currentCount = currentCount
+        self.onSave = onSave
+        self.onCancel = onCancel
+        _selectedCount = State(initialValue: currentCount)
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Text("Repeat Count").font(.headline)
+                Picker("Repeat count", selection: $selectedCount) {
+                    ForEach(options, id: \.self) { count in
+                        Text("\(count)x").tag(count)
+                    }
+                }
+                .pickerStyle(.wheel)
+                HStack {
+                    Button("Cancel") {
+                        onCancel()
+                        dismiss()
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Spacer()
+                    
+                    Button("Save") {
+                        onSave(selectedCount)
+                        dismiss()
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+            .padding()
+            .navigationTitle("Edit Repeat Count")
         }
     }
 }
