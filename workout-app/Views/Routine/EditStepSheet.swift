@@ -2,28 +2,6 @@ import SwiftUI
 
 enum StepEditAction { case changeType, changeAmount, delete }
 
-/// Semantic representation of a step's type and mode.
-/// Captures both the category (exercise/rest) AND the mode (timed/reps/open) with associated values.
-/// 
-/// Example usage:
-/// ```
-/// let timedExercise = StepMode.exerciseTimed(seconds: 30)
-/// let restWithDuration = StepMode.restTimed(seconds: 60)
-/// let repsExercise = StepMode.exerciseReps(count: 10)
-/// ```
-enum StepMode: Codable, Equatable {
-    case exerciseTimed(seconds: Int)
-    case exerciseReps(count: Int)
-    case exerciseOpen
-    case restTimed(seconds: Int)
-    case restOpen
-}
-
-// For backwards compatibility and editing logic
-enum StepCategory: Codable { case exercise, rest }
-enum ExerciseMode { case timed, reps, open }
-enum RestMode { case timed, open }
-
 private enum EditStep { case selectType, selectAmount, confirmDelete }
 
 struct EditStepSheet: View {

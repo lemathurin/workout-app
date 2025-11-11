@@ -5,12 +5,10 @@ struct NewStepSheet: View {
     @Binding var sheetDetent: PresentationDetent
     @State private var selectedStepType: StepType = .exercise
     @Environment(\.dismiss) private var dismiss
-    let onAddSummary: (String) -> Void
+    let onAddStep: (String?, StepMode) -> Void
     let onStartRepeatFlow: () -> Void
     
     enum FlowStep: Hashable { case chooseKind, exerciseMode, timed, reps, restMode, restTimed, exercisePicker }
-    enum ExerciseMode { case timed, reps, open }
-    enum RestMode { case timed, open }
     
     @State private var flow: FlowStep = .chooseKind
     @State private var exerciseModeSelection: ExerciseMode?
@@ -62,14 +60,16 @@ struct NewStepSheet: View {
                         onBack: { sheetDetent = .medium; flow = .exerciseMode },
                         onDone: {
                             if let name = selectedExerciseName, let mode = exerciseModeSelection {
+                                let stepMode: StepMode
                                 switch mode {
                                 case .timed:
-                                    onAddSummary("Exercise: \(name) – \(timerSeconds) sec")
+                                    stepMode = .exerciseTimed(seconds: timerSeconds)
                                 case .reps:
-                                    onAddSummary("Exercise: \(name) – \(repsCount) reps")
+                                    stepMode = .exerciseReps(count: repsCount)
                                 case .open:
-                                    onAddSummary("Exercise: \(name) – Open")
+                                    stepMode = .exerciseOpen
                                 }
+                                onAddStep(name, stepMode)
                             }
                             sheetDetent = .medium
                             dismiss()
@@ -79,16 +79,14 @@ struct NewStepSheet: View {
                     RestModeView(
                         onBack: { flow = .chooseKind },
                         onSelectTimed: { restModeSelection = .timed; flow = .restTimed },
-                        onSelectOpen: { restModeSelection = .open; onAddSummary("Rest – Open"); dismiss() }
+                        onSelectOpen: { onAddStep(nil, .restOpen); dismiss() }
                     )
                 case .restTimed:
                     RestTimedView(
                         seconds: $restSeconds,
                         onBack: { flow = .restMode },
-                        onNext: { onAddSummary("Rest – \(restSeconds) sec"); dismiss() }
+                        onNext: { onAddStep(nil, .restTimed(seconds: restSeconds)); dismiss() }
                     )
-                default:
-                    EmptyView()
                 }
             }
             .navigationTitle("New Step")
@@ -97,7 +95,7 @@ struct NewStepSheet: View {
 }
 
 #Preview {
-    NewStepSheet(sheetDetent: .constant(.medium), onAddSummary: { _ in }, onStartRepeatFlow: {})
+    NewStepSheet(sheetDetent: .constant(.medium), onAddStep: { _, _ in }, onStartRepeatFlow: {})
 }
 
 // Subviews used in the flow
