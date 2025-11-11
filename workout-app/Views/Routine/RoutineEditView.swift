@@ -17,7 +17,7 @@ struct RoutineEditView: View {
     struct StepSummary: Identifiable, Codable, Equatable {
         let id: UUID
         var name: String
-        var detail: String
+        var mode: StepMode
     }
     
     struct RepeatGroup: Identifiable, Codable, Equatable {
@@ -27,17 +27,17 @@ struct RoutineEditView: View {
     }
     
     @State private var items: [StepItem] = [
-        .step(.init(id: UUID(), name: "Alternating Cable Shoulder Press", detail: "30 seconds")),
+        .step(.init(id: UUID(), name: "Alternating Cable Shoulder Press", mode: .exerciseTimed(seconds: 30))),
         .repeatGroup(.init(
             id: UUID(),
             repeatCount: 5,
             steps: [
-                .init(id: UUID(), name: "Russian Twists", detail: "10 reps"),
-                .init(id: UUID(), name: "Push ups", detail: "10 reps")
+                .init(id: UUID(), name: "Russian Twists", mode: .exerciseReps(count: 10)),
+                .init(id: UUID(), name: "Push ups", mode: .exerciseReps(count: 10))
             ]
         )),
-        .step(.init(id: UUID(), name: "Rest", detail: "open")),
-        .step(.init(id: UUID(), name: "Alternating Cable Shoulder Press", detail: "30 seconds"))
+        .step(.init(id: UUID(), name: "Rest", mode: .restOpen)),
+        .step(.init(id: UUID(), name: "Alternating Cable Shoulder Press", mode: .exerciseTimed(seconds: 30)))
     ]
     
     @State private var draggingItem: StepSummary? = nil
@@ -83,7 +83,7 @@ struct RoutineEditView: View {
                     case .step(let step):
                         StepRowView(
                             stepName: step.name,
-                            stepDetail: step.detail,
+                            stepMode: step.mode,
                             onChangeType: { },
                             onChangeAmount: { },
                             onDelete: { removeItem(id: item.id) },

@@ -52,7 +52,7 @@ struct RepeatGroupView: View {
 
                 StepRowView(
                     stepName: step.name,
-                    stepDetail: step.detail,
+                    stepMode: step.mode,
                     onChangeType: { },
                     onChangeAmount: { },
                     onDelete: { onStepDelete(step.id) },

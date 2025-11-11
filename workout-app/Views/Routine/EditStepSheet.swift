@@ -1,7 +1,26 @@
 import SwiftUI
 
 enum StepEditAction { case changeType, changeAmount, delete }
-enum StepCategory { case exercise, rest }
+
+/// Semantic representation of a step's type and mode.
+/// Captures both the category (exercise/rest) AND the mode (timed/reps/open) with associated values.
+/// 
+/// Example usage:
+/// ```
+/// let timedExercise = StepMode.exerciseTimed(seconds: 30)
+/// let restWithDuration = StepMode.restTimed(seconds: 60)
+/// let repsExercise = StepMode.exerciseReps(count: 10)
+/// ```
+enum StepMode: Codable, Equatable {
+    case exerciseTimed(seconds: Int)
+    case exerciseReps(count: Int)
+    case exerciseOpen
+    case restTimed(seconds: Int)
+    case restOpen
+}
+
+// For backwards compatibility and editing logic
+enum StepCategory: Codable { case exercise, rest }
 enum ExerciseMode { case timed, reps, open }
 enum RestMode { case timed, open }
 
@@ -9,15 +28,15 @@ private enum EditStep { case selectType, selectAmount, confirmDelete }
 
 struct EditStepSheet: View {
     @Binding var sheetDetent: PresentationDetent
-    let initialSummary: String
+    let stepName: String
+    let stepMode: StepMode
     let action: StepEditAction
-    let onUpdateSummary: (String) -> Void
+    let onUpdateSummary: (StepMode) -> Void
     let onDelete: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
-    @State private var category: StepCategory = .exercise
-    @State private var exerciseName: String? = nil
+    @State private var exerciseName: String
     @State private var exerciseModeSelection: ExerciseMode? = .open
     @State private var restModeSelection: RestMode? = .open
     @State private var timerSeconds: Int = 60
@@ -26,24 +45,27 @@ struct EditStepSheet: View {
 
     init(
         sheetDetent: Binding<PresentationDetent>,
-        initialSummary: String,
+        stepName: String,
+        stepMode: StepMode,
         action: StepEditAction,
-        onUpdateSummary: @escaping (String) -> Void,
+        onUpdateSummary: @escaping (StepMode) -> Void,
         onDelete: @escaping () -> Void
     ) {
         _sheetDetent = sheetDetent
-        self.initialSummary = initialSummary
+        self.stepName = stepName
+        self.stepMode = stepMode
         self.action = action
         self.onUpdateSummary = onUpdateSummary
         self.onDelete = onDelete
 
-        let parsed = EditStepSheet.parseSummary(initialSummary)
-        _category = State(initialValue: parsed.category)
-        _exerciseName = State(initialValue: parsed.exerciseName)
-        _exerciseModeSelection = State(initialValue: parsed.exerciseMode)
-        _restModeSelection = State(initialValue: parsed.restMode)
-        _timerSeconds = State(initialValue: parsed.seconds)
-        _repsCount = State(initialValue: parsed.reps)
+        _exerciseName = State(initialValue: stepName)
+        
+        // Extract mode and amounts from StepMode
+        let (exerciseMode, restMode, seconds, reps) = EditStepSheet.extractFromStepMode(stepMode)
+        _exerciseModeSelection = State(initialValue: exerciseMode)
+        _restModeSelection = State(initialValue: restMode)
+        _timerSeconds = State(initialValue: seconds)
+        _repsCount = State(initialValue: reps)
 
         switch action {
         case .changeType:
@@ -60,7 +82,7 @@ struct EditStepSheet: View {
             Group {
                 switch editStep {
                 case .selectType:
-                    if category == .exercise {
+                    if isExercise {
                         ExerciseTypeEditView(
                             currentMode: exerciseModeSelection,
                             onSelectTimed: {
@@ -92,7 +114,7 @@ struct EditStepSheet: View {
                         )
                     }
                 case .selectAmount:
-                    if category == .exercise {
+                    if isExercise {
                         switch exerciseModeSelection {
                         case .timed:
                             TimedEditView(
@@ -142,6 +164,15 @@ struct EditStepSheet: View {
             .navigationTitle(navigationTitle)
         }
     }
+    
+    private var isExercise: Bool {
+        switch stepMode {
+        case .exerciseTimed, .exerciseReps, .exerciseOpen:
+            return true
+        case .restTimed, .restOpen:
+            return false
+        }
+    }
 
     private var navigationTitle: String {
         switch editStep {
@@ -152,68 +183,44 @@ struct EditStepSheet: View {
     }
 
     private func applyUpdateAndClose() {
-        switch category {
-        case .exercise:
-            let name = exerciseName ?? "Exercise"
+        let newStepMode: StepMode
+        
+        if isExercise {
             switch exerciseModeSelection {
             case .timed:
-                onUpdateSummary("Exercise: \(name) – \(timerSeconds) sec")
+                newStepMode = .exerciseTimed(seconds: timerSeconds)
             case .reps:
-                onUpdateSummary("Exercise: \(name) – \(repsCount) reps")
+                newStepMode = .exerciseReps(count: repsCount)
             case .open, .none:
-                onUpdateSummary("Exercise: \(name) – Open")
+                newStepMode = .exerciseOpen
             }
-        case .rest:
+        } else {
             switch restModeSelection {
             case .timed:
-                onUpdateSummary("Rest – \(timerSeconds) sec")
+                newStepMode = .restTimed(seconds: timerSeconds)
             case .open, .none:
-                onUpdateSummary("Rest – Open")
+                newStepMode = .restOpen
             }
         }
+        
+        onUpdateSummary(newStepMode)
         sheetDetent = .medium
         dismiss()
     }
 
-    private static func parseSummary(_ s: String) -> (category: StepCategory, exerciseName: String?, exerciseMode: ExerciseMode?, restMode: RestMode?, seconds: Int, reps: Int) {
-        var category: StepCategory = .exercise
-        var exerciseName: String? = nil
-        var exerciseMode: ExerciseMode? = nil
-        var restMode: RestMode? = nil
-        var seconds = 60
-        var reps = 10
-
-        if s.hasPrefix("Exercise: ") {
-            category = .exercise
-            let afterPrefix = s.dropFirst("Exercise: ".count)
-            if let sep = afterPrefix.range(of: " – ") {
-                exerciseName = String(afterPrefix[..<sep.lowerBound])
-                let suffix = String(afterPrefix[sep.upperBound...])
-                if suffix == "Open" {
-                    exerciseMode = .open
-                } else if suffix.hasSuffix(" sec") {
-                    let valueStr = suffix.replacingOccurrences(of: " sec", with: "")
-                    seconds = Int(valueStr) ?? seconds
-                    exerciseMode = .timed
-                } else if suffix.hasSuffix(" reps") {
-                    let valueStr = suffix.replacingOccurrences(of: " reps", with: "")
-                    reps = Int(valueStr) ?? reps
-                    exerciseMode = .reps
-                }
-            }
-        } else if s.hasPrefix("Rest – ") {
-            category = .rest
-            let suffix = s.dropFirst("Rest – ".count)
-            if suffix == "Open" {
-                restMode = .open
-            } else if suffix.hasSuffix(" sec") {
-                let valueStr = suffix.replacingOccurrences(of: " sec", with: "")
-                seconds = Int(valueStr) ?? seconds
-                restMode = .timed
-            }
+    private static func extractFromStepMode(_ stepMode: StepMode) -> (exerciseMode: ExerciseMode?, restMode: RestMode?, seconds: Int, reps: Int) {
+        switch stepMode {
+        case .exerciseTimed(let seconds):
+            return (.timed, nil, seconds, 10)
+        case .exerciseReps(let count):
+            return (.reps, nil, 60, count)
+        case .exerciseOpen:
+            return (.open, nil, 60, 10)
+        case .restTimed(let seconds):
+            return (nil, .timed, seconds, 10)
+        case .restOpen:
+            return (nil, .open, 60, 10)
         }
-
-        return (category, exerciseName, exerciseMode, restMode, seconds, reps)
     }
 }
 
