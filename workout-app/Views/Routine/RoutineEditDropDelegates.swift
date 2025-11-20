@@ -174,6 +174,10 @@ struct RepeatGroupDropDelegate: DropDelegate {
     let repeatGroupId: UUID
 
     func dropEntered(info: DropInfo) {
+        // Only highlight if we're dragging an individual item (not a repeat group)
+        // Repeats can't be nested, so don't highlight when dragging another repeat
+        guard draggingItem != nil else { return }
+
         if draggingFromRepeat != repeatGroupId {
             hoveredRepeatId = repeatGroupId
         }
@@ -186,7 +190,10 @@ struct RepeatGroupDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
+        // Reject drop if dragging a repeat group (repeats can't be nested)
         guard let draggingItem = draggingItem else { return false }
+
+        // Don't allow dropping into the same repeat group
         if draggingFromRepeat == repeatGroupId { return false }
 
         withAnimation {
