@@ -12,7 +12,8 @@ struct RoutineEditView: View {
                     DropZoneView(
                         height: 30,
                         color: .pink,
-                        delegate: InsertAtTopDelegate(
+                        delegate: InsertDropDelegate(
+                            position: .top,
                             draggingItem: $viewModel.draggingItem,
                             draggingFromRepeat: $viewModel.draggingFromRepeat,
                             draggingRepeatId: $viewModel.draggingRepeatId,
@@ -24,12 +25,12 @@ struct RoutineEditView: View {
                         VStack(spacing: 0) {
                             // Insert before drop zone
                             DropZoneView(
-                                delegate: InsertBeforeDropDelegate(
+                                delegate: InsertDropDelegate(
+                                    position: .before(item),
                                     draggingItem: $viewModel.draggingItem,
                                     draggingFromRepeat: $viewModel.draggingFromRepeat,
                                     draggingRepeatId: $viewModel.draggingRepeatId,
-                                    items: $viewModel.items,
-                                    targetItem: item
+                                    items: $viewModel.items
                                 )
                             )
 
@@ -38,12 +39,12 @@ struct RoutineEditView: View {
 
                             // Insert after drop zone
                             DropZoneView(
-                                delegate: InsertAfterDropDelegate(
+                                delegate: InsertDropDelegate(
+                                    position: .after(item),
                                     draggingItem: $viewModel.draggingItem,
                                     draggingFromRepeat: $viewModel.draggingFromRepeat,
                                     draggingRepeatId: $viewModel.draggingRepeatId,
-                                    items: $viewModel.items,
-                                    targetItem: item
+                                    items: $viewModel.items
                                 )
                             )
                         }
@@ -53,7 +54,8 @@ struct RoutineEditView: View {
                     DropZoneView(
                         height: 60,
                         color: .pink,
-                        delegate: EndDropDelegate(
+                        delegate: InsertDropDelegate(
+                            position: .end,
                             draggingItem: $viewModel.draggingItem,
                             draggingFromRepeat: $viewModel.draggingFromRepeat,
                             draggingRepeatId: $viewModel.draggingRepeatId,
