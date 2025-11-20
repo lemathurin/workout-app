@@ -2,13 +2,13 @@ import SwiftUI
 
 struct RepeatGroupView: View {
     let repeatCount: Int
-    let steps: [StepSummary]
+    let items: [RepeatItem]
     let repeatId: UUID
-    let onStepDrag: (StepSummary) -> NSItemProvider
-    let onStepDrop: (StepSummary) -> any DropDelegate
-    let onStepDelete: (UUID) -> Void
-    let onStepChangeType: (UUID) -> Void
-    let onStepChangeAmount: (UUID) -> Void
+    let onItemDrag: (RepeatItem) -> NSItemProvider
+    let onItemDrop: (RepeatItem) -> any DropDelegate
+    let onItemDelete: (UUID) -> Void
+    let onItemChangeType: (UUID) -> Void
+    let onItemChangeAmount: (UUID) -> Void
     let onGroupChangeCount: () -> Void
     let onGroupDelete: () -> Void
     let onGroupDrop: () -> any DropDelegate
@@ -54,26 +54,26 @@ struct RepeatGroupView: View {
             .padding(.vertical, 15)
             .padding(.horizontal, 17)
 
-            // Steps inside repeat
-            ForEach(steps) { step in
+            // Items inside repeat
+            ForEach(items) { item in
                 Divider()
                     .padding(.leading, 17)
 
                 StepRowView(
-                    stepName: step.name,
-                    stepMode: step.mode,
-                    onChangeType: { onStepChangeType(step.id) },
-                    onChangeAmount: { onStepChangeAmount(step.id) },
-                    onDelete: { onStepDelete(step.id) },
-                    onRemoveFromRepeat: { onRemoveFromRepeat(step.id) },
+                    stepName: item.displayName,
+                    stepMode: repeatItemToStepMode(item),
+                    onChangeType: { onItemChangeType(item.id) },
+                    onChangeAmount: { onItemChangeAmount(item.id) },
+                    onDelete: { onItemDelete(item.id) },
+                    onRemoveFromRepeat: { onRemoveFromRepeat(item.id) },
                     embedded: true
                 )
                 .onDrag {
-                    onStepDrag(step)
+                    onItemDrag(item)
                 }
                 .onDrop(
                     of: [.text],
-                    delegate: onStepDrop(step)
+                    delegate: onItemDrop(item)
                 )
             }
         }
@@ -92,5 +92,27 @@ struct RepeatGroupView: View {
             of: [.text],
             delegate: onGroupDrop()
         )
+    }
+
+    // Convert RepeatItem to StepMode for StepRowView compatibility
+    private func repeatItemToStepMode(_ item: RepeatItem) -> StepMode {
+        switch item {
+        case .exercise(_, _, let mode):
+            switch mode {
+            case .timed(let seconds):
+                return .exerciseTimed(seconds: seconds)
+            case .reps(let count):
+                return .exerciseReps(count: count)
+            case .open:
+                return .exerciseOpen
+            }
+        case .rest(_, let mode):
+            switch mode {
+            case .timed(let seconds):
+                return .restTimed(seconds: seconds)
+            case .open:
+                return .restOpen
+            }
+        }
     }
 }

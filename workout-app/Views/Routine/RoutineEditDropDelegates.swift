@@ -3,9 +3,9 @@ import SwiftUI
 // MARK: - Item Drop Delegate
 
 struct ItemDropDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
-    @Binding var draggingRepeat: RepeatGroup?
+    @Binding var draggingRepeatId: UUID?
     @Binding var items: [StepItem]
     @Binding var hoveredRepeatId: UUID?
     let targetItem: StepItem
@@ -13,16 +13,9 @@ struct ItemDropDelegate: DropDelegate {
     func dropEntered(info: DropInfo) {
         withAnimation {
             // Handle dragging entire repeat group
-            if let draggingRepeat = draggingRepeat {
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
-                            return true
-                        }
-                        return false
-                    })
+            if let draggingRepeatId = draggingRepeatId {
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingRepeatId })
                 else { return }
-
                 guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else {
                     return
                 }
@@ -36,41 +29,30 @@ struct ItemDropDelegate: DropDelegate {
                 return
             }
 
-            // Handle dragging individual step
+            // Handle dragging individual item
             guard let draggingItem = draggingItem else { return }
 
-            // If dragging from a repeat, don't allow dropping outside - only allow dropping on other repeats
+            // If dragging from a repeat, don't allow dropping outside
             if draggingFromRepeat != nil {
-                // Only allow if target is a repeat group
                 if case .repeatGroup = targetItem {
-                    // This will be handled by RepeatGroupDropDelegate
-                    return
+                    return  // Will be handled by RepeatGroupDropDelegate
                 } else {
-                    // Reject drop outside repeat
-                    return
+                    return  // Reject drop outside repeat
                 }
             }
 
-            // If dragging from a repeat, remove it first and clear the flag
+            // If dragging from a repeat, remove it first
             if let repeatId = draggingFromRepeat {
-                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: repeatId, itemId: draggingItem.id)
                 draggingFromRepeat = nil
 
-                // Insert at target position
                 if let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) {
-                    items.insert(.step(draggingItem), at: targetIndex)
+                    items.insert(repeatItemToStepItem(draggingItem), at: targetIndex)
                 }
             } else {
                 // Moving within main list
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .step(let s) = item, s.id == draggingItem.id {
-                            return true
-                        }
-                        return false
-                    })
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingItem.id })
                 else { return }
-
                 guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else {
                     return
                 }
@@ -88,7 +70,7 @@ struct ItemDropDelegate: DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         draggingItem = nil
         draggingFromRepeat = nil
-        draggingRepeat = nil
+        draggingRepeatId = nil
         hoveredRepeatId = nil
         return true
     }
@@ -97,17 +79,26 @@ struct ItemDropDelegate: DropDelegate {
         DropProposal(operation: .move)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    private func repeatItemToStepItem(_ item: RepeatItem) -> StepItem {
+        switch item {
+        case .exercise(let id, let name, let mode):
+            return .exercise(id: id, name: name, mode: mode)
+        case .rest(let id, let mode):
+            return .rest(id: id, mode: mode)
         }
     }
 }
@@ -115,23 +106,23 @@ struct ItemDropDelegate: DropDelegate {
 // MARK: - Repeat Step Drop Delegate
 
 struct RepeatStepDropDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
-    @Binding var draggingRepeat: RepeatGroup?
+    @Binding var draggingRepeatId: UUID?
     @Binding var items: [StepItem]
     let repeatGroupId: UUID
-    let targetStep: StepSummary
+    let targetItem: RepeatItem
 
     func dropEntered(info: DropInfo) {
         guard let draggingItem = draggingItem else { return }
 
-        // Don't process if we're dragging from the same repeat and at the same position
+        // Don't process if we're dragging from the same repeat at the same position
         if let sourceRepeatId = draggingFromRepeat,
             sourceRepeatId == repeatGroupId,
             let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
-            case .repeatGroup(let group) = items[groupIndex],
-            let fromIdx = group.steps.firstIndex(where: { $0.id == draggingItem.id }),
-            let toIdx = group.steps.firstIndex(where: { $0.id == targetStep.id }),
+            case .repeatGroup(_, _, let repeatItems) = items[groupIndex],
+            let fromIdx = repeatItems.firstIndex(where: { $0.id == draggingItem.id }),
+            let toIdx = repeatItems.firstIndex(where: { $0.id == targetItem.id }),
             fromIdx == toIdx
         {
             return
@@ -141,19 +132,16 @@ struct RepeatStepDropDelegate: DropDelegate {
             // Handle moving within same repeat
             if let sourceRepeatId = draggingFromRepeat, sourceRepeatId == repeatGroupId {
                 guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
-                    case .repeatGroup(var group) = items[groupIndex],
-                    let fromIdx = group.steps.firstIndex(where: { $0.id == draggingItem.id }),
-                    let toIdx = group.steps.firstIndex(where: { $0.id == targetStep.id }),
+                    case .repeatGroup(let id, let count, var repeatItems) = items[groupIndex],
+                    let fromIdx = repeatItems.firstIndex(where: { $0.id == draggingItem.id }),
+                    let toIdx = repeatItems.firstIndex(where: { $0.id == targetItem.id }),
                     fromIdx != toIdx
                 else { return }
 
-                group.steps.move(
+                repeatItems.move(
                     fromOffsets: IndexSet(integer: fromIdx),
                     toOffset: toIdx > fromIdx ? toIdx + 1 : toIdx)
-                items[groupIndex] = .repeatGroup(group)
-            } else {
-                // Moving from outside or another repeat into this repeat
-                // Removal and insertion will happen in performDrop
+                items[groupIndex] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
             }
         }
     }
@@ -163,34 +151,29 @@ struct RepeatStepDropDelegate: DropDelegate {
         if let draggingItem = draggingItem, draggingFromRepeat != repeatGroupId {
             // Remove from source
             if let sourceRepeatId = draggingFromRepeat {
-                removeStepFromRepeat(repeatId: sourceRepeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: sourceRepeatId, itemId: draggingItem.id)
             } else {
-                items.removeAll { item in
-                    if case .step(let s) = item, s.id == draggingItem.id {
-                        return true
-                    }
-                    return false
-                }
+                items.removeAll { $0.id == draggingItem.id }
             }
 
             // Insert into target repeat
             guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
-                case .repeatGroup(var group) = items[groupIndex]
+                case .repeatGroup(let id, let count, var repeatItems) = items[groupIndex]
             else { return true }
 
-            if let toIdx = group.steps.firstIndex(where: { $0.id == targetStep.id }) {
-                group.steps.insert(draggingItem, at: toIdx)
+            if let toIdx = repeatItems.firstIndex(where: { $0.id == targetItem.id }) {
+                repeatItems.insert(draggingItem, at: toIdx)
             } else {
-                group.steps.append(draggingItem)
+                repeatItems.append(draggingItem)
             }
 
-            items[groupIndex] = .repeatGroup(group)
+            items[groupIndex] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
             self.draggingFromRepeat = repeatGroupId
         }
 
         draggingItem = nil
         draggingFromRepeat = nil
-        draggingRepeat = nil
+        draggingRepeatId = nil
         return true
     }
 
@@ -198,17 +181,17 @@ struct RepeatStepDropDelegate: DropDelegate {
         DropProposal(operation: .move)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
         }
     }
 }
@@ -216,14 +199,13 @@ struct RepeatStepDropDelegate: DropDelegate {
 // MARK: - Repeat Group Drop Delegate
 
 struct RepeatGroupDropDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
     @Binding var items: [StepItem]
     @Binding var hoveredRepeatId: UUID?
     let repeatGroupId: UUID
 
     func dropEntered(info: DropInfo) {
-        // Don't highlight if dragging from the same repeat group
         if draggingFromRepeat != repeatGroupId {
             hoveredRepeatId = repeatGroupId
         }
@@ -237,30 +219,23 @@ struct RepeatGroupDropDelegate: DropDelegate {
 
     func performDrop(info: DropInfo) -> Bool {
         guard let draggingItem = draggingItem else { return false }
-
-        // Don't perform drop if dragging from the same repeat group
         if draggingFromRepeat == repeatGroupId { return false }
 
         withAnimation {
             // Remove from source
             if let sourceRepeatId = draggingFromRepeat {
-                removeStepFromRepeat(repeatId: sourceRepeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: sourceRepeatId, itemId: draggingItem.id)
             } else {
-                items.removeAll { item in
-                    if case .step(let s) = item, s.id == draggingItem.id {
-                        return true
-                    }
-                    return false
-                }
+                items.removeAll { $0.id == draggingItem.id }
             }
 
             // Add to end of this repeat
             guard let groupIndex = items.firstIndex(where: { $0.id == repeatGroupId }),
-                case .repeatGroup(var group) = items[groupIndex]
+                case .repeatGroup(let id, let count, var repeatItems) = items[groupIndex]
             else { return }
 
-            group.steps.append(draggingItem)
-            items[groupIndex] = .repeatGroup(group)
+            repeatItems.append(draggingItem)
+            items[groupIndex] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
             draggingFromRepeat = repeatGroupId
         }
 
@@ -274,17 +249,17 @@ struct RepeatGroupDropDelegate: DropDelegate {
         DropProposal(operation: .move)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
         }
     }
 }
@@ -292,22 +267,16 @@ struct RepeatGroupDropDelegate: DropDelegate {
 // MARK: - Insert At Top Delegate
 
 struct InsertAtTopDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
-    @Binding var draggingRepeat: RepeatGroup?
+    @Binding var draggingRepeatId: UUID?
     @Binding var items: [StepItem]
 
     func dropEntered(info: DropInfo) {
         withAnimation {
             // Handle dragging entire repeat group
-            if let draggingRepeat = draggingRepeat {
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
-                            return true
-                        }
-                        return false
-                    })
+            if let draggingRepeatId = draggingRepeatId {
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingRepeatId })
                 else { return }
 
                 if currentIndex != 0 {
@@ -316,24 +285,15 @@ struct InsertAtTopDelegate: DropDelegate {
                 return
             }
 
-            // Handle dragging individual step
+            // Handle dragging individual item
             guard let draggingItem = draggingItem else { return }
 
             if let repeatId = draggingFromRepeat {
-                // Remove from repeat and insert at top
-                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: repeatId, itemId: draggingItem.id)
                 draggingFromRepeat = nil
-
-                items.insert(.step(draggingItem), at: 0)
+                items.insert(repeatItemToStepItem(draggingItem), at: 0)
             } else {
-                // Move within main list
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .step(let s) = item, s.id == draggingItem.id {
-                            return true
-                        }
-                        return false
-                    })
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingItem.id })
                 else { return }
 
                 if currentIndex != 0 {
@@ -346,28 +306,37 @@ struct InsertAtTopDelegate: DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         draggingItem = nil
         draggingFromRepeat = nil
-        draggingRepeat = nil
+        draggingRepeatId = nil
         return true
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal {
-        if draggingItem != nil || draggingRepeat != nil {
+        if draggingItem != nil || draggingRepeatId != nil {
             return DropProposal(operation: .move)
         }
         return DropProposal(operation: .forbidden)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    private func repeatItemToStepItem(_ item: RepeatItem) -> StepItem {
+        switch item {
+        case .exercise(let id, let name, let mode):
+            return .exercise(id: id, name: name, mode: mode)
+        case .rest(let id, let mode):
+            return .rest(id: id, mode: mode)
         }
     }
 }
@@ -375,25 +344,18 @@ struct InsertAtTopDelegate: DropDelegate {
 // MARK: - Insert Before Drop Delegate
 
 struct InsertBeforeDropDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
-    @Binding var draggingRepeat: RepeatGroup?
+    @Binding var draggingRepeatId: UUID?
     @Binding var items: [StepItem]
     let targetItem: StepItem
 
     func dropEntered(info: DropInfo) {
         withAnimation {
             // Handle dragging entire repeat group
-            if let draggingRepeat = draggingRepeat {
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
-                            return true
-                        }
-                        return false
-                    })
+            if let draggingRepeatId = draggingRepeatId {
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingRepeatId })
                 else { return }
-
                 guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else {
                     return
                 }
@@ -404,28 +366,19 @@ struct InsertBeforeDropDelegate: DropDelegate {
                 return
             }
 
-            // Handle dragging individual step
+            // Handle dragging individual item
             guard let draggingItem = draggingItem else { return }
 
             if let repeatId = draggingFromRepeat {
-                // Remove from repeat and insert before target
-                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: repeatId, itemId: draggingItem.id)
                 draggingFromRepeat = nil
 
                 if let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) {
-                    items.insert(.step(draggingItem), at: targetIndex)
+                    items.insert(repeatItemToStepItem(draggingItem), at: targetIndex)
                 }
             } else {
-                // Move within main list
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .step(let s) = item, s.id == draggingItem.id {
-                            return true
-                        }
-                        return false
-                    })
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingItem.id })
                 else { return }
-
                 guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else {
                     return
                 }
@@ -440,28 +393,37 @@ struct InsertBeforeDropDelegate: DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         draggingItem = nil
         draggingFromRepeat = nil
-        draggingRepeat = nil
+        draggingRepeatId = nil
         return true
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal {
-        if draggingItem != nil || draggingRepeat != nil {
+        if draggingItem != nil || draggingRepeatId != nil {
             return DropProposal(operation: .move)
         }
         return DropProposal(operation: .forbidden)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    private func repeatItemToStepItem(_ item: RepeatItem) -> StepItem {
+        switch item {
+        case .exercise(let id, let name, let mode):
+            return .exercise(id: id, name: name, mode: mode)
+        case .rest(let id, let mode):
+            return .rest(id: id, mode: mode)
         }
     }
 }
@@ -469,25 +431,18 @@ struct InsertBeforeDropDelegate: DropDelegate {
 // MARK: - Insert After Drop Delegate
 
 struct InsertAfterDropDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
-    @Binding var draggingRepeat: RepeatGroup?
+    @Binding var draggingRepeatId: UUID?
     @Binding var items: [StepItem]
     let targetItem: StepItem
 
     func dropEntered(info: DropInfo) {
         withAnimation {
             // Handle dragging entire repeat group
-            if let draggingRepeat = draggingRepeat {
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
-                            return true
-                        }
-                        return false
-                    })
+            if let draggingRepeatId = draggingRepeatId {
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingRepeatId })
                 else { return }
-
                 guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else {
                     return
                 }
@@ -499,28 +454,19 @@ struct InsertAfterDropDelegate: DropDelegate {
                 return
             }
 
-            // Handle dragging individual step
+            // Handle dragging individual item
             guard let draggingItem = draggingItem else { return }
 
             if let repeatId = draggingFromRepeat {
-                // Remove from repeat and insert after target
-                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: repeatId, itemId: draggingItem.id)
                 draggingFromRepeat = nil
 
                 if let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) {
-                    items.insert(.step(draggingItem), at: targetIndex + 1)
+                    items.insert(repeatItemToStepItem(draggingItem), at: targetIndex + 1)
                 }
             } else {
-                // Move within main list
-                guard
-                    let currentIndex = items.firstIndex(where: { item in
-                        if case .step(let s) = item, s.id == draggingItem.id {
-                            return true
-                        }
-                        return false
-                    })
+                guard let currentIndex = items.firstIndex(where: { $0.id == draggingItem.id })
                 else { return }
-
                 guard let targetIndex = items.firstIndex(where: { $0.id == targetItem.id }) else {
                     return
                 }
@@ -536,28 +482,37 @@ struct InsertAfterDropDelegate: DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         draggingItem = nil
         draggingFromRepeat = nil
-        draggingRepeat = nil
+        draggingRepeatId = nil
         return true
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal {
-        if draggingItem != nil || draggingRepeat != nil {
+        if draggingItem != nil || draggingRepeatId != nil {
             return DropProposal(operation: .move)
         }
         return DropProposal(operation: .forbidden)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    private func repeatItemToStepItem(_ item: RepeatItem) -> StepItem {
+        switch item {
+        case .exercise(let id, let name, let mode):
+            return .exercise(id: id, name: name, mode: mode)
+        case .rest(let id, let mode):
+            return .rest(id: id, mode: mode)
         }
     }
 }
@@ -565,35 +520,30 @@ struct InsertAfterDropDelegate: DropDelegate {
 // MARK: - End Drop Delegate
 
 struct EndDropDelegate: DropDelegate {
-    @Binding var draggingItem: StepSummary?
+    @Binding var draggingItem: RepeatItem?
     @Binding var draggingFromRepeat: UUID?
-    @Binding var draggingRepeat: RepeatGroup?
+    @Binding var draggingRepeatId: UUID?
     @Binding var items: [StepItem]
 
     func performDrop(info: DropInfo) -> Bool {
         withAnimation {
             // Handle dragging entire repeat
-            if let draggingRepeat = draggingRepeat {
-                if case .repeatGroup(let lastRepeat) = items.last,
-                    lastRepeat.id == draggingRepeat.id
-                {
-                    self.draggingRepeat = nil
+            if let draggingRepeatId = draggingRepeatId {
+                if case .repeatGroup(let id, _, _) = items.last, id == draggingRepeatId {
+                    self.draggingRepeatId = nil
                     return true
                 }
 
-                items.removeAll { item in
-                    if case .repeatGroup(let r) = item, r.id == draggingRepeat.id {
-                        return true
-                    }
-                    return false
+                items.removeAll { $0.id == draggingRepeatId }
+                if let index = items.firstIndex(where: { $0.id == draggingRepeatId }) {
+                    let item = items.remove(at: index)
+                    items.append(item)
                 }
-
-                items.append(.repeatGroup(draggingRepeat))
-                self.draggingRepeat = nil
+                self.draggingRepeatId = nil
                 return true
             }
 
-            // Handle dragging step
+            // Handle dragging item
             guard let draggingItem = draggingItem else { return false }
 
             // If dragging from a repeat, don't allow dropping at the end
@@ -604,7 +554,7 @@ struct EndDropDelegate: DropDelegate {
             }
 
             // Check if already at the end
-            if case .step(let lastStep) = items.last, lastStep.id == draggingItem.id {
+            if items.last?.id == draggingItem.id {
                 self.draggingItem = nil
                 self.draggingFromRepeat = nil
                 return true
@@ -612,18 +562,13 @@ struct EndDropDelegate: DropDelegate {
 
             // Remove from source
             if let repeatId = draggingFromRepeat {
-                removeStepFromRepeat(repeatId: repeatId, stepId: draggingItem.id)
+                removeItemFromRepeat(repeatId: repeatId, itemId: draggingItem.id)
             } else {
-                items.removeAll { item in
-                    if case .step(let s) = item, s.id == draggingItem.id {
-                        return true
-                    }
-                    return false
-                }
+                items.removeAll { $0.id == draggingItem.id }
             }
 
             // Add to end
-            items.append(.step(draggingItem))
+            items.append(repeatItemToStepItem(draggingItem))
 
             self.draggingItem = nil
             self.draggingFromRepeat = nil
@@ -635,17 +580,26 @@ struct EndDropDelegate: DropDelegate {
         DropProposal(operation: .move)
     }
 
-    private func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    private func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    private func repeatItemToStepItem(_ item: RepeatItem) -> StepItem {
+        switch item {
+        case .exercise(let id, let name, let mode):
+            return .exercise(id: id, name: name, mode: mode)
+        case .rest(let id, let mode):
+            return .rest(id: id, mode: mode)
         }
     }
 }

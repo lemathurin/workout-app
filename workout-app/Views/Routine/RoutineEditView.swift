@@ -15,7 +15,7 @@ struct RoutineEditView: View {
                         delegate: InsertAtTopDelegate(
                             draggingItem: $viewModel.draggingItem,
                             draggingFromRepeat: $viewModel.draggingFromRepeat,
-                            draggingRepeat: $viewModel.draggingRepeat,
+                            draggingRepeatId: $viewModel.draggingRepeatId,
                             items: $viewModel.items
                         )
                     )
@@ -27,7 +27,7 @@ struct RoutineEditView: View {
                                 delegate: InsertBeforeDropDelegate(
                                     draggingItem: $viewModel.draggingItem,
                                     draggingFromRepeat: $viewModel.draggingFromRepeat,
-                                    draggingRepeat: $viewModel.draggingRepeat,
+                                    draggingRepeatId: $viewModel.draggingRepeatId,
                                     items: $viewModel.items,
                                     targetItem: item
                                 )
@@ -41,7 +41,7 @@ struct RoutineEditView: View {
                                 delegate: InsertAfterDropDelegate(
                                     draggingItem: $viewModel.draggingItem,
                                     draggingFromRepeat: $viewModel.draggingFromRepeat,
-                                    draggingRepeat: $viewModel.draggingRepeat,
+                                    draggingRepeatId: $viewModel.draggingRepeatId,
                                     items: $viewModel.items,
                                     targetItem: item
                                 )
@@ -56,7 +56,7 @@ struct RoutineEditView: View {
                         delegate: EndDropDelegate(
                             draggingItem: $viewModel.draggingItem,
                             draggingFromRepeat: $viewModel.draggingFromRepeat,
-                            draggingRepeat: $viewModel.draggingRepeat,
+                            draggingRepeatId: $viewModel.draggingRepeatId,
                             items: $viewModel.items
                         )
                     )
@@ -84,38 +84,42 @@ struct RoutineEditView: View {
     @ViewBuilder
     private func renderItem(_ item: StepItem) -> some View {
         switch item {
-        case .step(let step):
-            renderStepItem(step, item: item)
-        case .repeatGroup(let group):
-            renderRepeatGroupItem(group, item: item)
+        case .exercise(let id, let name, let mode):
+            renderExercise(id: id, name: name, mode: mode, item: item)
+        case .rest(let id, let mode):
+            renderRest(id: id, mode: mode, item: item)
+        case .repeatGroup(let id, let count, let items):
+            renderRepeatGroup(id: id, count: count, items: items, item: item)
         }
     }
 
-    private func renderStepItem(_ step: StepSummary, item: StepItem) -> some View {
+    private func renderExercise(id: UUID, name: String, mode: ExerciseStepMode, item: StepItem)
+        -> some View
+    {
         StepRowView(
-            stepName: step.name,
-            stepMode: step.mode,
+            stepName: name,
+            stepMode: exerciseModeToStepMode(mode),
             onChangeType: {
-                viewModel.handleStepEdit(stepId: step.id, repeatId: nil, action: .changeType)
+                viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeType)
             },
             onChangeAmount: {
-                viewModel.handleStepEdit(stepId: step.id, repeatId: nil, action: .changeAmount)
+                viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeAmount)
             },
-            onDelete: { viewModel.removeItem(id: item.id) },
+            onDelete: { viewModel.removeItem(id: id) },
             onRemoveFromRepeat: nil
         )
         .onDrag {
-            viewModel.draggingItem = step
+            viewModel.draggingItem = .exercise(id: id, name: name, mode: mode)
             viewModel.draggingFromRepeat = nil
-            viewModel.draggingRepeat = nil
-            return NSItemProvider(object: step.id.uuidString as NSString)
+            viewModel.draggingRepeatId = nil
+            return NSItemProvider(object: id.uuidString as NSString)
         }
         .onDrop(
             of: [.text],
             delegate: ItemDropDelegate(
                 draggingItem: $viewModel.draggingItem,
                 draggingFromRepeat: $viewModel.draggingFromRepeat,
-                draggingRepeat: $viewModel.draggingRepeat,
+                draggingRepeatId: $viewModel.draggingRepeatId,
                 items: $viewModel.items,
                 hoveredRepeatId: $viewModel.hoveredRepeatId,
                 targetItem: item
@@ -123,66 +127,100 @@ struct RoutineEditView: View {
         )
     }
 
-    private func renderRepeatGroupItem(_ group: RepeatGroup, item: StepItem) -> some View {
-        RepeatGroupView(
-            repeatCount: group.repeatCount,
-            steps: group.steps,
-            repeatId: group.id,
-            onStepDrag: { step in
-                viewModel.draggingItem = step
-                viewModel.draggingFromRepeat = group.id
-                viewModel.draggingRepeat = nil
-                return NSItemProvider(object: step.id.uuidString as NSString)
+    private func renderRest(id: UUID, mode: RestStepMode, item: StepItem) -> some View {
+        StepRowView(
+            stepName: "Rest",
+            stepMode: restModeToStepMode(mode),
+            onChangeType: {
+                viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeType)
             },
-            onStepDrop: { targetStep in
-                RepeatStepDropDelegate(
-                    draggingItem: $viewModel.draggingItem,
-                    draggingFromRepeat: $viewModel.draggingFromRepeat,
-                    draggingRepeat: $viewModel.draggingRepeat,
-                    items: $viewModel.items,
-                    repeatGroupId: group.id,
-                    targetStep: targetStep
-                )
+            onChangeAmount: {
+                viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeAmount)
             },
-            onStepDelete: { stepId in
-                viewModel.removeStepFromRepeat(repeatId: group.id, stepId: stepId)
-            },
-            onStepChangeType: { stepId in
-                viewModel.handleStepEdit(stepId: stepId, repeatId: group.id, action: .changeType)
-            },
-            onStepChangeAmount: { stepId in
-                viewModel.handleStepEdit(stepId: stepId, repeatId: group.id, action: .changeAmount)
-            },
-            onGroupChangeCount: {
-                viewModel.handleRepeatCountEdit(repeatId: group.id)
-            },
-            onGroupDelete: { viewModel.removeItem(id: item.id) },
-            onGroupDrop: {
-                RepeatGroupDropDelegate(
-                    draggingItem: $viewModel.draggingItem,
-                    draggingFromRepeat: $viewModel.draggingFromRepeat,
-                    items: $viewModel.items,
-                    hoveredRepeatId: $viewModel.hoveredRepeatId,
-                    repeatGroupId: group.id
-                )
-            },
-            onRemoveFromRepeat: { stepId in
-                viewModel.moveStepOutOfRepeat(repeatId: group.id, stepId: stepId)
-            },
-            isHighlighted: viewModel.hoveredRepeatId == group.id
+            onDelete: { viewModel.removeItem(id: id) },
+            onRemoveFromRepeat: nil
         )
         .onDrag {
-            viewModel.draggingItem = nil
+            viewModel.draggingItem = .rest(id: id, mode: mode)
             viewModel.draggingFromRepeat = nil
-            viewModel.draggingRepeat = group
-            return NSItemProvider(object: group.id.uuidString as NSString)
+            viewModel.draggingRepeatId = nil
+            return NSItemProvider(object: id.uuidString as NSString)
         }
         .onDrop(
             of: [.text],
             delegate: ItemDropDelegate(
                 draggingItem: $viewModel.draggingItem,
                 draggingFromRepeat: $viewModel.draggingFromRepeat,
-                draggingRepeat: $viewModel.draggingRepeat,
+                draggingRepeatId: $viewModel.draggingRepeatId,
+                items: $viewModel.items,
+                hoveredRepeatId: $viewModel.hoveredRepeatId,
+                targetItem: item
+            )
+        )
+    }
+
+    private func renderRepeatGroup(id: UUID, count: Int, items: [RepeatItem], item: StepItem)
+        -> some View
+    {
+        RepeatGroupView(
+            repeatCount: count,
+            items: items,
+            repeatId: id,
+            onItemDrag: { repeatItem in
+                viewModel.draggingItem = repeatItem
+                viewModel.draggingFromRepeat = id
+                viewModel.draggingRepeatId = nil
+                return NSItemProvider(object: repeatItem.id.uuidString as NSString)
+            },
+            onItemDrop: { targetItem in
+                RepeatStepDropDelegate(
+                    draggingItem: $viewModel.draggingItem,
+                    draggingFromRepeat: $viewModel.draggingFromRepeat,
+                    draggingRepeatId: $viewModel.draggingRepeatId,
+                    items: $viewModel.items,
+                    repeatGroupId: id,
+                    targetItem: targetItem
+                )
+            },
+            onItemDelete: { itemId in
+                viewModel.removeItemFromRepeat(repeatId: id, itemId: itemId)
+            },
+            onItemChangeType: { itemId in
+                viewModel.handleStepEdit(itemId: itemId, repeatId: id, action: .changeType)
+            },
+            onItemChangeAmount: { itemId in
+                viewModel.handleStepEdit(itemId: itemId, repeatId: id, action: .changeAmount)
+            },
+            onGroupChangeCount: {
+                viewModel.handleRepeatCountEdit(repeatId: id)
+            },
+            onGroupDelete: { viewModel.removeItem(id: id) },
+            onGroupDrop: {
+                RepeatGroupDropDelegate(
+                    draggingItem: $viewModel.draggingItem,
+                    draggingFromRepeat: $viewModel.draggingFromRepeat,
+                    items: $viewModel.items,
+                    hoveredRepeatId: $viewModel.hoveredRepeatId,
+                    repeatGroupId: id
+                )
+            },
+            onRemoveFromRepeat: { itemId in
+                viewModel.moveItemOutOfRepeat(repeatId: id, itemId: itemId)
+            },
+            isHighlighted: viewModel.hoveredRepeatId == id
+        )
+        .onDrag {
+            viewModel.draggingItem = nil
+            viewModel.draggingFromRepeat = nil
+            viewModel.draggingRepeatId = id
+            return NSItemProvider(object: id.uuidString as NSString)
+        }
+        .onDrop(
+            of: [.text],
+            delegate: ItemDropDelegate(
+                draggingItem: $viewModel.draggingItem,
+                draggingFromRepeat: $viewModel.draggingFromRepeat,
+                draggingRepeatId: $viewModel.draggingRepeatId,
                 items: $viewModel.items,
                 hoveredRepeatId: $viewModel.hoveredRepeatId,
                 targetItem: item
@@ -211,63 +249,112 @@ struct RoutineEditView: View {
 
     @ViewBuilder
     private var editStepSheet: some View {
-        if let stepId = viewModel.editingStepId,
+        if let itemId = viewModel.editingItemId,
             let action = viewModel.editAction
         {
             if let repeatId = viewModel.editingRepeatId {
-                editStepInRepeatSheet(stepId: stepId, repeatId: repeatId, action: action)
+                editStepInRepeatSheet(itemId: itemId, repeatId: repeatId, action: action)
             } else {
-                editTopLevelStepSheet(stepId: stepId, action: action)
+                editTopLevelStepSheet(itemId: itemId, action: action)
             }
         }
     }
 
     @ViewBuilder
-    private func editStepInRepeatSheet(stepId: UUID, repeatId: UUID, action: StepEditAction)
+    private func editStepInRepeatSheet(itemId: UUID, repeatId: UUID, action: StepEditAction)
         -> some View
     {
         if let repeatIndex = viewModel.items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(let group) = viewModel.items[repeatIndex],
-            let stepIndex = group.steps.firstIndex(where: { $0.id == stepId })
+            case .repeatGroup(_, _, let repeatItems) = viewModel.items[repeatIndex],
+            let itemIndex = repeatItems.firstIndex(where: { $0.id == itemId })
         {
-            let step = group.steps[stepIndex]
-            EditStepSheet(
-                sheetDetent: $viewModel.sheetDetent,
-                stepName: step.name,
-                stepMode: step.mode,
-                action: action,
-                onUpdateSummary: { newMode in
-                    viewModel.updateStepInRepeat(
-                        repeatId: repeatId, stepId: stepId, newMode: newMode)
-                    viewModel.closeEditSheet()
-                },
-                onDelete: {
-                    viewModel.removeStepFromRepeat(repeatId: repeatId, stepId: stepId)
-                    viewModel.closeEditSheet()
-                }
-            )
+
+            let repeatItem = repeatItems[itemIndex]
+
+            switch repeatItem {
+            case .exercise(_, let name, let mode):
+                EditStepSheet(
+                    sheetDetent: $viewModel.sheetDetent,
+                    stepName: name,
+                    stepMode: exerciseModeToStepMode(mode),
+                    action: action,
+                    onUpdateSummary: { newStepMode in
+                        if let newMode = stepModeToExerciseMode(newStepMode) {
+                            viewModel.updateExerciseInRepeat(
+                                repeatId: repeatId, exerciseId: itemId, newMode: newMode)
+                        }
+                        viewModel.closeEditSheet()
+                    },
+                    onDelete: {
+                        viewModel.removeItemFromRepeat(repeatId: repeatId, itemId: itemId)
+                        viewModel.closeEditSheet()
+                    }
+                )
+            case .rest(_, let mode):
+                EditStepSheet(
+                    sheetDetent: $viewModel.sheetDetent,
+                    stepName: "Rest",
+                    stepMode: restModeToStepMode(mode),
+                    action: action,
+                    onUpdateSummary: { newStepMode in
+                        if let newMode = stepModeToRestMode(newStepMode) {
+                            viewModel.updateRestInRepeat(
+                                repeatId: repeatId, restId: itemId, newMode: newMode)
+                        }
+                        viewModel.closeEditSheet()
+                    },
+                    onDelete: {
+                        viewModel.removeItemFromRepeat(repeatId: repeatId, itemId: itemId)
+                        viewModel.closeEditSheet()
+                    }
+                )
+            }
         }
     }
 
     @ViewBuilder
-    private func editTopLevelStepSheet(stepId: UUID, action: StepEditAction) -> some View {
-        if let itemIndex = viewModel.items.firstIndex(where: { $0.id == stepId }),
-            case .step(let step) = viewModel.items[itemIndex]
-        {
-            EditStepSheet(
-                sheetDetent: $viewModel.sheetDetent,
-                stepName: step.name,
-                stepMode: step.mode,
-                action: action,
-                onUpdateSummary: { newMode in
-                    viewModel.updateTopLevelStep(stepId: stepId, newMode: newMode)
-                    viewModel.closeEditSheet()
-                },
-                onDelete: {
-                    viewModel.removeItem(id: stepId)
-                    viewModel.closeEditSheet()
-                }
-            )
+    private func editTopLevelStepSheet(itemId: UUID, action: StepEditAction) -> some View {
+        if let itemIndex = viewModel.items.firstIndex(where: { $0.id == itemId }) {
+            let item = viewModel.items[itemIndex]
+
+            switch item {
+            case .exercise(_, let name, let mode):
+                EditStepSheet(
+                    sheetDetent: $viewModel.sheetDetent,
+                    stepName: name,
+                    stepMode: exerciseModeToStepMode(mode),
+                    action: action,
+                    onUpdateSummary: { newStepMode in
+                        if let newMode = stepModeToExerciseMode(newStepMode) {
+                            viewModel.updateExerciseMode(id: itemId, newMode: newMode)
+                        }
+                        viewModel.closeEditSheet()
+                    },
+                    onDelete: {
+                        viewModel.removeItem(id: itemId)
+                        viewModel.closeEditSheet()
+                    }
+                )
+            case .rest(_, let mode):
+                EditStepSheet(
+                    sheetDetent: $viewModel.sheetDetent,
+                    stepName: "Rest",
+                    stepMode: restModeToStepMode(mode),
+                    action: action,
+                    onUpdateSummary: { newStepMode in
+                        if let newMode = stepModeToRestMode(newStepMode) {
+                            viewModel.updateRestMode(id: itemId, newMode: newMode)
+                        }
+                        viewModel.closeEditSheet()
+                    },
+                    onDelete: {
+                        viewModel.removeItem(id: itemId)
+                        viewModel.closeEditSheet()
+                    }
+                )
+            case .repeatGroup:
+                EmptyView()
+            }
         }
     }
 
@@ -275,11 +362,11 @@ struct RoutineEditView: View {
     private var editRepeatCountSheet: some View {
         if let repeatId = viewModel.editingRepeatCountId,
             let repeatIndex = viewModel.items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(let group) = viewModel.items[repeatIndex]
+            case .repeatGroup(_, let count, _) = viewModel.items[repeatIndex]
         {
             RepeatCountEditSheet(
                 sheetDetent: $viewModel.repeatCountSheetDetent,
-                currentCount: group.repeatCount,
+                currentCount: count,
                 onSave: { newCount in
                     viewModel.updateRepeatCount(repeatId: repeatId, newCount: newCount)
                     viewModel.closeRepeatCountSheet()
@@ -295,12 +382,62 @@ struct RoutineEditView: View {
         NewStepSheet(
             sheetDetent: $viewModel.newStepSheetDetent,
             onAddStep: { name, mode in
-                viewModel.handleAddStep(name: name, mode: mode)
+                if let exerciseMode = stepModeToExerciseMode(mode) {
+                    viewModel.handleAddExercise(name: name ?? "", mode: exerciseMode)
+                } else if let restMode = stepModeToRestMode(mode) {
+                    viewModel.handleAddRest(mode: restMode)
+                }
             },
             onStartRepeatFlow: {
                 viewModel.handleStartRepeatFlow()
             }
         )
+    }
+
+    // MARK: - Helper Methods (Conversion between StepMode and specific modes)
+
+    private func exerciseModeToStepMode(_ mode: ExerciseStepMode) -> StepMode {
+        switch mode {
+        case .timed(let seconds):
+            return .exerciseTimed(seconds: seconds)
+        case .reps(let count):
+            return .exerciseReps(count: count)
+        case .open:
+            return .exerciseOpen
+        }
+    }
+
+    private func restModeToStepMode(_ mode: RestStepMode) -> StepMode {
+        switch mode {
+        case .timed(let seconds):
+            return .restTimed(seconds: seconds)
+        case .open:
+            return .restOpen
+        }
+    }
+
+    private func stepModeToExerciseMode(_ stepMode: StepMode) -> ExerciseStepMode? {
+        switch stepMode {
+        case .exerciseTimed(let seconds):
+            return .timed(seconds: seconds)
+        case .exerciseReps(let count):
+            return .reps(count: count)
+        case .exerciseOpen:
+            return .open
+        default:
+            return nil
+        }
+    }
+
+    private func stepModeToRestMode(_ stepMode: StepMode) -> RestStepMode? {
+        switch stepMode {
+        case .restTimed(let seconds):
+            return .timed(seconds: seconds)
+        case .restOpen:
+            return .open
+        default:
+            return nil
+        }
     }
 }
 

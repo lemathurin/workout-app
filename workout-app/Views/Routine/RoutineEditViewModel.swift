@@ -9,13 +9,13 @@ class RoutineEditViewModel {
     var items: [StepItem] = []
 
     // Drag state
-    var draggingItem: StepSummary? = nil
+    var draggingItem: RepeatItem? = nil
     var draggingFromRepeat: UUID? = nil
-    var draggingRepeat: RepeatGroup? = nil
+    var draggingRepeatId: UUID? = nil
     var hoveredRepeatId: UUID? = nil
 
     // Editing state
-    var editingStepId: UUID? = nil
+    var editingItemId: UUID? = nil
     var editingRepeatId: UUID? = nil
     var editAction: StepEditAction? = nil
 
@@ -29,84 +29,113 @@ class RoutineEditViewModel {
     // MARK: - Computed Properties
 
     var isEditingStep: Bool {
-        editingStepId != nil && editAction != nil
+        editingItemId != nil && editAction != nil
     }
 
     var isEditingRepeatCount: Bool {
         editingRepeatCountId != nil
     }
 
-    // MARK: - Business Logic Methods
+    // MARK: - Update Methods
 
     func updateRepeatCount(repeatId: UUID, newCount: Int) {
         if let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, _, let items) = items[index]
         {
-            group.repeatCount = newCount
-            items[index] = .repeatGroup(group)
+            self.items[index] = .repeatGroup(id: id, repeatCount: newCount, items: items)
         }
     }
 
-    func updateTopLevelStep(stepId: UUID, newMode: StepMode) {
-        if let index = items.firstIndex(where: { $0.id == stepId }),
-            case .step(var step) = items[index]
+    func updateExerciseMode(id: UUID, newMode: ExerciseStepMode) {
+        if let index = items.firstIndex(where: { $0.id == id }),
+            case .exercise(let itemId, let name, _) = items[index]
         {
-            step.mode = newMode
-            items[index] = .step(step)
+            items[index] = .exercise(id: itemId, name: name, mode: newMode)
         }
     }
 
-    func updateStepInRepeat(repeatId: UUID, stepId: UUID, newMode: StepMode) {
-        if let repeatIndex = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[repeatIndex],
-            let stepIndex = group.steps.firstIndex(where: { $0.id == stepId })
+    func updateRestMode(id: UUID, newMode: RestStepMode) {
+        if let index = items.firstIndex(where: { $0.id == id }),
+            case .rest(let itemId, _) = items[index]
         {
-            group.steps[stepIndex].mode = newMode
-            items[repeatIndex] = .repeatGroup(group)
+            items[index] = .rest(id: itemId, mode: newMode)
         }
     }
+
+    func updateExerciseInRepeat(repeatId: UUID, exerciseId: UUID, newMode: ExerciseStepMode) {
+        if let index = items.firstIndex(where: { $0.id == repeatId }),
+            case .repeatGroup(let id, let count, var repeatItems) = items[index],
+            let itemIndex = repeatItems.firstIndex(where: { $0.id == exerciseId }),
+            case .exercise(let exId, let name, _) = repeatItems[itemIndex]
+        {
+            repeatItems[itemIndex] = .exercise(id: exId, name: name, mode: newMode)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    func updateRestInRepeat(repeatId: UUID, restId: UUID, newMode: RestStepMode) {
+        if let index = items.firstIndex(where: { $0.id == repeatId }),
+            case .repeatGroup(let id, let count, var repeatItems) = items[index],
+            let itemIndex = repeatItems.firstIndex(where: { $0.id == restId }),
+            case .rest(let restItemId, _) = repeatItems[itemIndex]
+        {
+            repeatItems[itemIndex] = .rest(id: restItemId, mode: newMode)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+        }
+    }
+
+    // MARK: - CRUD Methods
 
     func removeItem(id: UUID) {
         items.removeAll { $0.id == id }
     }
 
-    func removeStepFromRepeat(repeatId: UUID, stepId: UUID) {
+    func removeItemFromRepeat(repeatId: UUID, itemId: UUID) {
         guard let index = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[index]
+            case .repeatGroup(let id, let count, var repeatItems) = items[index]
         else { return }
 
-        group.steps.removeAll { $0.id == stepId }
+        repeatItems.removeAll { $0.id == itemId }
 
-        if group.steps.isEmpty {
+        if repeatItems.isEmpty {
             items.remove(at: index)
         } else {
-            items[index] = .repeatGroup(group)
+            items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
         }
     }
 
-    func moveStepOutOfRepeat(repeatId: UUID, stepId: UUID) {
+    func moveItemOutOfRepeat(repeatId: UUID, itemId: UUID) {
         guard let repeatIndex = items.firstIndex(where: { $0.id == repeatId }),
-            case .repeatGroup(var group) = items[repeatIndex],
-            let stepIndex = group.steps.firstIndex(where: { $0.id == stepId })
+            case .repeatGroup(let id, let count, var repeatItems) = items[repeatIndex],
+            let itemIndex = repeatItems.firstIndex(where: { $0.id == itemId })
         else { return }
 
-        let step = group.steps.remove(at: stepIndex)
+        let item = repeatItems.remove(at: itemIndex)
 
-        if group.steps.isEmpty {
+        // Update or remove the repeat group
+        if repeatItems.isEmpty {
             items.remove(at: repeatIndex)
         } else {
-            items[repeatIndex] = .repeatGroup(group)
+            items[repeatIndex] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
         }
 
-        // Insert after the repeat group
-        let insertIndex = repeatIndex + (group.steps.isEmpty ? 0 : 1)
-        items.insert(.step(step), at: insertIndex)
+        // Convert RepeatItem to StepItem
+        let stepItem: StepItem
+        switch item {
+        case .exercise(let id, let name, let mode):
+            stepItem = .exercise(id: id, name: name, mode: mode)
+        case .rest(let id, let mode):
+            stepItem = .rest(id: id, mode: mode)
+        }
+
+        let insertIndex = repeatIndex + (repeatItems.isEmpty ? 0 : 1)
+        items.insert(stepItem, at: insertIndex)
     }
 
     // MARK: - Action Handlers
 
-    func handleStepEdit(stepId: UUID, repeatId: UUID?, action: StepEditAction) {
-        editingStepId = stepId
+    func handleStepEdit(itemId: UUID, repeatId: UUID?, action: StepEditAction) {
+        editingItemId = itemId
         editingRepeatId = repeatId
         editAction = action
     }
@@ -115,20 +144,23 @@ class RoutineEditViewModel {
         editingRepeatCountId = repeatId
     }
 
-    func handleAddStep(name: String?, mode: StepMode) {
-        let newStep = StepSummary(id: UUID(), name: name ?? "", mode: mode)
-        items.append(.step(newStep))
+    func handleAddExercise(name: String, mode: ExerciseStepMode) {
+        items.append(.exercise(id: UUID(), name: name, mode: mode))
+        showNewStepSheet = false
+    }
+
+    func handleAddRest(mode: RestStepMode) {
+        items.append(.rest(id: UUID(), mode: mode))
         showNewStepSheet = false
     }
 
     func handleStartRepeatFlow() {
-        let newRepeatGroup = RepeatGroup(id: UUID(), repeatCount: 2, steps: [])
-        items.append(.repeatGroup(newRepeatGroup))
+        items.append(.repeatGroup(id: UUID(), repeatCount: 2, items: []))
         showNewStepSheet = false
     }
 
     func closeEditSheet() {
-        editingStepId = nil
+        editingItemId = nil
         editAction = nil
     }
 
