@@ -2,10 +2,10 @@ import SwiftUI
 
 struct RepeatGroupView: View {
     let repeatCount: Int
-    let steps: [RoutineEditView.StepSummary]
+    let steps: [StepSummary]
     let repeatId: UUID
-    let onStepDrag: (RoutineEditView.StepSummary) -> NSItemProvider
-    let onStepDrop: (RoutineEditView.StepSummary) -> any DropDelegate
+    let onStepDrag: (StepSummary) -> NSItemProvider
+    let onStepDrop: (StepSummary) -> any DropDelegate
     let onStepDelete: (UUID) -> Void
     let onStepChangeType: (UUID) -> Void
     let onStepChangeAmount: (UUID) -> Void
@@ -31,10 +31,16 @@ struct RepeatGroupView: View {
                 Spacer()
 
                 Menu {
-                    Button { onGroupChangeCount() } label: {
-                        Label("Change repeat count", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                    Button {
+                        onGroupChangeCount()
+                    } label: {
+                        Label(
+                            "Change repeat count",
+                            systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                     }
-                    Button(role: .destructive) { onGroupDelete() } label: {
+                    Button(role: .destructive) {
+                        onGroupDelete()
+                    } label: {
                         Label("Remove repeat", systemImage: "trash")
                     }
                 } label: {
@@ -73,7 +79,9 @@ struct RepeatGroupView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isHighlighted ? Color.blue.opacity(0.1) : Color(UIColor.secondarySystemGroupedBackground))
+                .fill(
+                    isHighlighted
+                        ? Color.blue.opacity(0.1) : Color(UIColor.secondarySystemGroupedBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
