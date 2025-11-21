@@ -48,9 +48,9 @@ class RoutineEditViewModel {
 
     func updateExerciseMode(id: UUID, newMode: ExerciseStepMode) {
         if let index = items.firstIndex(where: { $0.id == id }),
-            case .exercise(let itemId, let name, _) = items[index]
+            case .exercise(let itemId, let exerciseId, let name, _) = items[index]
         {
-            items[index] = .exercise(id: itemId, name: name, mode: newMode)
+            items[index] = .exercise(id: itemId, exerciseId: exerciseId, name: name, mode: newMode)
         }
     }
 
@@ -66,9 +66,10 @@ class RoutineEditViewModel {
         if let index = items.firstIndex(where: { $0.id == repeatId }),
             case .repeatGroup(let id, let count, var repeatItems) = items[index],
             let itemIndex = repeatItems.firstIndex(where: { $0.id == exerciseId }),
-            case .exercise(let exId, let name, _) = repeatItems[itemIndex]
+            case .exercise(let exId, let exExerciseId, let name, _) = repeatItems[itemIndex]
         {
-            repeatItems[itemIndex] = .exercise(id: exId, name: name, mode: newMode)
+            repeatItems[itemIndex] = .exercise(
+                id: exId, exerciseId: exExerciseId, name: name, mode: newMode)
             items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
         }
     }
@@ -122,8 +123,8 @@ class RoutineEditViewModel {
         // Convert RepeatItem to StepItem
         let stepItem: StepItem
         switch item {
-        case .exercise(let id, let name, let mode):
-            stepItem = .exercise(id: id, name: name, mode: mode)
+        case .exercise(let id, let exerciseId, let name, let mode):
+            stepItem = .exercise(id: id, exerciseId: exerciseId, name: name, mode: mode)
         case .rest(let id, let mode):
             stepItem = .rest(id: id, mode: mode)
         }
@@ -144,8 +145,8 @@ class RoutineEditViewModel {
         editingRepeatCountId = repeatId
     }
 
-    func handleAddExercise(name: String, mode: ExerciseStepMode) {
-        items.append(.exercise(id: UUID(), name: name, mode: mode))
+    func handleAddExercise(exerciseId: String, name: String, mode: ExerciseStepMode) {
+        items.append(.exercise(id: UUID(), exerciseId: exerciseId, name: name, mode: mode))
         showNewStepSheet = false
     }
 

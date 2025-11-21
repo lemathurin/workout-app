@@ -97,7 +97,7 @@ struct RepeatGroupView: View {
     // Convert RepeatItem to StepMode for StepRowView compatibility
     private func repeatItemToStepMode(_ item: RepeatItem) -> StepMode {
         switch item {
-        case .exercise(_, _, let mode):
+        case .exercise(_, _, _, let mode):
             switch mode {
             case .timed(let seconds):
                 return .exerciseTimed(seconds: seconds)

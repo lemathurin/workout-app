@@ -86,8 +86,8 @@ struct RoutineEditView: View {
     @ViewBuilder
     private func renderItem(_ item: StepItem) -> some View {
         switch item {
-        case .exercise(let id, let name, let mode):
-            renderExercise(id: id, name: name, mode: mode, item: item)
+        case .exercise(let id, let exerciseId, let name, let mode):
+            renderExercise(id: id, exerciseId: exerciseId, name: name, mode: mode, item: item)
         case .rest(let id, let mode):
             renderRest(id: id, mode: mode, item: item)
         case .repeatGroup(let id, let count, let items):
@@ -95,7 +95,9 @@ struct RoutineEditView: View {
         }
     }
 
-    private func renderExercise(id: UUID, name: String, mode: ExerciseStepMode, item: StepItem)
+    private func renderExercise(
+        id: UUID, exerciseId: String, name: String, mode: ExerciseStepMode, item: StepItem
+    )
         -> some View
     {
         StepRowView(
@@ -111,7 +113,8 @@ struct RoutineEditView: View {
             onRemoveFromRepeat: nil
         )
         .onDrag {
-            viewModel.draggingItem = .exercise(id: id, name: name, mode: mode)
+            viewModel.draggingItem = .exercise(
+                id: id, exerciseId: exerciseId, name: name, mode: mode)
             viewModel.draggingFromRepeat = nil
             viewModel.draggingRepeatId = nil
             return NSItemProvider(object: id.uuidString as NSString)
@@ -274,7 +277,7 @@ struct RoutineEditView: View {
             let repeatItem = repeatItems[itemIndex]
 
             switch repeatItem {
-            case .exercise(_, let name, let mode):
+            case .exercise(_, _, let name, let mode):
                 EditStepSheet(
                     sheetDetent: $viewModel.sheetDetent,
                     stepName: name,
@@ -320,7 +323,7 @@ struct RoutineEditView: View {
             let item = viewModel.items[itemIndex]
 
             switch item {
-            case .exercise(_, let name, let mode):
+            case .exercise(_, _, let name, let mode):
                 EditStepSheet(
                     sheetDetent: $viewModel.sheetDetent,
                     stepName: name,
@@ -383,9 +386,12 @@ struct RoutineEditView: View {
     private var newStepSheet: some View {
         NewStepSheet(
             sheetDetent: $viewModel.newStepSheetDetent,
-            onAddStep: { name, mode in
-                if let exerciseMode = stepModeToExerciseMode(mode) {
-                    viewModel.handleAddExercise(name: name ?? "", mode: exerciseMode)
+            onAddStep: { exerciseId, name, mode in
+                if let exerciseId = exerciseId, let name = name,
+                    let exerciseMode = stepModeToExerciseMode(mode)
+                {
+                    viewModel.handleAddExercise(
+                        exerciseId: exerciseId, name: name, mode: exerciseMode)
                 } else if let restMode = stepModeToRestMode(mode) {
                     viewModel.handleAddRest(mode: restMode)
                 }

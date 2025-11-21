@@ -23,8 +23,8 @@ enum RoutineEditHelpers {
     /// Convert a RepeatItem to a StepItem
     static func repeatItemToStepItem(_ item: RepeatItem) -> StepItem {
         switch item {
-        case .exercise(let id, let name, let mode):
-            return .exercise(id: id, name: name, mode: mode)
+        case .exercise(let id, let exerciseId, let name, let mode):
+            return .exercise(id: id, exerciseId: exerciseId, name: name, mode: mode)
         case .rest(let id, let mode):
             return .rest(id: id, mode: mode)
         }

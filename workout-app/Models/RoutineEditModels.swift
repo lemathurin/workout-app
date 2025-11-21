@@ -5,13 +5,13 @@ import Foundation
 /// Represents an item in the routine editor
 /// The enum case itself determines what type of item it is (exercise, rest, or repeat)
 enum StepItem: Identifiable, Codable, Equatable {
-    case exercise(id: UUID, name: String, mode: ExerciseStepMode)
+    case exercise(id: UUID, exerciseId: String, name: String, mode: ExerciseStepMode)
     case rest(id: UUID, mode: RestStepMode)
     case repeatGroup(id: UUID, repeatCount: Int, items: [RepeatItem])
-    
+
     var id: UUID {
         switch self {
-        case .exercise(let id, _, _): return id
+        case .exercise(let id, _, _, _): return id
         case .rest(let id, _): return id
         case .repeatGroup(let id, _, _): return id
         }
@@ -33,12 +33,12 @@ enum RestStepMode: Codable, Equatable {
 
 /// Items that can exist within a repeat group
 enum RepeatItem: Identifiable, Codable, Equatable {
-    case exercise(id: UUID, name: String, mode: ExerciseStepMode)
+    case exercise(id: UUID, exerciseId: String, name: String, mode: ExerciseStepMode)
     case rest(id: UUID, mode: RestStepMode)
-    
+
     var id: UUID {
         switch self {
-        case .exercise(let id, _, _): return id
+        case .exercise(let id, _, _, _): return id
         case .rest(let id, _): return id
         }
     }
@@ -50,7 +50,7 @@ extension StepItem {
     /// Display name for UI (always "Rest" for rest items)
     var displayName: String {
         switch self {
-        case .exercise(_, let name, _):
+        case .exercise(_, _, let name, _):
             return name
         case .rest:
             return "Rest"
@@ -58,13 +58,13 @@ extension StepItem {
             return "Repeat Group"
         }
     }
-    
+
     /// Check if this is a rest step
     var isRest: Bool {
         if case .rest = self { return true }
         return false
     }
-    
+
     /// Check if this is an exercise step
     var isExercise: Bool {
         if case .exercise = self { return true }
@@ -76,13 +76,13 @@ extension RepeatItem {
     /// Display name for UI
     var displayName: String {
         switch self {
-        case .exercise(_, let name, _):
+        case .exercise(_, _, let name, _):
             return name
         case .rest:
             return "Rest"
         }
     }
-    
+
     /// Check if this is a rest step
     var isRest: Bool {
         if case .rest = self { return true }
