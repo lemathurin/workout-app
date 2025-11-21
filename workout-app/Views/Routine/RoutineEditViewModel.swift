@@ -6,6 +6,7 @@ import SwiftUI
 class RoutineEditViewModel {
     // MARK: - State Properties
 
+    var routineName: String = ""
     var items: [StepItem] = []
 
     // Drag state

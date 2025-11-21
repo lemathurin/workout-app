@@ -8,6 +8,29 @@ struct RoutineEditView: View {
         ZStack(alignment: .bottom) {
             ScrollView {
                 LazyVStack(spacing: 0) {
+                    Text("Routine Name")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 4)
+
+                    TextField("Routine Name", text: $viewModel.routineName)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .padding(.vertical, 15)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                        )
+                        .cornerRadius(20)
+                        .padding(.bottom, 12)
+
+                    Text("Steps")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, 4)
+
                     // Top drop zone
                     DropZoneView(
                         height: 30,
