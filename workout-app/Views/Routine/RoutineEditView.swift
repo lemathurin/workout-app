@@ -2,124 +2,152 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct RoutineEditView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel = RoutineEditViewModel()
+    @State private var showDiscardAlert = false
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    Text("Routine Name")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        Text("Routine Name")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 4)
 
-                    TextField("Routine Name", text: $viewModel.routineName)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.vertical, 15)
-                        .padding(.horizontal, 17)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                        TextField("Routine Name", text: $viewModel.routineName)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .padding(.vertical, 15)
+                            .padding(.horizontal, 17)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(UIColor.secondarySystemGroupedBackground))
+                            )
+                            .cornerRadius(20)
+                            .padding(.bottom, 12)
+                            .submitLabel(.done)
+                            .onSubmit {
+                                // Dismiss keyboard
+                                UIApplication.shared.sendAction(
+                                    #selector(UIResponder.resignFirstResponder), to: nil, from: nil,
+                                    for: nil)
+                            }
+
+                        Text("Steps")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 4)
+
+                        // Top drop zone
+                        DropZoneView(
+                            height: 30,
+                            color: .pink,
+                            delegate: InsertDropDelegate(
+                                position: .top,
+                                draggingItem: $viewModel.draggingItem,
+                                draggingFromRepeat: $viewModel.draggingFromRepeat,
+                                draggingRepeatId: $viewModel.draggingRepeatId,
+                                items: $viewModel.items
+                            )
                         )
-                        .cornerRadius(20)
-                        .padding(.bottom, 12)
-                        .submitLabel(.done)
-                        .onSubmit {
-                            // Dismiss keyboard
-                            UIApplication.shared.sendAction(
-                                #selector(UIResponder.resignFirstResponder), to: nil, from: nil,
-                                for: nil)
+
+                        ForEach(viewModel.items) { item in
+                            VStack(spacing: 0) {
+                                // Insert before drop zone
+                                DropZoneView(
+                                    height: 12,
+                                    color: .pink,
+                                    delegate: InsertDropDelegate(
+                                        position: .before(item),
+                                        draggingItem: $viewModel.draggingItem,
+                                        draggingFromRepeat: $viewModel.draggingFromRepeat,
+                                        draggingRepeatId: $viewModel.draggingRepeatId,
+                                        items: $viewModel.items
+                                    )
+                                )
+
+                                // Render the item
+                                renderItem(item)
+
+                                // Insert after drop zone
+                                DropZoneView(
+                                    height: 12,
+                                    color: .pink,
+                                    delegate: InsertDropDelegate(
+                                        position: .after(item),
+                                        draggingItem: $viewModel.draggingItem,
+                                        draggingFromRepeat: $viewModel.draggingFromRepeat,
+                                        draggingRepeatId: $viewModel.draggingRepeatId,
+                                        items: $viewModel.items
+                                    )
+                                )
+                            }
                         }
 
-                    Text("Steps")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
-
-                    // Top drop zone
-                    DropZoneView(
-                        height: 30,
-                        color: .pink,
-                        delegate: InsertDropDelegate(
-                            position: .top,
-                            draggingItem: $viewModel.draggingItem,
-                            draggingFromRepeat: $viewModel.draggingFromRepeat,
-                            draggingRepeatId: $viewModel.draggingRepeatId,
-                            items: $viewModel.items
+                        // End-of-list drop zone
+                        DropZoneView(
+                            height: 60,
+                            color: .pink,
+                            delegate: InsertDropDelegate(
+                                position: .end,
+                                draggingItem: $viewModel.draggingItem,
+                                draggingFromRepeat: $viewModel.draggingFromRepeat,
+                                draggingRepeatId: $viewModel.draggingRepeatId,
+                                items: $viewModel.items
+                            )
                         )
-                    )
-
-                    ForEach(viewModel.items) { item in
-                        VStack(spacing: 0) {
-                            // Insert before drop zone
-                            DropZoneView(
-                                height: 12,
-                                color: .pink,
-                                delegate: InsertDropDelegate(
-                                    position: .before(item),
-                                    draggingItem: $viewModel.draggingItem,
-                                    draggingFromRepeat: $viewModel.draggingFromRepeat,
-                                    draggingRepeatId: $viewModel.draggingRepeatId,
-                                    items: $viewModel.items
-                                )
-                            )
-
-                            // Render the item
-                            renderItem(item)
-
-                            // Insert after drop zone
-                            DropZoneView(
-                                height: 12,
-                                color: .pink,
-                                delegate: InsertDropDelegate(
-                                    position: .after(item),
-                                    draggingItem: $viewModel.draggingItem,
-                                    draggingFromRepeat: $viewModel.draggingFromRepeat,
-                                    draggingRepeatId: $viewModel.draggingRepeatId,
-                                    items: $viewModel.items
-                                )
-                            )
-                        }
                     }
-
-                    // End-of-list drop zone
-                    DropZoneView(
-                        height: 60,
-                        color: .pink,
-                        delegate: InsertDropDelegate(
-                            position: .end,
-                            draggingItem: $viewModel.draggingItem,
-                            draggingFromRepeat: $viewModel.draggingFromRepeat,
-                            draggingRepeatId: $viewModel.draggingRepeatId,
-                            items: $viewModel.items
-                        )
-                    )
+                    .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 16)
+                .background(Color(UIColor.systemGroupedBackground))
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        // Dismiss keyboard when tapping anywhere
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder), to: nil, from: nil,
+                            for: nil)
+                    }
+                )
+
+                // Floating add button
+                addButton
             }
-            .background(Color(UIColor.systemGroupedBackground))
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    // Dismiss keyboard when tapping anywhere
-                    UIApplication.shared.sendAction(
-                        #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            .sheet(isPresented: .constant(viewModel.isEditingStep)) {
+                editStepSheet
+            }
+            .sheet(isPresented: .constant(viewModel.isEditingRepeatCount)) {
+                editRepeatCountSheet
+            }
+            .sheet(isPresented: $viewModel.showNewStepSheet) {
+                newStepSheet
+            }
+            .navigationTitle("New Routine")
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark") {
+                        showDiscardAlert = true
+                    }
                 }
-            )
 
-            // Floating add button
-            addButton
-        }
-        .sheet(isPresented: .constant(viewModel.isEditingStep)) {
-            editStepSheet
-        }
-        .sheet(isPresented: .constant(viewModel.isEditingRepeatCount)) {
-            editRepeatCountSheet
-        }
-        .sheet(isPresented: $viewModel.showNewStepSheet) {
-            newStepSheet
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done", systemImage: "checkmark") {
+                        // Button action here
+                    }
+                }
+            }
+            .alert("Discard Changes?", isPresented: $showDiscardAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Discard", role: .destructive) {
+                    dismiss()
+                }
+            } message: {
+                Text("Your changes won't be saved.")
+            }
         }
     }
 

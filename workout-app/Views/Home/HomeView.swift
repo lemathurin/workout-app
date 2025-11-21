@@ -1,9 +1,9 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct HomeView: View {
     @State private var showingSettings = false
-    
+
     @State private var isDeleting = false
     @State private var navigateToRoutineEdit = false
     @Environment(\.modelContext) private var modelContext
@@ -18,23 +18,23 @@ struct HomeView: View {
                 }) {
                     Image(systemName: "gear")
                 }
-                
+
                 Spacer()
-                
+
                 Button("New Routine") {
-                navigateToRoutineEdit = true
+                    navigateToRoutineEdit = true
                 }
             }
             .padding(.horizontal)
             .buttonStyle(.bordered)
-            
+
             ScrollView {
                 VStack(spacing: 20) {
                     Text("Ready for some exercise?")
                         .font(.largeTitle)
                         .fontDesign(.rounded)
                         .fontWeight(.semibold)
-                    
+
                     // Routines Section
                     if !routines.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
@@ -45,7 +45,7 @@ struct HomeView: View {
                                 Spacer()
                             }
                             .padding(.horizontal)
-                            
+
                             LazyVStack(spacing: 12) {
                                 ForEach(routines) { routine in
                                     RoutineCard(routine: routine)
@@ -54,7 +54,7 @@ struct HomeView: View {
                             }
                         }
                     }
-                    
+
                     // Delete all data button
                     Button("Delete All Data") {
                         Task {
@@ -65,17 +65,16 @@ struct HomeView: View {
                 }
                 .padding(.vertical)
             }
-                }
+        }
         .sheet(isPresented: $showingSettings) { SettingsView() }
-        
         .navigationDestination(isPresented: $navigateToRoutineEdit) {
-            RoutineEditView() // Navigate to RoutineEditView
+            RoutineEditView()
         }
     }
-    
+
     private func handleDeleteAllData() async {
         isDeleting = true
-        
+
         do {
             try dataManager.deleteAllData(from: modelContext)
             // Optionally reload initial data
@@ -83,7 +82,7 @@ struct HomeView: View {
         } catch {
             print("Failed to delete data: \(error)")
         }
-        
+
         isDeleting = false
     }
 }
