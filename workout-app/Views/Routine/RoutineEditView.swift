@@ -42,25 +42,12 @@ struct RoutineEditView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 4)
 
-                        // Top drop zone
-                        DropZoneView(
-                            height: 30,
-                            color: .pink,
-                            delegate: InsertDropDelegate(
-                                position: .top,
-                                draggingItem: $viewModel.draggingItem,
-                                draggingFromRepeat: $viewModel.draggingFromRepeat,
-                                draggingRepeatId: $viewModel.draggingRepeatId,
-                                items: $viewModel.items
-                            )
-                        )
-
                         ForEach(viewModel.items) { item in
                             VStack(spacing: 0) {
                                 // Insert before drop zone
                                 DropZoneView(
                                     height: 12,
-                                    color: .pink,
+                                    color: .clear,
                                     delegate: InsertDropDelegate(
                                         position: .before(item),
                                         draggingItem: $viewModel.draggingItem,
@@ -76,7 +63,7 @@ struct RoutineEditView: View {
                                 // Insert after drop zone
                                 DropZoneView(
                                     height: 12,
-                                    color: .pink,
+                                    color: .clear,
                                     delegate: InsertDropDelegate(
                                         position: .after(item),
                                         draggingItem: $viewModel.draggingItem,
@@ -90,8 +77,8 @@ struct RoutineEditView: View {
 
                         // End-of-list drop zone
                         DropZoneView(
-                            height: 60,
-                            color: .pink,
+                            height: 120,
+                            color: .clear,
                             delegate: InsertDropDelegate(
                                 position: .end,
                                 draggingItem: $viewModel.draggingItem,

@@ -17,6 +17,7 @@ struct DropZoneView<Delegate: DropDelegate>: View {
         Rectangle()
             .fill(color)
             .frame(height: height)
+            .contentShape(Rectangle())
             .onDrop(of: [.text], delegate: delegate)
     }
 }
