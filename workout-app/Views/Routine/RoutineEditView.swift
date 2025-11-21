@@ -17,7 +17,8 @@ struct RoutineEditView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 4)
 
-                        TextField("Routine Name", text: $viewModel.routineName)
+                        TextField("Routine Name", text: $viewModel.routineName, axis: .vertical)
+                            .lineLimit(1...5)
                             .font(.title2)
                             .fontWeight(.semibold)
                             .padding(.vertical, 15)
