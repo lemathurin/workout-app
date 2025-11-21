@@ -100,8 +100,17 @@ struct RoutineEditView: View {
                     }
                 )
 
-                // Floating add button
-                addButton
+                Button(
+                    action: {
+                        viewModel.showNewStepSheet = true
+                    },
+                    label: {
+                        Label("Add a step", systemImage: "plus")
+                    }
+                )
+                .controlSize(.large)
+                .buttonStyle(.borderedProminent)
+
             }
             .sheet(isPresented: .constant(viewModel.isEditingStep)) {
                 editStepSheet
@@ -296,23 +305,6 @@ struct RoutineEditView: View {
                 targetItem: item
             )
         )
-    }
-
-    private var addButton: some View {
-        VStack {
-            Spacer()
-            Button(action: { viewModel.showNewStepSheet = true }) {
-                Label("Add Step", systemImage: "plus.circle.fill")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(12)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 20)
-            }
-        }
     }
 
     // MARK: - Sheet Views
