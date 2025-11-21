@@ -18,12 +18,20 @@ struct RoutineEditView: View {
                         .font(.title2)
                         .fontWeight(.semibold)
                         .padding(.vertical, 15)
+                        .padding(.horizontal, 17)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color(UIColor.secondarySystemGroupedBackground))
                         )
                         .cornerRadius(20)
                         .padding(.bottom, 12)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            // Dismiss keyboard
+                            UIApplication.shared.sendAction(
+                                #selector(UIResponder.resignFirstResponder), to: nil, from: nil,
+                                for: nil)
+                        }
 
                     Text("Steps")
                         .font(.headline)
@@ -93,6 +101,13 @@ struct RoutineEditView: View {
                 .padding(.horizontal, 16)
             }
             .background(Color(UIColor.systemGroupedBackground))
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    // Dismiss keyboard when tapping anywhere
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
+            )
 
             // Floating add button
             addButton
