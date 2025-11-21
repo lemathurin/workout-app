@@ -109,6 +109,7 @@ struct RoutineEditView: View {
             onChangeAmount: {
                 viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeAmount)
             },
+            onDuplicate: { viewModel.duplicateStep(id: id) },
             onDelete: { viewModel.removeItem(id: id) },
             onRemoveFromRepeat: nil
         )
@@ -142,6 +143,7 @@ struct RoutineEditView: View {
             onChangeAmount: {
                 viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeAmount)
             },
+            onDuplicate: { viewModel.duplicateStep(id: id) },
             onDelete: { viewModel.removeItem(id: id) },
             onRemoveFromRepeat: nil
         )
@@ -196,8 +198,14 @@ struct RoutineEditView: View {
             onItemChangeAmount: { itemId in
                 viewModel.handleStepEdit(itemId: itemId, repeatId: id, action: .changeAmount)
             },
+            onItemDuplicate: { itemId in
+                viewModel.duplicateStepInRepeat(repeatId: id, itemId: itemId)
+            },
             onGroupChangeCount: {
                 viewModel.handleRepeatCountEdit(repeatId: id)
+            },
+            onGroupDuplicate: {
+                viewModel.duplicateRepeatGroup(id: id)
             },
             onGroupDelete: { viewModel.removeItem(id: id) },
             onGroupDrop: {

@@ -5,6 +5,7 @@ struct StepRowView: View {
     let stepMode: StepMode
     let onChangeType: () -> Void
     let onChangeAmount: () -> Void
+    let onDuplicate: (() -> Void)?
     let onDelete: () -> Void
     let onRemoveFromRepeat: (() -> Void)?
 
@@ -39,13 +40,24 @@ struct StepRowView: View {
             }
 
             Spacer()
-            
+
             Menu {
-                Button { onChangeType() } label: {
+                Button {
+                    onChangeType()
+                } label: {
                     Label("Change type", systemImage: "figure.strengthtraining.functional")
                 }
-                Button { onChangeAmount() } label: {
+                Button {
+                    onChangeAmount()
+                } label: {
                     Label("Change amount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                }
+                if let onDuplicate = onDuplicate {
+                    Button {
+                        onDuplicate()
+                    } label: {
+                        Label("Duplicate", systemImage: "plus.square.on.square")
+                    }
                 }
                 if embedded, let onRemoveFromRepeat = onRemoveFromRepeat {
                     Button {
@@ -56,7 +68,9 @@ struct StepRowView: View {
                         Label("Remove from repeat", systemImage: "arrow.up.right.square")
                     }
                 }
-                Button(role: .destructive) { onDelete() } label: {
+                Button(role: .destructive) {
+                    onDelete()
+                } label: {
                     Label("Remove step", systemImage: "trash")
                 }
             } label: {
@@ -98,6 +112,7 @@ struct StepRowView: View {
             stepMode: .exerciseTimed(seconds: 30),
             onChangeType: {},
             onChangeAmount: {},
+            onDuplicate: {},
             onDelete: {},
             onRemoveFromRepeat: nil
         )
@@ -106,6 +121,7 @@ struct StepRowView: View {
             stepMode: .exerciseReps(count: 10),
             onChangeType: {},
             onChangeAmount: {},
+            onDuplicate: {},
             onDelete: {},
             onRemoveFromRepeat: nil
         )
@@ -114,6 +130,7 @@ struct StepRowView: View {
             stepMode: .exerciseOpen,
             onChangeType: {},
             onChangeAmount: {},
+            onDuplicate: {},
             onDelete: {},
             onRemoveFromRepeat: nil
         )
@@ -122,6 +139,7 @@ struct StepRowView: View {
             stepMode: .restTimed(seconds: 60),
             onChangeType: {},
             onChangeAmount: {},
+            onDuplicate: {},
             onDelete: {},
             onRemoveFromRepeat: nil
         )
@@ -130,6 +148,7 @@ struct StepRowView: View {
             stepMode: .restOpen,
             onChangeType: {},
             onChangeAmount: {},
+            onDuplicate: {},
             onDelete: {},
             onRemoveFromRepeat: nil
         )

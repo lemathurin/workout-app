@@ -160,6 +160,66 @@ class RoutineEditViewModel {
         showNewStepSheet = false
     }
 
+    // MARK: - Duplicate Methods
+
+    func duplicateStep(id: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+
+        let duplicatedItem: StepItem
+        switch items[index] {
+        case .exercise(_, let exerciseId, let name, let mode):
+            duplicatedItem = .exercise(id: UUID(), exerciseId: exerciseId, name: name, mode: mode)
+        case .rest(_, let mode):
+            duplicatedItem = .rest(id: UUID(), mode: mode)
+        case .repeatGroup:
+            return  // Use duplicateRepeatGroup for repeat groups
+        }
+
+        items.insert(duplicatedItem, at: index + 1)
+    }
+
+    func duplicateStepInRepeat(repeatId: UUID, itemId: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == repeatId }),
+            case .repeatGroup(let id, let count, var repeatItems) = items[index],
+            let itemIndex = repeatItems.firstIndex(where: { $0.id == itemId })
+        else { return }
+
+        let duplicatedItem: RepeatItem
+        switch repeatItems[itemIndex] {
+        case .exercise(_, let exerciseId, let name, let mode):
+            duplicatedItem = .exercise(id: UUID(), exerciseId: exerciseId, name: name, mode: mode)
+        case .rest(_, let mode):
+            duplicatedItem = .rest(id: UUID(), mode: mode)
+        }
+
+        repeatItems.insert(duplicatedItem, at: itemIndex + 1)
+        items[index] = .repeatGroup(id: id, repeatCount: count, items: repeatItems)
+    }
+
+    func duplicateRepeatGroup(id: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == id }),
+            case .repeatGroup(_, let count, let repeatItems) = items[index]
+        else { return }
+
+        // Create new items with new UUIDs
+        let duplicatedItems: [RepeatItem] = repeatItems.map { item in
+            switch item {
+            case .exercise(_, let exerciseId, let name, let mode):
+                return .exercise(id: UUID(), exerciseId: exerciseId, name: name, mode: mode)
+            case .rest(_, let mode):
+                return .rest(id: UUID(), mode: mode)
+            }
+        }
+
+        let duplicatedGroup = StepItem.repeatGroup(
+            id: UUID(),
+            repeatCount: count,
+            items: duplicatedItems
+        )
+
+        items.insert(duplicatedGroup, at: index + 1)
+    }
+
     func closeEditSheet() {
         editingItemId = nil
         editAction = nil

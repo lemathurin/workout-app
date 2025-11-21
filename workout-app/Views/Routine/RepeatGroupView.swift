@@ -9,7 +9,9 @@ struct RepeatGroupView: View {
     let onItemDelete: (UUID) -> Void
     let onItemChangeType: (UUID) -> Void
     let onItemChangeAmount: (UUID) -> Void
+    let onItemDuplicate: (UUID) -> Void
     let onGroupChangeCount: () -> Void
+    let onGroupDuplicate: () -> Void
     let onGroupDelete: () -> Void
     let onGroupDrop: () -> any DropDelegate
     let onRemoveFromRepeat: (UUID) -> Void
@@ -38,6 +40,11 @@ struct RepeatGroupView: View {
                             "Change repeat count",
                             systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                     }
+                    Button {
+                        onGroupDuplicate()
+                    } label: {
+                        Label("Duplicate", systemImage: "plus.square.on.square")
+                    }
                     Button(role: .destructive) {
                         onGroupDelete()
                     } label: {
@@ -64,6 +71,7 @@ struct RepeatGroupView: View {
                     stepMode: repeatItemToStepMode(item),
                     onChangeType: { onItemChangeType(item.id) },
                     onChangeAmount: { onItemChangeAmount(item.id) },
+                    onDuplicate: { onItemDuplicate(item.id) },
                     onDelete: { onItemDelete(item.id) },
                     onRemoveFromRepeat: { onRemoveFromRepeat(item.id) },
                     embedded: true
