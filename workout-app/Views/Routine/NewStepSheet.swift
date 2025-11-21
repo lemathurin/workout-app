@@ -6,10 +6,10 @@ struct NewStepSheet: View {
     @State private var selectedStepType: StepType = .exercise
     @Environment(\.dismiss) private var dismiss
     let onAddStep: (String?, String?, StepMode) -> Void
-    let onStartRepeatFlow: () -> Void
+    let onStartRepeatFlow: (Int) -> Void
 
     enum FlowStep: Hashable {
-        case chooseKind, exerciseMode, timed, reps, restMode, restTimed, exercisePicker
+        case chooseKind, exerciseMode, timed, reps, restMode, restTimed, exercisePicker, repeatCount
     }
 
     @State private var flow: FlowStep = .chooseKind
@@ -20,6 +20,7 @@ struct NewStepSheet: View {
     @State private var restModeSelection: RestMode?
     @State private var restSeconds: Int = 30
     @State private var repsCount: Int = 10
+    @State private var repeatCountSelection: Int = 2
 
     var body: some View {
         NavigationStack {
@@ -34,8 +35,7 @@ struct NewStepSheet: View {
                             } else if kind == .rest {
                                 flow = .restMode
                             } else if kind == .repeats {
-                                onStartRepeatFlow()
-                                dismiss()
+                                flow = .repeatCount
                             }
                         },
                         onCancel: { dismiss() }
@@ -123,6 +123,15 @@ struct NewStepSheet: View {
                             dismiss()
                         }
                     )
+                case .repeatCount:
+                    RepeatCountView(
+                        count: $repeatCountSelection,
+                        onBack: { flow = .chooseKind },
+                        onNext: {
+                            onStartRepeatFlow(repeatCountSelection)
+                            dismiss()
+                        }
+                    )
                 }
             }
             .navigationTitle("New Step")
@@ -131,7 +140,8 @@ struct NewStepSheet: View {
 }
 
 #Preview {
-    NewStepSheet(sheetDetent: .constant(.medium), onAddStep: { _, _, _ in }, onStartRepeatFlow: {})
+    NewStepSheet(
+        sheetDetent: .constant(.medium), onAddStep: { _, _, _ in }, onStartRepeatFlow: { _ in })
 }
 
 // Subviews used in the flow
@@ -293,6 +303,32 @@ private struct RestTimedView: View {
             Picker("Seconds", selection: $seconds) {
                 ForEach(options, id: \.self) { sec in
                     Text("\(sec) sec").tag(sec)
+                }
+            }
+            .pickerStyle(.wheel)
+            HStack {
+                Button("Back") { onBack() }
+                Button("Next") { onNext() }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding()
+    }
+}
+
+private struct RepeatCountView: View {
+    @Binding var count: Int
+    let onBack: () -> Void
+    let onNext: () -> Void
+
+    private let options = Array(2...20)
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("Repeat Count").font(.headline)
+            Picker("Count", selection: $count) {
+                ForEach(options, id: \.self) { value in
+                    Text("\(value)x").tag(value)
                 }
             }
             .pickerStyle(.wheel)

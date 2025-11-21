@@ -155,8 +155,8 @@ class RoutineEditViewModel {
         showNewStepSheet = false
     }
 
-    func handleStartRepeatFlow() {
-        items.append(.repeatGroup(id: UUID(), repeatCount: 2, items: []))
+    func handleStartRepeatFlow(count: Int) {
+        items.append(.repeatGroup(id: UUID(), repeatCount: count, items: []))
         showNewStepSheet = false
     }
 

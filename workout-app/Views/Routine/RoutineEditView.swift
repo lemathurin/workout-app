@@ -396,8 +396,8 @@ struct RoutineEditView: View {
                     viewModel.handleAddRest(mode: restMode)
                 }
             },
-            onStartRepeatFlow: {
-                viewModel.handleStartRepeatFlow()
+            onStartRepeatFlow: { count in
+                viewModel.handleStartRepeatFlow(count: count)
             }
         )
     }
