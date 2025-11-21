@@ -25,6 +25,8 @@ struct RoutineEditView: View {
                         VStack(spacing: 0) {
                             // Insert before drop zone
                             DropZoneView(
+                                height: 12,
+                                color: .pink,
                                 delegate: InsertDropDelegate(
                                     position: .before(item),
                                     draggingItem: $viewModel.draggingItem,
@@ -39,6 +41,8 @@ struct RoutineEditView: View {
 
                             // Insert after drop zone
                             DropZoneView(
+                                height: 12,
+                                color: .pink,
                                 delegate: InsertDropDelegate(
                                     position: .after(item),
                                     draggingItem: $viewModel.draggingItem,
