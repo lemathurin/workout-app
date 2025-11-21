@@ -110,6 +110,7 @@ struct RoutineEditView: View {
                 )
                 .controlSize(.large)
                 .buttonStyle(.borderedProminent)
+                .padding(.bottom, 10)
 
             }
             .sheet(isPresented: .constant(viewModel.isEditingStep)) {
