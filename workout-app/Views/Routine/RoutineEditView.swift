@@ -125,15 +125,20 @@ struct RoutineEditView: View {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark") {
+                    Button(action: {
                         showDiscardAlert = true
+                    }) {
+                        Image(systemName: "xmark")
                     }
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done", systemImage: "checkmark") {
+                    Button(action: {
                         // Button action here
+                    }) {
+                        Image(systemName: "checkmark")
                     }
+                    .buttonStyle(.glassProminent)
                 }
             }
             .alert("Discard Changes?", isPresented: $showDiscardAlert) {
