@@ -15,7 +15,7 @@ struct RoutineEditView: View {
                             .font(.headline)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 4)
+                            .padding(.vertical, 12)
 
                         TextField("Routine Name", text: $viewModel.routineName, axis: .vertical)
                             .lineLimit(1...5)
@@ -41,7 +41,8 @@ struct RoutineEditView: View {
                             .font(.headline)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, 4)
+                            .padding(.top, 12)
+                            .padding(.bottom, 6)
 
                         if viewModel.items.isEmpty {
                             ContentUnavailableView(
@@ -57,7 +58,7 @@ struct RoutineEditView: View {
                             VStack(spacing: 0) {
                                 // Insert before drop zone
                                 DropZoneView(
-                                    height: 12,
+                                    height: 6,
                                     color: .clear,
                                     delegate: InsertDropDelegate(
                                         position: .before(item),
@@ -73,7 +74,7 @@ struct RoutineEditView: View {
 
                                 // Insert after drop zone
                                 DropZoneView(
-                                    height: 12,
+                                    height: 6,
                                     color: .clear,
                                     delegate: InsertDropDelegate(
                                         position: .after(item),
@@ -88,7 +89,7 @@ struct RoutineEditView: View {
 
                         // End-of-list drop zone
                         DropZoneView(
-                            height: 120,
+                            height: 100,
                             color: .clear,
                             delegate: InsertDropDelegate(
                                 position: .end,
