@@ -34,20 +34,23 @@ struct RepeatCountEditSheet: View {
                 }
                 .pickerStyle(.wheel)
                 HStack {
-                    Button("Cancel") {
+                    Button {
                         onCancel()
-                        dismiss()
+                    } label: {
+                        Text("Cancel")
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
 
-                    Spacer()
-
-                    Button("Save") {
+                    Button {
                         onSave(selectedCount)
-                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(.borderedProminent)
                 }
+                .controlSize(.large)
             }
             .padding()
             .navigationTitle("Repeat Count")

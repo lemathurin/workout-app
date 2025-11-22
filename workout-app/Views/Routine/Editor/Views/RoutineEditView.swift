@@ -128,14 +128,17 @@ struct RoutineEditView: View {
             .sheet(isPresented: .constant(viewModel.isEditingStep)) {
                 editStepSheet
                     .presentationDetents([.height(300)])
+                    .interactiveDismissDisabled(true)
             }
             .sheet(isPresented: .constant(viewModel.isEditingRepeatCount)) {
                 editRepeatCountSheet
                     .presentationDetents([.height(300)])
+                    .interactiveDismissDisabled(true)
             }
             .sheet(isPresented: $viewModel.showNewStepSheet) {
                 newStepSheet
                     .presentationDetents([viewModel.newStepSheetDetent])
+                    .interactiveDismissDisabled(true)
             }
             .navigationTitle("New Routine")
             .navigationBarBackButtonHidden(true)
@@ -371,6 +374,9 @@ struct RoutineEditView: View {
                     onDelete: {
                         viewModel.removeItemFromRepeat(repeatId: repeatId, itemId: itemId)
                         viewModel.closeEditSheet()
+                    },
+                    onCancel: {
+                        viewModel.closeEditSheet()
                     }
                 )
             case .rest(_, let mode):
@@ -388,6 +394,9 @@ struct RoutineEditView: View {
                     },
                     onDelete: {
                         viewModel.removeItemFromRepeat(repeatId: repeatId, itemId: itemId)
+                        viewModel.closeEditSheet()
+                    },
+                    onCancel: {
                         viewModel.closeEditSheet()
                     }
                 )
@@ -416,6 +425,9 @@ struct RoutineEditView: View {
                     onDelete: {
                         viewModel.removeItem(id: itemId)
                         viewModel.closeEditSheet()
+                    },
+                    onCancel: {
+                        viewModel.closeEditSheet()
                     }
                 )
             case .rest(_, let mode):
@@ -432,6 +444,9 @@ struct RoutineEditView: View {
                     },
                     onDelete: {
                         viewModel.removeItem(id: itemId)
+                        viewModel.closeEditSheet()
+                    },
+                    onCancel: {
                         viewModel.closeEditSheet()
                     }
                 )

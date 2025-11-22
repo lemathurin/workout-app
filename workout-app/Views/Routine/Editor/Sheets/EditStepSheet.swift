@@ -11,6 +11,7 @@ struct EditStepSheet: View {
     let action: StepEditAction
     let onUpdateSummary: (StepMode) -> Void
     let onDelete: () -> Void
+    let onCancel: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
@@ -27,7 +28,8 @@ struct EditStepSheet: View {
         stepMode: StepMode,
         action: StepEditAction,
         onUpdateSummary: @escaping (StepMode) -> Void,
-        onDelete: @escaping () -> Void
+        onDelete: @escaping () -> Void,
+        onCancel: @escaping () -> Void
     ) {
         _sheetDetent = sheetDetent
         self.stepName = stepName
@@ -35,6 +37,7 @@ struct EditStepSheet: View {
         self.action = action
         self.onUpdateSummary = onUpdateSummary
         self.onDelete = onDelete
+        self.onCancel = onCancel
 
         _exerciseName = State(initialValue: stepName)
 
@@ -77,7 +80,7 @@ struct EditStepSheet: View {
                                 exerciseModeSelection = .open
                                 applyUpdateAndClose()
                             },
-                            onSecondary: { dismiss() }
+                            onSecondary: { onCancel() }
                         )
                     } else {
                         RestModeSelector(
@@ -92,7 +95,7 @@ struct EditStepSheet: View {
                                 restModeSelection = .open
                                 applyUpdateAndClose()
                             },
-                            onSecondary: { dismiss() }
+                            onSecondary: { onCancel() }
                         )
                     }
                 case .selectAmount:
@@ -104,7 +107,7 @@ struct EditStepSheet: View {
                                 primaryLabel: "Save",
                                 secondaryLabel: "Cancel",
                                 onPrimary: { applyUpdateAndClose() },
-                                onSecondary: { dismiss() }
+                                onSecondary: { onCancel() }
                             )
                         case .reps:
                             RepsPicker(
@@ -112,13 +115,13 @@ struct EditStepSheet: View {
                                 primaryLabel: "Save",
                                 secondaryLabel: "Cancel",
                                 onPrimary: { applyUpdateAndClose() },
-                                onSecondary: { dismiss() }
+                                onSecondary: { onCancel() }
                             )
                         case .open, .none:
                             InfoView(
                                 title: "No amount to change",
                                 message: "Open exercises have no duration or reps.",
-                                onClose: { dismiss() }
+                                onClose: { onCancel() }
                             )
                         }
                     } else {
@@ -129,22 +132,21 @@ struct EditStepSheet: View {
                                 primaryLabel: "Save",
                                 secondaryLabel: "Cancel",
                                 onPrimary: { applyUpdateAndClose() },
-                                onSecondary: { dismiss() }
+                                onSecondary: { onCancel() }
                             )
                         case .open, .none:
                             InfoView(
                                 title: "No duration to change",
                                 message: "Open rest has no duration.",
-                                onClose: { dismiss() }
+                                onClose: { onCancel() }
                             )
                         }
                     }
                 case .confirmDelete:
                     DeleteConfirmView(
-                        onCancel: { dismiss() },
+                        onCancel: { onCancel() },
                         onDeleteConfirm: {
                             onDelete()
-                            dismiss()
                         }
                     )
                 }
@@ -203,8 +205,7 @@ struct EditStepSheet: View {
         }
 
         onUpdateSummary(newStepMode)
-        sheetDetent = .medium
-        dismiss()
+        sheetDetent = .height(300)
     }
 
     private static func extractFromStepMode(_ stepMode: StepMode) -> (
