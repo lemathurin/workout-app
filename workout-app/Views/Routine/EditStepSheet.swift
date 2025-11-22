@@ -37,7 +37,7 @@ struct EditStepSheet: View {
         self.onDelete = onDelete
 
         _exerciseName = State(initialValue: stepName)
-        
+
         // Extract mode and amounts from StepMode
         let (exerciseMode, restMode, seconds, reps) = EditStepSheet.extractFromStepMode(stepMode)
         _exerciseModeSelection = State(initialValue: exerciseMode)
@@ -61,8 +61,10 @@ struct EditStepSheet: View {
                 switch editStep {
                 case .selectType:
                     if isExercise {
-                        ExerciseTypeEditView(
+                        ExerciseModeSelector(
                             currentMode: exerciseModeSelection,
+                            primaryLabel: "Save",
+                            secondaryLabel: "Cancel",
                             onSelectTimed: {
                                 exerciseModeSelection = .timed
                                 editStep = .selectAmount
@@ -75,11 +77,13 @@ struct EditStepSheet: View {
                                 exerciseModeSelection = .open
                                 applyUpdateAndClose()
                             },
-                            onCancel: { dismiss() }
+                            onSecondary: { dismiss() }
                         )
                     } else {
-                        RestModeEditView(
+                        RestModeSelector(
                             currentMode: restModeSelection,
+                            primaryLabel: "Save",
+                            secondaryLabel: "Cancel",
                             onSelectTimed: {
                                 restModeSelection = .timed
                                 editStep = .selectAmount
@@ -88,23 +92,27 @@ struct EditStepSheet: View {
                                 restModeSelection = .open
                                 applyUpdateAndClose()
                             },
-                            onCancel: { dismiss() }
+                            onSecondary: { dismiss() }
                         )
                     }
                 case .selectAmount:
                     if isExercise {
                         switch exerciseModeSelection {
                         case .timed:
-                            TimedEditView(
+                            TimedPicker(
                                 seconds: $timerSeconds,
-                                onCancel: { dismiss() },
-                                onSave: { applyUpdateAndClose() }
+                                primaryLabel: "Save",
+                                secondaryLabel: "Cancel",
+                                onPrimary: { applyUpdateAndClose() },
+                                onSecondary: { dismiss() }
                             )
                         case .reps:
-                            RepsEditView(
+                            RepsPicker(
                                 reps: $repsCount,
-                                onCancel: { dismiss() },
-                                onSave: { applyUpdateAndClose() }
+                                primaryLabel: "Save",
+                                secondaryLabel: "Cancel",
+                                onPrimary: { applyUpdateAndClose() },
+                                onSecondary: { dismiss() }
                             )
                         case .open, .none:
                             InfoView(
@@ -116,10 +124,12 @@ struct EditStepSheet: View {
                     } else {
                         switch restModeSelection {
                         case .timed:
-                            RestTimedEditView(
+                            RestTimedPicker(
                                 seconds: $timerSeconds,
-                                onCancel: { dismiss() },
-                                onSave: { applyUpdateAndClose() }
+                                primaryLabel: "Save",
+                                secondaryLabel: "Cancel",
+                                onPrimary: { applyUpdateAndClose() },
+                                onSecondary: { dismiss() }
                             )
                         case .open, .none:
                             InfoView(
@@ -142,7 +152,7 @@ struct EditStepSheet: View {
             .navigationTitle(navigationTitle)
         }
     }
-    
+
     private var isExercise: Bool {
         switch stepMode {
         case .exerciseTimed, .exerciseReps, .exerciseOpen:
@@ -162,7 +172,7 @@ struct EditStepSheet: View {
 
     private func applyUpdateAndClose() {
         let newStepMode: StepMode
-        
+
         if isExercise {
             switch exerciseModeSelection {
             case .timed:
@@ -180,13 +190,15 @@ struct EditStepSheet: View {
                 newStepMode = .restOpen
             }
         }
-        
+
         onUpdateSummary(newStepMode)
         sheetDetent = .medium
         dismiss()
     }
 
-    private static func extractFromStepMode(_ stepMode: StepMode) -> (exerciseMode: ExerciseMode?, restMode: RestMode?, seconds: Int, reps: Int) {
+    private static func extractFromStepMode(_ stepMode: StepMode) -> (
+        exerciseMode: ExerciseMode?, restMode: RestMode?, seconds: Int, reps: Int
+    ) {
         switch stepMode {
         case .exerciseTimed(let seconds):
             return (.timed, nil, seconds, 10)
@@ -202,127 +214,7 @@ struct EditStepSheet: View {
     }
 }
 
-// MARK: - Subviews (styled like NewStepSheet but focused)
-
-private struct ExerciseTypeEditView: View {
-    let currentMode: ExerciseMode?
-    let onSelectTimed: () -> Void
-    let onSelectReps: () -> Void
-    let onSelectOpen: () -> Void
-    let onCancel: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Exercise type").font(.headline)
-            HStack {
-                Button("Timed") { onSelectTimed() }
-                Button("Reps") { onSelectReps() }
-                Button("Open") { onSelectOpen() }
-                Button("Cancel") { onCancel() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct RestModeEditView: View {
-    let currentMode: RestMode?
-    let onSelectTimed: () -> Void
-    let onSelectOpen: () -> Void
-    let onCancel: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Rest type").font(.headline)
-            HStack {
-                Button("Timed") { onSelectTimed() }
-                Button("Open") { onSelectOpen() }
-                Button("Cancel") { onCancel() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct TimedEditView: View {
-    @Binding var seconds: Int
-    let onCancel: () -> Void
-    let onSave: () -> Void
-
-    private let options = Array(stride(from: 5, through: 600, by: 5))
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Timed").font(.headline)
-            Picker("Seconds", selection: $seconds) {
-                ForEach(options, id: \.self) { sec in
-                    Text("\(sec) sec").tag(sec)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Cancel") { onCancel() }
-                Button("Save") { onSave() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct RepsEditView: View {
-    @Binding var reps: Int
-    let onCancel: () -> Void
-    let onSave: () -> Void
-
-    private let options = Array(1...100)
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Reps").font(.headline)
-            Picker("Reps", selection: $reps) {
-                ForEach(options, id: \.self) { value in
-                    Text("\(value)").tag(value)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Cancel") { onCancel() }
-                Button("Save") { onSave() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct RestTimedEditView: View {
-    @Binding var seconds: Int
-    let onCancel: () -> Void
-    let onSave: () -> Void
-
-    private let options = Array(stride(from: 5, through: 600, by: 5))
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Rest (Timed)").font(.headline)
-            Picker("Seconds", selection: $seconds) {
-                ForEach(options, id: \.self) { sec in
-                    Text("\(sec) sec").tag(sec)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Cancel") { onCancel() }
-                Button("Save") { onSave() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
+// MARK: - Subviews unique to EditStepSheet
 
 private struct DeleteConfirmView: View {
     let onCancel: () -> Void

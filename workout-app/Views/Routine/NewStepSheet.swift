@@ -41,8 +41,10 @@ struct NewStepSheet: View {
                         onCancel: { dismiss() }
                     )
                 case .exerciseMode:
-                    ExerciseModeView(
-                        onBack: { flow = .chooseKind },
+                    ExerciseModeSelector(
+                        currentMode: exerciseModeSelection,
+                        primaryLabel: "Next",
+                        secondaryLabel: "Back",
                         onSelectTimed: {
                             exerciseModeSelection = .timed
                             flow = .timed
@@ -55,25 +57,30 @@ struct NewStepSheet: View {
                             exerciseModeSelection = .open
                             sheetDetent = .large
                             flow = .exercisePicker
-                        }
+                        },
+                        onSecondary: { flow = .chooseKind }
                     )
                 case .timed:
-                    TimedView(
+                    TimedPicker(
                         seconds: $timerSeconds,
-                        onBack: { flow = .exerciseMode },
-                        onNext: {
+                        primaryLabel: "Next",
+                        secondaryLabel: "Back",
+                        onPrimary: {
                             sheetDetent = .large
                             flow = .exercisePicker
-                        }
+                        },
+                        onSecondary: { flow = .exerciseMode }
                     )
                 case .reps:
-                    RepsView(
+                    RepsPicker(
                         reps: $repsCount,
-                        onBack: { flow = .exerciseMode },
-                        onNext: {
+                        primaryLabel: "Next",
+                        secondaryLabel: "Back",
+                        onPrimary: {
                             sheetDetent = .large
                             flow = .exercisePicker
-                        }
+                        },
+                        onSecondary: { flow = .exerciseMode }
                     )
                 case .exercisePicker:
                     ExercisePickerView(
@@ -103,8 +110,10 @@ struct NewStepSheet: View {
                         }
                     )
                 case .restMode:
-                    RestModeView(
-                        onBack: { flow = .chooseKind },
+                    RestModeSelector(
+                        currentMode: restModeSelection,
+                        primaryLabel: "Next",
+                        secondaryLabel: "Back",
                         onSelectTimed: {
                             restModeSelection = .timed
                             flow = .restTimed
@@ -112,25 +121,30 @@ struct NewStepSheet: View {
                         onSelectOpen: {
                             onAddStep(nil, nil, .restOpen)
                             dismiss()
-                        }
+                        },
+                        onSecondary: { flow = .chooseKind }
                     )
                 case .restTimed:
-                    RestTimedView(
+                    RestTimedPicker(
                         seconds: $restSeconds,
-                        onBack: { flow = .restMode },
-                        onNext: {
+                        primaryLabel: "Next",
+                        secondaryLabel: "Back",
+                        onPrimary: {
                             onAddStep(nil, nil, .restTimed(seconds: restSeconds))
                             dismiss()
-                        }
+                        },
+                        onSecondary: { flow = .restMode }
                     )
                 case .repeatCount:
-                    RepeatCountView(
+                    RepeatCountPicker(
                         count: $repeatCountSelection,
-                        onBack: { flow = .chooseKind },
-                        onNext: {
+                        primaryLabel: "Next",
+                        secondaryLabel: "Back",
+                        onPrimary: {
                             onStartRepeatFlow(repeatCountSelection)
                             dismiss()
-                        }
+                        },
+                        onSecondary: { flow = .chooseKind }
                     )
                 }
             }
@@ -158,183 +172,6 @@ private struct ChooseKindView: View {
                 Button("Rest") { onSelect(.rest) }
                 Button("Repeat") { onSelect(.repeats) }
                 Button("Cancel") { onCancel() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct ExerciseModeView: View {
-    let onBack: () -> Void
-    let onSelectTimed: () -> Void
-    let onSelectReps: () -> Void
-    let onSelectOpen: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Exercise type").font(.headline)
-            HStack {
-                Button("Timed") { onSelectTimed() }
-                Button("Reps") { onSelectReps() }
-                Button("Open") { onSelectOpen() }
-                Button("Back") { onBack() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct TimedView: View {
-    @Binding var seconds: Int
-    let onBack: () -> Void
-    let onNext: () -> Void
-
-    private let options = Array(stride(from: 5, through: 600, by: 5))
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Timed").font(.headline)
-            Picker("Seconds", selection: $seconds) {
-                ForEach(options, id: \.self) { sec in
-                    Text("\(sec) sec").tag(sec)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Back") { onBack() }
-                Button("Next") { onNext() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct RepsView: View {
-    @Binding var reps: Int
-    let onBack: () -> Void
-    let onNext: () -> Void
-
-    private let options = Array(1...100)
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Reps").font(.headline)
-            Picker("Reps", selection: $reps) {
-                ForEach(options, id: \.self) { value in
-                    Text("\(value)").tag(value)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Back") { onBack() }
-                Button("Next") { onNext() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct ExercisePickerView: View {
-    @Binding var selectedId: String?
-    @Binding var selectedName: String?
-    let onBack: () -> Void
-    let onDone: () -> Void
-
-    @Query private var exercises: [Exercise]
-
-    var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Button("Back") { onBack() }
-                Spacer()
-                Text("Choose Exercise").font(.headline)
-                Spacer()
-                Color.clear.frame(width: 60, height: 1)
-            }
-            .padding(.horizontal)
-
-            List(exercises, id: \.id) { exercise in
-                Button {
-                    selectedId = exercise.id
-                    selectedName = exercise.getName()
-                    onDone()
-                } label: {
-                    Text(exercise.getName())
-                }
-            }
-        }
-    }
-}
-
-// Subviews used in the rest flow
-private struct RestModeView: View {
-    let onBack: () -> Void
-    let onSelectTimed: () -> Void
-    let onSelectOpen: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Rest type").font(.headline)
-            HStack {
-                Button("Timed") { onSelectTimed() }
-                Button("Open") { onSelectOpen() }
-                Button("Back") { onBack() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct RestTimedView: View {
-    @Binding var seconds: Int
-    let onBack: () -> Void
-    let onNext: () -> Void
-
-    private let options = Array(stride(from: 5, through: 600, by: 5))
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Rest (Timed)").font(.headline)
-            Picker("Seconds", selection: $seconds) {
-                ForEach(options, id: \.self) { sec in
-                    Text("\(sec) sec").tag(sec)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Back") { onBack() }
-                Button("Next") { onNext() }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct RepeatCountView: View {
-    @Binding var count: Int
-    let onBack: () -> Void
-    let onNext: () -> Void
-
-    private let options = Array(2...20)
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Repeat Count").font(.headline)
-            Picker("Count", selection: $count) {
-                ForEach(options, id: \.self) { value in
-                    Text("\(value)x").tag(value)
-                }
-            }
-            .pickerStyle(.wheel)
-            HStack {
-                Button("Back") { onBack() }
-                Button("Next") { onNext() }
             }
             .buttonStyle(.bordered)
         }
