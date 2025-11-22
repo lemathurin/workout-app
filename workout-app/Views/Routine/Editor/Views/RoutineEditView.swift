@@ -127,12 +127,15 @@ struct RoutineEditView: View {
             }
             .sheet(isPresented: .constant(viewModel.isEditingStep)) {
                 editStepSheet
+                    .presentationDetents([.medium])
             }
             .sheet(isPresented: .constant(viewModel.isEditingRepeatCount)) {
                 editRepeatCountSheet
+                    .presentationDetents([.medium])
             }
             .sheet(isPresented: $viewModel.showNewStepSheet) {
                 newStepSheet
+                    .presentationDetents([viewModel.newStepSheetDetent])
             }
             .navigationTitle("New Routine")
             .navigationBarBackButtonHidden(true)
