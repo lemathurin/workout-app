@@ -43,6 +43,16 @@ struct RoutineEditView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 4)
 
+                        if viewModel.items.isEmpty {
+                            ContentUnavailableView(
+                                "No Steps Yet",
+                                systemImage: "figure.walk",
+                                description: Text(
+                                    "Tap the button below to start building your routine")
+                            )
+                            .padding(.vertical, 40)
+                        }
+
                         ForEach(viewModel.items) { item in
                             VStack(spacing: 0) {
                                 // Insert before drop zone
