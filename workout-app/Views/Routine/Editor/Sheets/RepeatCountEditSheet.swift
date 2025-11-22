@@ -51,6 +51,7 @@ struct RepeatCountEditSheet: View {
             }
             .padding()
             .navigationTitle("Repeat Count")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

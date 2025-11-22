@@ -127,11 +127,11 @@ struct RoutineEditView: View {
             }
             .sheet(isPresented: .constant(viewModel.isEditingStep)) {
                 editStepSheet
-                    .presentationDetents([.medium])
+                    .presentationDetents([.height(300)])
             }
             .sheet(isPresented: .constant(viewModel.isEditingRepeatCount)) {
                 editRepeatCountSheet
-                    .presentationDetents([.medium])
+                    .presentationDetents([.height(300)])
             }
             .sheet(isPresented: $viewModel.showNewStepSheet) {
                 newStepSheet

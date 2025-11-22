@@ -150,6 +150,7 @@ struct EditStepSheet: View {
                 }
             }
             .navigationTitle(navigationTitle)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 
