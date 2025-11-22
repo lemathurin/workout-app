@@ -62,27 +62,40 @@ struct RepeatGroupView: View {
             .padding(.horizontal, 17)
 
             // Items inside repeat
-            ForEach(items) { item in
-                Divider()
-                    .padding(.leading, 17)
+            if items.isEmpty {
+                VStack(spacing: 0) {
+                    Divider()
 
-                StepRowView(
-                    stepName: item.displayName,
-                    stepMode: repeatItemToStepMode(item),
-                    onChangeType: { onItemChangeType(item.id) },
-                    onChangeAmount: { onItemChangeAmount(item.id) },
-                    onDuplicate: { onItemDuplicate(item.id) },
-                    onDelete: { onItemDelete(item.id) },
-                    onRemoveFromRepeat: { onRemoveFromRepeat(item.id) },
-                    embedded: true
-                )
-                .onDrag {
-                    onItemDrag(item)
+                    HStack(spacing: 12) {
+                        Text("Drag steps here")
+                            .font(.callout)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.all, 17)
                 }
-                .onDrop(
-                    of: [.text],
-                    delegate: onItemDrop(item)
-                )
+            } else {
+                ForEach(items) { item in
+                    Divider()
+                        .padding(.leading, 17)
+
+                    StepRowView(
+                        stepName: item.displayName,
+                        stepMode: repeatItemToStepMode(item),
+                        onChangeType: { onItemChangeType(item.id) },
+                        onChangeAmount: { onItemChangeAmount(item.id) },
+                        onDuplicate: { onItemDuplicate(item.id) },
+                        onDelete: { onItemDelete(item.id) },
+                        onRemoveFromRepeat: { onRemoveFromRepeat(item.id) },
+                        embedded: true
+                    )
+                    .onDrag {
+                        onItemDrag(item)
+                    }
+                    .onDrop(
+                        of: [.text],
+                        delegate: onItemDrop(item)
+                    )
+                }
             }
         }
         .background(
