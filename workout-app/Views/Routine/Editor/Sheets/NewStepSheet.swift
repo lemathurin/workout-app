@@ -187,15 +187,40 @@ private struct ChooseKindView: View {
     let onCancel: () -> Void
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Button("Exercise") { onSelect(.exercise) }
-                Button("Rest") { onSelect(.rest) }
-                Button("Repeat") { onSelect(.repeats) }
-                Button("Cancel") { onCancel() }
+        VStack(spacing: 12) {
+            Button {
+                onSelect(.exercise)
+            } label: {
+                Text("Exercise")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            
+            Button {
+                onSelect(.rest)
+            } label: {
+                Text("Rest")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onSelect(.repeats)
+            } label: {
+                Text("Repeat")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onCancel()
+            } label: {
+                Text("Cancel")
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
         }
+        .controlSize(.large)
         .padding()
     }
 }
