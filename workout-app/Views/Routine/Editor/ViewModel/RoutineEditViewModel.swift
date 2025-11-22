@@ -25,7 +25,7 @@ class RoutineEditViewModel {
     var editingRepeatCountId: UUID? = nil
     var repeatCountSheetDetent: PresentationDetent = .medium
     var showNewStepSheet: Bool = false
-    var newStepSheetDetent: PresentationDetent = .medium
+    var newStepSheetDetent: PresentationDetent = .height(300)
 
     // MARK: - Computed Properties
 

@@ -87,7 +87,7 @@ struct NewStepSheet: View {
                         selectedId: $selectedExerciseId,
                         selectedName: $selectedExerciseName,
                         onBack: {
-                            sheetDetent = .medium
+                            sheetDetent = .height(300)
                             flow = .exerciseMode
                         },
                         onDone: {
@@ -105,7 +105,7 @@ struct NewStepSheet: View {
                                 }
                                 onAddStep(exerciseId, name, stepMode)
                             }
-                            sheetDetent = .medium
+                            sheetDetent = .height(300)
                             dismiss()
                         }
                     )
@@ -195,7 +195,7 @@ private struct ChooseKindView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            
+
             Button {
                 onSelect(.rest)
             } label: {

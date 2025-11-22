@@ -13,15 +13,40 @@ struct ExerciseModeSelector: View {
     let onSecondary: () -> Void
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Button("Timed") { onSelectTimed() }
-                Button("Reps") { onSelectReps() }
-                Button("Open") { onSelectOpen() }
-                Button(secondaryLabel) { onSecondary() }
+        VStack(spacing: 12) {
+            Button {
+                onSelectTimed()
+            } label: {
+                Text("Timed")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onSelectReps()
+            } label: {
+                Text("Reps")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onSelectOpen()
+            } label: {
+                Text("Open")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onSecondary()
+            } label: {
+                Text(secondaryLabel)
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
         }
+        .controlSize(.large)
         .padding()
     }
 }
@@ -41,15 +66,28 @@ struct TimedPicker: View {
         VStack(spacing: 16) {
             Picker("Seconds", selection: $seconds) {
                 ForEach(options, id: \.self) { sec in
-                    Text("\(sec) sec").tag(sec)
+                    Text("\(sec) seconds").tag(sec)
                 }
             }
             .pickerStyle(.wheel)
             HStack {
-                Button(secondaryLabel) { onSecondary() }
-                Button(primaryLabel) { onPrimary() }
+                Button {
+                    onSecondary()
+                } label: {
+                    Text(secondaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+                Button {
+                    onPrimary()
+                } label: {
+                    Text(primaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.bordered)
+            .controlSize(.large)
         }
         .padding()
     }
@@ -75,10 +113,23 @@ struct RepsPicker: View {
             }
             .pickerStyle(.wheel)
             HStack {
-                Button(secondaryLabel) { onSecondary() }
-                Button(primaryLabel) { onPrimary() }
+                Button {
+                    onSecondary()
+                } label: {
+                    Text(secondaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+                Button {
+                    onPrimary()
+                } label: {
+                    Text(primaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.bordered)
+            .controlSize(.large)
         }
         .padding()
     }
@@ -95,14 +146,32 @@ struct RestModeSelector: View {
     let onSecondary: () -> Void
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Button("Timed") { onSelectTimed() }
-                Button("Open") { onSelectOpen() }
-                Button(secondaryLabel) { onSecondary() }
+        VStack(spacing: 12) {
+            Button {
+                onSelectTimed()
+            } label: {
+                Text("Timed")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onSelectOpen()
+            } label: {
+                Text("Open")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button {
+                onSecondary()
+            } label: {
+                Text(secondaryLabel)
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
         }
+        .controlSize(.large)
         .padding()
     }
 }
@@ -127,10 +196,23 @@ struct RestTimedPicker: View {
             }
             .pickerStyle(.wheel)
             HStack {
-                Button(secondaryLabel) { onSecondary() }
-                Button(primaryLabel) { onPrimary() }
+                Button {
+                    onSecondary()
+                } label: {
+                    Text(secondaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+                Button {
+                    onPrimary()
+                } label: {
+                    Text(primaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.bordered)
+            .controlSize(.large)
         }
         .padding()
     }
@@ -151,15 +233,28 @@ struct RepeatCountPicker: View {
         VStack(spacing: 16) {
             Picker("Count", selection: $count) {
                 ForEach(options, id: \.self) { value in
-                    Text("\(value)x").tag(value)
+                    Text("\(value) times").tag(value)
                 }
             }
             .pickerStyle(.wheel)
             HStack {
-                Button(secondaryLabel) { onSecondary() }
-                Button(primaryLabel) { onPrimary() }
+                Button {
+                    onSecondary()
+                } label: {
+                    Text(secondaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+                Button {
+                    onPrimary()
+                } label: {
+                    Text(primaryLabel)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.bordered)
+            .controlSize(.large)
         }
         .padding()
     }
