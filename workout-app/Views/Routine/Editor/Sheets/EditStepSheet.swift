@@ -164,9 +164,19 @@ struct EditStepSheet: View {
 
     private var navigationTitle: String {
         switch editStep {
-        case .selectType: return "Edit Step Type"
-        case .selectAmount: return "Edit Amount"
-        case .confirmDelete: return "Delete Step"
+        case .selectType, .selectAmount:
+            if isExercise {
+                if exerciseModeSelection == .open || exerciseModeSelection == .none {
+                    return "No amount to change"
+                }
+            } else {
+                if restModeSelection == .open || restModeSelection == .none {
+                    return "No duration to change"
+                }
+            }
+            return stepName
+        case .confirmDelete:
+            return "Delete Step"
         }
     }
 
@@ -222,7 +232,6 @@ private struct DeleteConfirmView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Delete Step").font(.headline)
             Text("Are you sure you want to delete this step?")
                 .foregroundColor(.secondary)
             HStack {
@@ -246,7 +255,6 @@ private struct InfoView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text(title).font(.headline)
             Text(message).foregroundColor(.secondary)
             Button("Close") { onClose() }
                 .buttonStyle(.bordered)

@@ -14,7 +14,6 @@ struct ExerciseModeSelector: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Exercise type").font(.headline)
             HStack {
                 Button("Timed") { onSelectTimed() }
                 Button("Reps") { onSelectReps() }
@@ -40,7 +39,6 @@ struct TimedPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Timed").font(.headline)
             Picker("Seconds", selection: $seconds) {
                 ForEach(options, id: \.self) { sec in
                     Text("\(sec) sec").tag(sec)
@@ -70,7 +68,6 @@ struct RepsPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Reps").font(.headline)
             Picker("Reps", selection: $reps) {
                 ForEach(options, id: \.self) { value in
                     Text("\(value)").tag(value)
@@ -99,7 +96,6 @@ struct RestModeSelector: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Rest type").font(.headline)
             HStack {
                 Button("Timed") { onSelectTimed() }
                 Button("Open") { onSelectOpen() }
@@ -124,7 +120,6 @@ struct RestTimedPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Rest (Timed)").font(.headline)
             Picker("Seconds", selection: $seconds) {
                 ForEach(options, id: \.self) { sec in
                     Text("\(sec) sec").tag(sec)
@@ -154,7 +149,6 @@ struct RepeatCountPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Repeat Count").font(.headline)
             Picker("Count", selection: $count) {
                 ForEach(options, id: \.self) { value in
                     Text("\(value)x").tag(value)
@@ -185,8 +179,6 @@ struct ExercisePickerView: View {
         VStack(spacing: 12) {
             HStack {
                 Button("Back") { onBack() }
-                Spacer()
-                Text("Choose Exercise").font(.headline)
                 Spacer()
                 Color.clear.frame(width: 60, height: 1)
             }

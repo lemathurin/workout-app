@@ -148,7 +148,29 @@ struct NewStepSheet: View {
                     )
                 }
             }
-            .navigationTitle("New Step")
+            .navigationTitle(currentTitle)
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private var currentTitle: String {
+        switch flow {
+        case .chooseKind:
+            return "Add a step"
+        case .exerciseMode:
+            return "Exercise Type"
+        case .timed:
+            return "Timed"
+        case .reps:
+            return "Reps"
+        case .exercisePicker:
+            return "Choose Exercise"
+        case .restMode:
+            return "Rest Type"
+        case .restTimed:
+            return "Rest (Timed)"
+        case .repeatCount:
+            return "Repeat Count"
         }
     }
 }
@@ -166,7 +188,6 @@ private struct ChooseKindView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Add a step").font(.headline)
             HStack {
                 Button("Exercise") { onSelect(.exercise) }
                 Button("Rest") { onSelect(.rest) }

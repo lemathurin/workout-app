@@ -27,6 +27,15 @@ struct StepRowView: View {
         }
     }
 
+    private var isOpen: Bool {
+        switch stepMode {
+        case .exerciseOpen, .restOpen:
+            return true
+        default:
+            return false
+        }
+    }
+
     // Extract row content so we can reuse it with two styles (standalone vs embedded)
     private var rowContent: some View {
         HStack(spacing: 12) {
@@ -47,10 +56,14 @@ struct StepRowView: View {
                 } label: {
                     Label("Change type", systemImage: "figure.strengthtraining.functional")
                 }
-                Button {
-                    onChangeAmount()
-                } label: {
-                    Label("Change amount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                if !isOpen {
+                    Button {
+                        onChangeAmount()
+                    } label: {
+                        Label(
+                            "Change amount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
+                        )
+                    }
                 }
                 if let onDuplicate = onDuplicate {
                     Button {

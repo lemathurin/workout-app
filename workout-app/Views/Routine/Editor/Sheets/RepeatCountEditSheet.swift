@@ -27,7 +27,6 @@ struct RepeatCountEditSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                Text("Repeat Count").font(.headline)
                 Picker("Repeat count", selection: $selectedCount) {
                     ForEach(options, id: \.self) { count in
                         Text("\(count)x").tag(count)
@@ -51,7 +50,7 @@ struct RepeatCountEditSheet: View {
                 }
             }
             .padding()
-            .navigationTitle("Edit Repeat Count")
+            .navigationTitle("Repeat Count")
         }
     }
 }
