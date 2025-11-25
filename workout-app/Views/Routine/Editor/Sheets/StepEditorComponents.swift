@@ -269,25 +269,216 @@ struct ExercisePickerView: View {
     let onDone: () -> Void
 
     @Query private var exercises: [Exercise]
+    @State private var searchText = ""
+    @State private var searchResults: [Exercise] = []
+
+    private var isSearching: Bool {
+        return !searchText.isEmpty
+    }
+
+    private var displayedExercises: [Exercise] {
+        isSearching ? searchResults : exercises
+    }
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Button("Back") { onBack() }
-                Spacer()
-                Color.clear.frame(width: 60, height: 1)
-            }
-            .padding(.horizontal)
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Custom Search Bar due to .searchable position bug/issue I can't fix
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
 
-            List(exercises, id: \.id) { exercise in
-                Button {
-                    selectedId = exercise.id
-                    selectedName = exercise.getName()
-                    onDone()
-                } label: {
-                    Text(exercise.getName())
+                    TextField("Search exercises", text: $searchText)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+
+                    if !searchText.isEmpty {
+                        Button {
+                            searchText = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding(.vertical, 15)
+                .padding(.horizontal, 17)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(UIColor.secondarySystemBackground))
+                )
+                .cornerRadius(20)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+
+                List {
+                    ForEach(displayedExercises, id: \.id) { exercise in
+                        Button {
+                            selectedId = exercise.id
+                            selectedName = exercise.getName()
+                            onDone()
+                        } label: {
+                            Text(exercise.getName())
+                        }
+                    }
+                }
+                .listStyle(.plain)
+                .navigationTitle("Choose Exercise")
+                .navigationBarTitleDisplayMode(.inline)
+                .onChange(of: searchText) {
+                    fetchSearchResults(for: searchText)
+                }
+                .overlay {
+                    if isSearching && searchResults.isEmpty {
+                        ContentUnavailableView(
+                            "Exercise not found",
+                            systemImage: "magnifyingglass",
+                            description: Text("No results for **\(searchText)**")
+                        )
+                    }
+                }
+
+                Button {
+                    onBack()
+                } label: {
+                    Text("Back")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .padding()
             }
         }
     }
+
+    private func fetchSearchResults(for query: String) {
+        searchResults = exercises.filter { exercise in
+            exercise.getName()
+                .lowercased()
+                .contains(query.lowercased())
+        }
+    }
+}
+
+#Preview {
+    let sampleExercises = [
+        Exercise(
+            id: "barbell_squat",
+            forceId: "push",
+            levelId: "beginner",
+            mechanicId: "compound",
+            equipmentId: "barbell",
+            categoryId: "strength",
+            primaryMuscleId: "quadriceps",
+            secondaryMuscles: ["calves", "glutes", "hamstrings", "lower_back"],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Barbell squat"),
+                ExerciseTranslation(languageCode: "fr", name: "Squat barre"),
+            ]
+        ),
+        Exercise(
+            id: "pushup",
+            forceId: "push",
+            levelId: "beginner",
+            mechanicId: "compound",
+            equipmentId: "body_only",
+            categoryId: "strength",
+            primaryMuscleId: "chest",
+            secondaryMuscles: ["shoulders", "triceps"],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Pushup"),
+                ExerciseTranslation(languageCode: "fr", name: "Pushup"),
+            ]
+        ),
+        Exercise(
+            id: "plank",
+            forceId: "static",
+            levelId: "beginner",
+            mechanicId: "isolation",
+            equipmentId: "body_only",
+            categoryId: "strength",
+            primaryMuscleId: "abdominals",
+            secondaryMuscles: [],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Plank"),
+                ExerciseTranslation(languageCode: "fr", name: "Planche"),
+            ]
+        ),
+        Exercise(
+            id: "crunch",
+            forceId: "pull",
+            levelId: "beginner",
+            mechanicId: "isolation",
+            equipmentId: "body_only",
+            categoryId: "strength",
+            primaryMuscleId: "abdominals",
+            secondaryMuscles: [],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Crunch"),
+                ExerciseTranslation(languageCode: "fr", name: "Abdominal"),
+            ]
+        ),
+        Exercise(
+            id: "mountain_climber",
+            forceId: "pull",
+            levelId: "beginner",
+            mechanicId: "compound",
+            equipmentId: "body_only",
+            categoryId: "strength",
+            primaryMuscleId: "quadriceps",
+            secondaryMuscles: ["chest", "hamstrings", "shoulders"],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Mountain climber"),
+                ExerciseTranslation(languageCode: "fr", name: "Mouvement du grimpeur"),
+            ]
+        ),
+        Exercise(
+            id: "russian_twist",
+            forceId: "pull",
+            levelId: "intermediate",
+            mechanicId: "compound",
+            equipmentId: "body_only",
+            categoryId: "strength",
+            primaryMuscleId: "abdominals",
+            secondaryMuscles: ["lower_back"],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Russian twist"),
+                ExerciseTranslation(languageCode: "fr", name: "Torsion russe"),
+            ]
+        ),
+        Exercise(
+            id: "cat_stretch",
+            forceId: "static",
+            levelId: "beginner",
+            mechanicId: "isolation",
+            equipmentId: "body_only",
+            categoryId: "stretching",
+            primaryMuscleId: "lower_back",
+            secondaryMuscles: ["middle_back", "traps"],
+            translations: [
+                ExerciseTranslation(languageCode: "en", name: "Cat stretch"),
+                ExerciseTranslation(languageCode: "fr", name: "Étirement de chat"),
+            ]
+        ),
+    ]
+
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Exercise.self, ExerciseTranslation.self,
+        configurations: config
+    )
+
+    for exercise in sampleExercises {
+        container.mainContext.insert(exercise)
+    }
+
+    return ExercisePickerView(
+        selectedId: .constant(nil),
+        selectedName: .constant(nil),
+        onBack: {},
+        onDone: {}
+    )
+    .modelContainer(container)
 }
