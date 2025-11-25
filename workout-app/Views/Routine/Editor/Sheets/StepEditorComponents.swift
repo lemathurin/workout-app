@@ -472,7 +472,8 @@ struct ExercisePickerView: View {
                     selectedMuscle: $selectedMuscle
                 )
             }
-            .safeAreaInset(edge: .bottom) {
+            .safeAreaPadding(.bottom, 90)
+            .overlay(alignment: .bottom) {
                 Button {
                     onBack()
                 } label: {
@@ -481,8 +482,11 @@ struct ExercisePickerView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
+                .background {
+                        Capsule()
+                            .fill(.regularMaterial)
+                    }
                 .padding()
-                .background(Color(UIColor.systemBackground))
             }
             .background(Color(UIColor.systemGroupedBackground))
         }
