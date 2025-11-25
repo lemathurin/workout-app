@@ -277,7 +277,20 @@ struct ExercisePickerView: View {
     }
 
     private var displayedExercises: [Exercise] {
-        isSearching ? searchResults : exercises
+        let exerciseList = isSearching ? searchResults : exercises
+        return exerciseList.sorted {
+            $0.getName().localizedCaseInsensitiveCompare($1.getName()) == .orderedAscending
+        }
+    }
+
+    private var groupedExercises: [String: [Exercise]] {
+        Dictionary(grouping: displayedExercises) { exercise in
+            String(exercise.getName().prefix(1)).uppercased()
+        }
+    }
+
+    private var sectionTitles: [String] {
+        groupedExercises.keys.sorted()
     }
 
     var body: some View {
@@ -314,17 +327,23 @@ struct ExercisePickerView: View {
                 .padding(.vertical, 8)
 
                 List {
-                    ForEach(displayedExercises, id: \.id) { exercise in
-                        Button {
-                            selectedId = exercise.id
-                            selectedName = exercise.getName()
-                            onDone()
-                        } label: {
-                            Text(exercise.getName())
+                    ForEach(sectionTitles, id: \.self) { letter in
+                        Section(header: Text(letter)) {
+                            ForEach(groupedExercises[letter] ?? [], id: \.id) { exercise in
+                                Button {
+                                    selectedId = exercise.id
+                                    selectedName = exercise.getName()
+                                    onDone()
+                                } label: {
+                                    Text(exercise.getName())
+                                }
+                            }
                         }
+                        .sectionIndexLabel(Text(letter))
                     }
                 }
-                .listStyle(.plain)
+                .listStyle(.insetGrouped)
+                .listSectionIndexVisibility(.visible)
                 .navigationTitle("Choose Exercise")
                 .navigationBarTitleDisplayMode(.inline)
                 .onChange(of: searchText) {
