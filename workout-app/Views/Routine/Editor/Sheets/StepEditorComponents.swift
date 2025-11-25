@@ -395,7 +395,7 @@ struct ExercisePickerView: View {
                             }
                         }
                     } label: {
-                        Image(systemName: showingSearch ? "xmark.circle.fill" : "magnifyingglass")
+                        Image(systemName: showingSearch ? "xmark" : "magnifyingglass")
                     }
                 }
 
@@ -404,7 +404,7 @@ struct ExercisePickerView: View {
                         showingFilters = true
                     } label: {
                         ZStack(alignment: .topTrailing) {
-                            Image(systemName: "line.3.horizontal.decrease.circle")
+                            Image(systemName: "line.3.horizontal.decrease")
                             if hasActiveFilters {
                                 Circle()
                                     .fill(.red)
