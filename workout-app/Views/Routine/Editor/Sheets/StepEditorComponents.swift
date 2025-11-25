@@ -357,8 +357,58 @@ struct ExercisePickerView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Custom Search Bar - Toggleable
+            List {
+                ForEach(sectionTitles, id: \.self) { letter in
+                    Section(header: Text(letter)) {
+                        ForEach(groupedExercises[letter] ?? [], id: \.id) { exercise in
+                            Button {
+                                selectedId = exercise.id
+                                selectedName = exercise.getName(for: "en")
+                                onDone()
+                            } label: {
+                                Text(exercise.getName(for: "en"))
+                            }
+                        }
+                    }
+                    .sectionIndexLabel(Text(letter))
+                }
+            }
+            .scrollDismissesKeyboard(.immediately)
+            .listStyle(.insetGrouped)
+            .listSectionIndexVisibility(.visible)
+            .navigationTitle("Select Exercise")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        withAnimation {
+                            showingSearch.toggle()
+                            if !showingSearch {
+                                searchText = ""
+                            }
+                        }
+                    } label: {
+                        Image(systemName: showingSearch ? "xmark.circle.fill" : "magnifyingglass")
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingFilters = true
+                    } label: {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                            if hasActiveFilters {
+                                Circle()
+                                    .fill(.red)
+                                    .frame(width: 8, height: 8)
+                                    .offset(x: 4, y: -4)
+                            }
+                        }
+                    }
+                }
+            }
+            .overlay(alignment: .top) {
                 if showingSearch {
                     HStack(spacing: 8) {
                         Image(systemName: "magnifyingglass")
@@ -381,96 +431,42 @@ struct ExercisePickerView: View {
                     .fontWeight(.semibold)
                     .padding(.vertical, 15)
                     .padding(.horizontal, 17)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(UIColor.secondarySystemBackground))
-                    )
+                    .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                    .glassEffect(.clear.interactive())
                     .cornerRadius(20)
                     .padding(.horizontal)
-                    .padding(.vertical, 8)
+                    .padding(.top, 8)
                     .transition(.move(edge: .top).combined(with: .opacity))
                 }
-
-                List {
-                    ForEach(sectionTitles, id: \.self) { letter in
-                        Section(header: Text(letter)) {
-                            ForEach(groupedExercises[letter] ?? [], id: \.id) { exercise in
-                                Button {
-                                    selectedId = exercise.id
-                                    selectedName = exercise.getName(for: "en")
-                                    onDone()
-                                } label: {
-                                    Text(exercise.getName(for: "en"))
-                                }
-                            }
-                        }
-                        .sectionIndexLabel(Text(letter))
-                    }
-                }
-                .scrollDismissesKeyboard(.immediately)
-                .listStyle(.insetGrouped)
-                .listSectionIndexVisibility(.visible)
-                .navigationTitle("Select Exercise")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            withAnimation {
-                                showingSearch.toggle()
-                                if !showingSearch {
-                                    searchText = ""
-                                }
-                            }
-                        } label: {
-                            Image(
-                                systemName: showingSearch ? "xmark.circle.fill" : "magnifyingglass")
-                        }
-                    }
-
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showingFilters = true
-                        } label: {
-                            ZStack(alignment: .topTrailing) {
-                                Image(systemName: "line.3.horizontal.decrease.circle")
-                                if hasActiveFilters {
-                                    Circle()
-                                        .fill(.red)
-                                        .frame(width: 8, height: 8)
-                                        .offset(x: 4, y: -4)
-                                }
-                            }
-                        }
-                    }
-                }
-                .overlay {
-                    if filteredExercises.isEmpty {
-                        ContentUnavailableView(
-                            "No exercises found",
-                            systemImage: "dumbbell",
-                            description: Text(
-                                hasActiveFilters
-                                    ? "Try adjusting your filters" : "No exercises available")
-                        )
-                    }
-                }
-                .sheet(isPresented: $showingFilters) {
-                    ExerciseFilterSheet(
-                        equipment: equipment,
-                        levels: levels,
-                        forces: forces,
-                        categories: categories,
-                        mechanics: mechanics,
-                        muscles: muscles,
-                        selectedEquipment: $selectedEquipment,
-                        selectedLevel: $selectedLevel,
-                        selectedForce: $selectedForce,
-                        selectedCategory: $selectedCategory,
-                        selectedMechanic: $selectedMechanic,
-                        selectedMuscle: $selectedMuscle
+            }
+            .overlay {
+                if filteredExercises.isEmpty {
+                    ContentUnavailableView(
+                        "No exercises found",
+                        systemImage: "dumbbell",
+                        description: Text(
+                            hasActiveFilters
+                                ? "Try adjusting your filters" : "No exercises available")
                     )
                 }
-
+            }
+            .sheet(isPresented: $showingFilters) {
+                ExerciseFilterSheet(
+                    equipment: equipment,
+                    levels: levels,
+                    forces: forces,
+                    categories: categories,
+                    mechanics: mechanics,
+                    muscles: muscles,
+                    selectedEquipment: $selectedEquipment,
+                    selectedLevel: $selectedLevel,
+                    selectedForce: $selectedForce,
+                    selectedCategory: $selectedCategory,
+                    selectedMechanic: $selectedMechanic,
+                    selectedMuscle: $selectedMuscle
+                )
+            }
+            .safeAreaInset(edge: .bottom) {
                 Button {
                     onBack()
                 } label: {
@@ -480,6 +476,7 @@ struct ExercisePickerView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .padding()
+                .background(Color(UIColor.systemBackground))
             }
         }
     }
