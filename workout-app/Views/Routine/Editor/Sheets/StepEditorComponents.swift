@@ -376,6 +376,13 @@ struct ExercisePickerView: View {
             .scrollDismissesKeyboard(.immediately)
             .listStyle(.insetGrouped)
             .listSectionIndexVisibility(.visible)
+            .safeAreaInset(edge: .top) {
+                if showingSearch {
+                    Color.clear
+                        .frame(height: 80)
+                        .animation(nil, value: showingSearch)
+                }
+            }
             .navigationTitle("Select Exercise")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -433,7 +440,6 @@ struct ExercisePickerView: View {
                     .padding(.horizontal, 17)
                     .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                     .glassEffect(.clear.interactive())
-                    .cornerRadius(20)
                     .padding(.horizontal)
                     .padding(.top, 8)
                     .transition(.move(edge: .top).combined(with: .opacity))
@@ -478,6 +484,7 @@ struct ExercisePickerView: View {
                 .padding()
                 .background(Color(UIColor.systemBackground))
             }
+            .background(Color(UIColor.systemGroupedBackground))
         }
     }
 }
