@@ -278,6 +278,7 @@ struct ExercisePickerView: View {
 
     @State private var searchText = ""
     @State private var showingFilters = false
+    @State private var showingSearch = false
 
     // Filter states
     @State private var selectedEquipment: Set<String> = []
@@ -357,35 +358,38 @@ struct ExercisePickerView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Custom Search Bar
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
+                // Custom Search Bar - Toggleable
+                if showingSearch {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
 
-                    TextField("Search exercises", text: $searchText)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
+                        TextField("Search exercises", text: $searchText)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
 
-                    if !searchText.isEmpty {
-                        Button {
-                            searchText = ""
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.secondary)
+                        if !searchText.isEmpty {
+                            Button {
+                                searchText = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 17)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(UIColor.secondarySystemBackground))
+                    )
+                    .cornerRadius(20)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
-                .font(.title2)
-                .fontWeight(.semibold)
-                .padding(.vertical, 15)
-                .padding(.horizontal, 17)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(UIColor.secondarySystemBackground))
-                )
-                .cornerRadius(20)
-                .padding(.horizontal)
-                .padding(.vertical, 8)
 
                 List {
                     ForEach(sectionTitles, id: \.self) { letter in
@@ -403,11 +407,26 @@ struct ExercisePickerView: View {
                         .sectionIndexLabel(Text(letter))
                     }
                 }
+                .scrollDismissesKeyboard(.immediately)
                 .listStyle(.insetGrouped)
                 .listSectionIndexVisibility(.visible)
-                .navigationTitle("Choose Exercise")
+                .navigationTitle("Select Exercise")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            withAnimation {
+                                showingSearch.toggle()
+                                if !showingSearch {
+                                    searchText = ""
+                                }
+                            }
+                        } label: {
+                            Image(
+                                systemName: showingSearch ? "xmark.circle.fill" : "magnifyingglass")
+                        }
+                    }
+
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             showingFilters = true
