@@ -269,23 +269,84 @@ struct ExercisePickerView: View {
     let onDone: () -> Void
 
     @Query private var exercises: [Exercise]
+    @Query private var equipment: [Equipment]
+    @Query private var levels: [Level]
+    @Query private var forces: [Force]
+    @Query private var categories: [Category]
+    @Query private var mechanics: [Mechanic]
+    @Query private var muscles: [Muscle]
+
     @State private var searchText = ""
-    @State private var searchResults: [Exercise] = []
+    @State private var showingFilters = false
+
+    // Filter states
+    @State private var selectedEquipment: Set<String> = []
+    @State private var selectedLevel: String?
+    @State private var selectedForce: String?
+    @State private var selectedCategory: String?
+    @State private var selectedMechanic: String?
+    @State private var selectedMuscle: String?
 
     private var isSearching: Bool {
         return !searchText.isEmpty
     }
 
-    private var displayedExercises: [Exercise] {
-        let exerciseList = isSearching ? searchResults : exercises
-        return exerciseList.sorted {
+    private var hasActiveFilters: Bool {
+        !selectedEquipment.isEmpty || selectedLevel != nil || selectedForce != nil
+            || selectedCategory != nil || selectedMechanic != nil || selectedMuscle != nil
+    }
+
+    private var activeFilterCount: Int {
+        selectedEquipment.count + (selectedLevel != nil ? 1 : 0) + (selectedForce != nil ? 1 : 0)
+            + (selectedCategory != nil ? 1 : 0) + (selectedMechanic != nil ? 1 : 0)
+            + (selectedMuscle != nil ? 1 : 0)
+    }
+
+    private var filteredExercises: [Exercise] {
+        var result = exercises
+
+        // Only show exercises with English translations
+        result = result.filter { exercise in
+            exercise.translations.contains { $0.languageCode == "en" }
+        }
+
+        // Apply filters
+        if !selectedEquipment.isEmpty {
+            result = result.filter { selectedEquipment.contains($0.equipmentId) }
+        }
+        if let level = selectedLevel {
+            result = result.filter { $0.levelId == level }
+        }
+        if let force = selectedForce {
+            result = result.filter { $0.forceId == force }
+        }
+        if let category = selectedCategory {
+            result = result.filter { $0.categoryId == category }
+        }
+        if let mechanic = selectedMechanic {
+            result = result.filter { $0.mechanicId == mechanic }
+        }
+        if let muscle = selectedMuscle {
+            result = result.filter { $0.primaryMuscleId == muscle }
+        }
+
+        // Apply search
+        if isSearching {
+            result = result.filter { exercise in
+                exercise.getName(for: "en")
+                    .lowercased()
+                    .contains(searchText.lowercased())
+            }
+        }
+
+        return result.sorted {
             $0.getName().localizedCaseInsensitiveCompare($1.getName()) == .orderedAscending
         }
     }
 
     private var groupedExercises: [String: [Exercise]] {
-        Dictionary(grouping: displayedExercises) { exercise in
-            String(exercise.getName().prefix(1)).uppercased()
+        Dictionary(grouping: filteredExercises) { exercise in
+            String(exercise.getName(for: "en").prefix(1)).uppercased()
         }
     }
 
@@ -296,7 +357,7 @@ struct ExercisePickerView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Custom Search Bar due to .searchable position bug/issue I can't fix
+                // Custom Search Bar
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
@@ -332,10 +393,10 @@ struct ExercisePickerView: View {
                             ForEach(groupedExercises[letter] ?? [], id: \.id) { exercise in
                                 Button {
                                     selectedId = exercise.id
-                                    selectedName = exercise.getName()
+                                    selectedName = exercise.getName(for: "en")
                                     onDone()
                                 } label: {
-                                    Text(exercise.getName())
+                                    Text(exercise.getName(for: "en"))
                                 }
                             }
                         }
@@ -346,17 +407,49 @@ struct ExercisePickerView: View {
                 .listSectionIndexVisibility(.visible)
                 .navigationTitle("Choose Exercise")
                 .navigationBarTitleDisplayMode(.inline)
-                .onChange(of: searchText) {
-                    fetchSearchResults(for: searchText)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showingFilters = true
+                        } label: {
+                            ZStack(alignment: .topTrailing) {
+                                Image(systemName: "line.3.horizontal.decrease.circle")
+                                if hasActiveFilters {
+                                    Circle()
+                                        .fill(.red)
+                                        .frame(width: 8, height: 8)
+                                        .offset(x: 4, y: -4)
+                                }
+                            }
+                        }
+                    }
                 }
                 .overlay {
-                    if isSearching && searchResults.isEmpty {
+                    if filteredExercises.isEmpty {
                         ContentUnavailableView(
-                            "Exercise not found",
-                            systemImage: "magnifyingglass",
-                            description: Text("No results for **\(searchText)**")
+                            "No exercises found",
+                            systemImage: "dumbbell",
+                            description: Text(
+                                hasActiveFilters
+                                    ? "Try adjusting your filters" : "No exercises available")
                         )
                     }
+                }
+                .sheet(isPresented: $showingFilters) {
+                    ExerciseFilterSheet(
+                        equipment: equipment,
+                        levels: levels,
+                        forces: forces,
+                        categories: categories,
+                        mechanics: mechanics,
+                        muscles: muscles,
+                        selectedEquipment: $selectedEquipment,
+                        selectedLevel: $selectedLevel,
+                        selectedForce: $selectedForce,
+                        selectedCategory: $selectedCategory,
+                        selectedMechanic: $selectedMechanic,
+                        selectedMuscle: $selectedMuscle
+                    )
                 }
 
                 Button {
@@ -371,12 +464,181 @@ struct ExercisePickerView: View {
             }
         }
     }
+}
 
-    private func fetchSearchResults(for query: String) {
-        searchResults = exercises.filter { exercise in
-            exercise.getName()
-                .lowercased()
-                .contains(query.lowercased())
+// MARK: - Exercise Filter Sheet
+
+struct ExerciseFilterSheet: View {
+    let equipment: [Equipment]
+    let levels: [Level]
+    let forces: [Force]
+    let categories: [Category]
+    let mechanics: [Mechanic]
+    let muscles: [Muscle]
+
+    @Binding var selectedEquipment: Set<String>
+    @Binding var selectedLevel: String?
+    @Binding var selectedForce: String?
+    @Binding var selectedCategory: String?
+    @Binding var selectedMechanic: String?
+    @Binding var selectedMuscle: String?
+
+    @Environment(\.dismiss) private var dismiss
+
+    private var hasActiveFilters: Bool {
+        !selectedEquipment.isEmpty || selectedLevel != nil || selectedForce != nil
+            || selectedCategory != nil || selectedMechanic != nil || selectedMuscle != nil
+    }
+
+    // Helper function to get English translation
+    private func getEnglishText(_ translations: [Translation], fallback: String) -> String {
+        translations.first(where: { $0.languageCode == "en" })?.text.capitalized
+            ?? fallback.capitalized
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                // Equipment Section
+                Section("Equipment") {
+                    ForEach(equipment.sorted(by: { $0.id < $1.id }), id: \.id) { item in
+                        Button {
+                            if selectedEquipment.contains(item.id) {
+                                selectedEquipment.remove(item.id)
+                            } else {
+                                selectedEquipment.insert(item.id)
+                            }
+                        } label: {
+                            HStack {
+                                Text(getEnglishText(item.translations, fallback: item.id))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedEquipment.contains(item.id) {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Level Section
+                Section("Level") {
+                    ForEach(levels.sorted(by: { $0.id < $1.id }), id: \.id) { item in
+                        Button {
+                            selectedLevel = selectedLevel == item.id ? nil : item.id
+                        } label: {
+                            HStack {
+                                Text(getEnglishText(item.translations, fallback: item.id))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedLevel == item.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Force Section
+                Section("Force Type") {
+                    ForEach(forces.sorted(by: { $0.id < $1.id }), id: \.id) { item in
+                        Button {
+                            selectedForce = selectedForce == item.id ? nil : item.id
+                        } label: {
+                            HStack {
+                                Text(getEnglishText(item.translations, fallback: item.id))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedForce == item.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Category Section
+                Section("Category") {
+                    ForEach(categories.sorted(by: { $0.id < $1.id }), id: \.id) { item in
+                        Button {
+                            selectedCategory = selectedCategory == item.id ? nil : item.id
+                        } label: {
+                            HStack {
+                                Text(getEnglishText(item.translations, fallback: item.id))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedCategory == item.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Mechanic Section
+                Section("Mechanic") {
+                    ForEach(mechanics.sorted(by: { $0.id < $1.id }), id: \.id) { item in
+                        Button {
+                            selectedMechanic = selectedMechanic == item.id ? nil : item.id
+                        } label: {
+                            HStack {
+                                Text(getEnglishText(item.translations, fallback: item.id))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedMechanic == item.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Primary Muscle Section
+                Section("Primary Muscle") {
+                    ForEach(muscles.sorted(by: { $0.id < $1.id }), id: \.id) { item in
+                        Button {
+                            selectedMuscle = selectedMuscle == item.id ? nil : item.id
+                        } label: {
+                            HStack {
+                                Text(getEnglishText(item.translations, fallback: item.id))
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedMuscle == item.id {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Filter Exercises")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if hasActiveFilters {
+                        Button("Clear All") {
+                            selectedEquipment.removeAll()
+                            selectedLevel = nil
+                            selectedForce = nil
+                            selectedCategory = nil
+                            selectedMechanic = nil
+                            selectedMuscle = nil
+                        }
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
         }
     }
 }
