@@ -115,7 +115,7 @@ struct RoutineEditView: View {
 
                 Button(
                     action: {
-                        viewModel.showNewStepSheet = true
+                        viewModel.showChooseStepKindSheet = true
                     },
                     label: {
                         Label("Add a step", systemImage: "plus")
@@ -136,10 +136,25 @@ struct RoutineEditView: View {
                     .presentationDetents([.height(300)])
                     .interactiveDismissDisabled(true)
             }
-            .sheet(isPresented: $viewModel.showNewStepSheet) {
-                newStepSheet
-                    .presentationDetents([viewModel.newStepSheetDetent])
-                    .interactiveDismissDisabled(true)
+            .sheet(isPresented: $viewModel.showChooseStepKindSheet) {
+                ChooseStepKindSheet(
+                    onAddExercise: { exerciseId, name, mode in
+                        if let exerciseMode = stepModeToExerciseMode(mode) {
+                            viewModel.handleAddExercise(
+                                exerciseId: exerciseId, name: name, mode: exerciseMode)
+                        }
+                    },
+                    onAddRest: { mode in
+                        if let restMode = stepModeToRestMode(mode) {
+                            viewModel.handleAddRest(mode: restMode)
+                        }
+                    },
+                    onStartRepeatFlow: { count in
+                        viewModel.handleStartRepeatFlow(count: count)
+                    }
+                )
+                .presentationDetents([.height(300)])
+                .interactiveDismissDisabled(true)
             }
             .navigationTitle("New Routine")
             .navigationBarBackButtonHidden(true)
@@ -496,25 +511,6 @@ struct RoutineEditView: View {
                 }
             )
         }
-    }
-
-    private var newStepSheet: some View {
-        NewStepSheet(
-            sheetDetent: $viewModel.newStepSheetDetent,
-            onAddStep: { exerciseId, name, mode in
-                if let exerciseId = exerciseId, let name = name,
-                    let exerciseMode = stepModeToExerciseMode(mode)
-                {
-                    viewModel.handleAddExercise(
-                        exerciseId: exerciseId, name: name, mode: exerciseMode)
-                } else if let restMode = stepModeToRestMode(mode) {
-                    viewModel.handleAddRest(mode: restMode)
-                }
-            },
-            onStartRepeatFlow: { count in
-                viewModel.handleStartRepeatFlow(count: count)
-            }
-        )
     }
 
     // MARK: - Helper Methods (Conversion between StepMode and specific modes)

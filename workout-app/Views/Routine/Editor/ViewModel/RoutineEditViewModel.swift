@@ -24,8 +24,7 @@ class RoutineEditViewModel {
     var sheetDetent: PresentationDetent = .height(300)
     var editingRepeatCountId: UUID? = nil
     var repeatCountSheetDetent: PresentationDetent = .height(300)
-    var showNewStepSheet: Bool = false
-    var newStepSheetDetent: PresentationDetent = .height(300)
+    var showChooseStepKindSheet: Bool = false
 
     // MARK: - Computed Properties
 
@@ -148,17 +147,17 @@ class RoutineEditViewModel {
 
     func handleAddExercise(exerciseId: String, name: String, mode: ExerciseStepMode) {
         items.append(.exercise(id: UUID(), exerciseId: exerciseId, name: name, mode: mode))
-        showNewStepSheet = false
+        showChooseStepKindSheet = false
     }
 
     func handleAddRest(mode: RestStepMode) {
         items.append(.rest(id: UUID(), mode: mode))
-        showNewStepSheet = false
+        showChooseStepKindSheet = false
     }
 
     func handleStartRepeatFlow(count: Int) {
         items.append(.repeatGroup(id: UUID(), repeatCount: count, items: []))
-        showNewStepSheet = false
+        showChooseStepKindSheet = false
     }
 
     // MARK: - Duplicate Methods
