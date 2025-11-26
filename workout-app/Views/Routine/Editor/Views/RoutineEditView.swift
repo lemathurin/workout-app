@@ -3,8 +3,10 @@ import UniformTypeIdentifiers
 
 struct RoutineEditView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RoutineEditViewModel()
     @State private var showDiscardAlert = false
+    @State private var showValidationAlert = false
 
     var body: some View {
         NavigationStack {
@@ -153,12 +155,22 @@ struct RoutineEditView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: {
-                        // Button action here
+                        if let routine = viewModel.buildRoutine() {
+                            modelContext.insert(routine)
+                            dismiss()
+                        } else {
+                            showValidationAlert = true
+                        }
                     }) {
                         Image(systemName: "checkmark")
                     }
                     .buttonStyle(.glassProminent)
                 }
+            }
+            .alert("Missing Information", isPresented: $showValidationAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Please ensure your routine has a name and at least one step.")
             }
             .alert("Discard Changes?", isPresented: $showDiscardAlert) {
                 Button("Cancel", role: .cancel) {}

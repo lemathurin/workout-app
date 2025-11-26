@@ -229,4 +229,92 @@ class RoutineEditViewModel {
     func closeRepeatCountSheet() {
         editingRepeatCountId = nil
     }
+
+    // MARK: - Saving
+
+    func buildRoutine() -> Routine? {
+        guard !routineName.isEmpty else { return nil }
+        guard !items.isEmpty else { return nil }
+
+        let steps = items.enumerated().map { index, item in
+            convertStepItemToRoutineStep(item, order: index + 1)
+        }
+
+        return Routine(name: routineName, steps: steps)
+    }
+
+    private func convertStepItemToRoutineStep(_ item: StepItem, order: Int) -> RoutineStep {
+        switch item {
+        case .exercise(_, let exerciseId, _, let mode):
+            let (duration, count) = extractDurationAndCount(from: mode)
+            return RoutineStep(
+                type: .exercise,
+                exerciseId: exerciseId,
+                duration: duration,
+                count: count,
+                order: order
+            )
+
+        case .rest(_, let mode):
+            let (duration, _) = extractDurationAndCount(from: mode)
+            return RoutineStep(
+                type: .rest,
+                duration: duration,
+                order: order
+            )
+
+        case .repeatGroup(_, let repeatCount, let items):
+            let nestedSteps = items.enumerated().map { index, item in
+                convertRepeatItemToRoutineStep(item, order: index + 1)
+            }
+            return RoutineStep(
+                type: .repeats,
+                count: repeatCount,
+                steps: nestedSteps,
+                order: order
+            )
+        }
+    }
+
+    private func convertRepeatItemToRoutineStep(_ item: RepeatItem, order: Int) -> RoutineStep {
+        switch item {
+        case .exercise(_, let exerciseId, _, let mode):
+            let (duration, count) = extractDurationAndCount(from: mode)
+            return RoutineStep(
+                type: .exercise,
+                exerciseId: exerciseId,
+                duration: duration,
+                count: count,
+                order: order
+            )
+
+        case .rest(_, let mode):
+            let (duration, _) = extractDurationAndCount(from: mode)
+            return RoutineStep(
+                type: .rest,
+                duration: duration,
+                order: order
+            )
+        }
+    }
+
+    private func extractDurationAndCount(from mode: ExerciseStepMode) -> (Int, Int?) {
+        switch mode {
+        case .timed(let seconds):
+            return (seconds, nil)
+        case .reps(let count):
+            return (0, count)
+        case .open:
+            return (0, nil)
+        }
+    }
+
+    private func extractDurationAndCount(from mode: RestStepMode) -> (Int, Int?) {
+        switch mode {
+        case .timed(let seconds):
+            return (seconds, nil)
+        case .open:
+            return (0, nil)
+        }
+    }
 }
