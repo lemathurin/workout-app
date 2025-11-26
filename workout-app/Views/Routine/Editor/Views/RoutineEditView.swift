@@ -6,7 +6,6 @@ struct RoutineEditView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RoutineEditViewModel()
     @State private var showDiscardAlert = false
-    @State private var showValidationAlert = false
 
     var body: some View {
         NavigationStack {
@@ -154,24 +153,35 @@ struct RoutineEditView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(action: {
-                        if let routine = viewModel.buildRoutine() {
-                            modelContext.insert(routine)
-                            dismiss()
-                        } else {
-                            showValidationAlert = true
+                    let isInvalid =
+                        viewModel.routineName.trimmingCharacters(in: .whitespaces).isEmpty
+                        || viewModel.items.isEmpty
+
+                    if isInvalid {
+                        Button(action: {
+                            if let routine = viewModel.buildRoutine() {
+                                modelContext.insert(routine)
+                                dismiss()
+                            }
+                        }) {
+                            Image(systemName: "checkmark")
                         }
-                    }) {
-                        Image(systemName: "checkmark")
+                        .buttonStyle(PlainButtonStyle())
+                        .disabled(true)
+                    } else {
+                        Button(action: {
+                            if let routine = viewModel.buildRoutine() {
+                                modelContext.insert(routine)
+                                dismiss()
+                            }
+                        }) {
+                            Image(systemName: "checkmark")
+                        }
+                        .buttonStyle(GlassProminentButtonStyle())
                     }
-                    .buttonStyle(.glassProminent)
                 }
             }
-            .alert("Missing Information", isPresented: $showValidationAlert) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("Please ensure your routine has a name and at least one step.")
-            }
+
             .alert("Discard Changes?", isPresented: $showDiscardAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Discard", role: .destructive) {
