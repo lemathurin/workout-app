@@ -1,16 +1,14 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 @Model
 class RoutineTranslation {
     var languageCode: String
     var name: String
-    var routineDescription: String?
-    
-    init(languageCode: String, name: String, routineDescription: String? = nil) {
+
+    init(languageCode: String, name: String) {
         self.languageCode = languageCode
         self.name = name
-        self.routineDescription = routineDescription
     }
 }
 
@@ -21,41 +19,37 @@ class Routine {
     var steps: [RoutineStep]
     var metadata: RoutineMetadata
     var isSystemRoutine: Bool
-    
-    init(translations: [RoutineTranslation], steps: [RoutineStep] = [], isSystemRoutine: Bool = false) {
+
+    init(
+        translations: [RoutineTranslation], steps: [RoutineStep] = [], isSystemRoutine: Bool = false
+    ) {
         self.id = UUID().uuidString
         self.translations = translations
         self.steps = steps
         self.metadata = RoutineMetadata()
         self.isSystemRoutine = isSystemRoutine
     }
-    
+
     // Convenience initializer for user-created routines (single language)
-    convenience init(name: String, routineDescription: String? = nil, languageCode: String = "en", steps: [RoutineStep] = []) {
-        let translation = RoutineTranslation(languageCode: languageCode, name: name, routineDescription: routineDescription)
+    convenience init(name: String, languageCode: String = "en", steps: [RoutineStep] = []) {
+        let translation = RoutineTranslation(languageCode: languageCode, name: name)
         self.init(translations: [translation], steps: steps, isSystemRoutine: false)
     }
-    
+
     // Get localized name
     func getName(for languageCode: String = "en") -> String {
-        return translations.first { $0.languageCode == languageCode }?.name 
-            ?? translations.first?.name 
+        return translations.first { $0.languageCode == languageCode }?.name
+            ?? translations.first?.name
             ?? "Unnamed Routine"
     }
-    
-    // Get localized description
-    func getDescription(for languageCode: String = "en") -> String? {
-        return translations.first { $0.languageCode == languageCode }?.routineDescription 
-            ?? translations.first?.routineDescription
-    }
-    
+
     /// Calculates total duration by traversing all steps including nested repeats
     func calculateTotalDuration() -> Int {
         return steps.reduce(0) { total, step in
             total + step.calculateDuration()
         }
     }
-    
+
     /// Counts total number of exercise steps (excluding rest and repeat containers)
     func calculateExerciseCount() -> Int {
         return steps.reduce(0) { total, step in
@@ -72,8 +66,11 @@ class RoutineStep {
     var count: Int?
     var steps: [RoutineStep]?
     var order: Int
-    
-    init(type: StepType, exerciseId: String? = nil, duration: Int = 0, count: Int? = nil, steps: [RoutineStep]? = nil, order: Int = 0) {
+
+    init(
+        type: StepType, exerciseId: String? = nil, duration: Int = 0, count: Int? = nil,
+        steps: [RoutineStep]? = nil, order: Int = 0
+    ) {
         self.type = type
         self.exerciseId = exerciseId
         self.duration = duration
@@ -81,7 +78,7 @@ class RoutineStep {
         self.steps = steps
         self.order = order
     }
-    
+
     /// Calculates duration for this step, including nested steps for repeats
     func calculateDuration() -> Int {
         switch type {
@@ -93,7 +90,7 @@ class RoutineStep {
             return stepsDuration * count
         }
     }
-    
+
     /// Counts exercise steps in this step and nested steps
     func countExercises() -> Int {
         switch type {
@@ -117,7 +114,7 @@ enum StepType: String, Codable, CaseIterable {
 
 /// Semantic representation of a step's type and mode.
 /// Captures both the category (exercise/rest) AND the mode (timed/reps/open) with associated values.
-/// 
+///
 /// Example usage:
 /// ```
 /// let timedExercise = StepMode.exerciseTimed(seconds: 30)
@@ -145,8 +142,13 @@ class RoutineMetadata {
     var tags: [String]
     var equipment: [String]
     var targetMuscles: [String]
-    
-    init(createdAt: Date = Date(), updatedAt: Date = Date(), categories: [String] = [], difficulty: String = "", tags: [String] = [], equipment: [String] = [], targetMuscles: [String] = []) {
+    var author: String?
+
+    init(
+        createdAt: Date = Date(), updatedAt: Date = Date(), categories: [String] = [],
+        difficulty: String = "", tags: [String] = [], equipment: [String] = [],
+        targetMuscles: [String] = [], author: String? = nil
+    ) {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.categories = categories
@@ -154,8 +156,9 @@ class RoutineMetadata {
         self.tags = tags
         self.equipment = equipment
         self.targetMuscles = targetMuscles
+        self.author = author
     }
-    
+
     func updateTimestamp() {
         self.updatedAt = Date()
     }

@@ -1,9 +1,9 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct RoutineCard: View {
     let routine: Routine
-    
+
     var body: some View {
         NavigationLink(destination: RoutineDetailView(routine: routine)) {
             VStack(alignment: .leading, spacing: 12) {
@@ -13,27 +13,22 @@ struct RoutineCard: View {
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
-                        
-                        Text(routine.getDescription() ?? "No description available")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .lineLimit(2)
                     }
-                    
+
                     Spacer()
-                    
+
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("\(routine.calculateTotalDuration()) min")
                             .font(.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.blue)
-                        
+
                         Text("\(routine.calculateExerciseCount()) exercises")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 HStack {
                     Text(routine.metadata.difficulty)
                         .font(.caption2)
@@ -42,7 +37,7 @@ struct RoutineCard: View {
                         .background(Color.blue.opacity(0.1))
                         .foregroundColor(.blue)
                         .cornerRadius(8)
-                    
+
                     if !routine.metadata.equipment.isEmpty {
                         Text(routine.metadata.equipment.joined(separator: ", "))
                             .font(.caption2)
@@ -52,7 +47,7 @@ struct RoutineCard: View {
                             .foregroundColor(.green)
                             .cornerRadius(8)
                     }
-                    
+
                     Spacer()
                 }
             }
@@ -69,10 +64,9 @@ struct RoutineCard: View {
     // Preview with sample data
     let sampleRoutine = Routine(
         name: "Core Crusher",
-        routineDescription: "A challenging core workout",
         steps: []
     )
-    
+
     RoutineCard(routine: sampleRoutine)
         .padding()
 }
