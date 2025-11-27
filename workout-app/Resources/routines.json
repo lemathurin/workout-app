@@ -4,13 +4,11 @@
     "translations": [
       {
         "languageCode": "en",
-        "name": "Core Crusher",
-        "description": "An intense core workout for advanced practitioners"
+        "name": "Core Crusher"
       },
       {
         "languageCode": "fr",
-        "name": "Core Crusher",
-        "description": "Un entraînement de core intense pour les pratiquants avancés"
+        "name": "Core Crusher"
       }
     ],
     "steps": [
@@ -47,12 +45,19 @@
     "metadata": {
       "createdAt": "2025-08-15T10:00:00Z",
       "updatedAt": "2025-08-15T10:00:00Z",
-      "equipment": ["body_only"],
+      "equipment": [
+        "body_only"
+      ],
       "level": "beginner",
-      "categories": ["strength"],
-      "totalDuration": "225",
+      "categories": [
+        "strength"
+      ],
       "exerciseCount": "4",
-      "targetMuscles": ["abdominals", "lower_back"]
+      "targetMuscles": [
+        "abdominals",
+        "lower_back"
+      ],
+      "author": "Workout App Team"
     }
   }
 ]

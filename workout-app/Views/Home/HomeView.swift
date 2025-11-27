@@ -1,10 +1,9 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct HomeView: View {
     @State private var showingSettings = false
-    @State private var showingNewRoutineModal = false
-    @State private var newRoutineName = ""
+
     @State private var isDeleting = false
     @State private var navigateToRoutineEdit = false
     @Environment(\.modelContext) private var modelContext
@@ -19,23 +18,23 @@ struct HomeView: View {
                 }) {
                     Image(systemName: "gear")
                 }
-                
+
                 Spacer()
-                
+
                 Button("New Routine") {
-                    showingNewRoutineModal = true
+                    navigateToRoutineEdit = true
                 }
             }
             .padding(.horizontal)
             .buttonStyle(.bordered)
-            
+
             ScrollView {
                 VStack(spacing: 20) {
                     Text("Ready for some exercise?")
                         .font(.largeTitle)
                         .fontDesign(.rounded)
                         .fontWeight(.semibold)
-                    
+
                     // Routines Section
                     if !routines.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
@@ -46,7 +45,7 @@ struct HomeView: View {
                                 Spacer()
                             }
                             .padding(.horizontal)
-                            
+
                             LazyVStack(spacing: 12) {
                                 ForEach(routines) { routine in
                                     RoutineCard(routine: routine)
@@ -55,7 +54,7 @@ struct HomeView: View {
                             }
                         }
                     }
-                    
+
                     // Delete all data button
                     Button("Delete All Data") {
                         Task {
@@ -66,50 +65,16 @@ struct HomeView: View {
                 }
                 .padding(.vertical)
             }
-                }
-        .sheet(isPresented: $showingSettings) { SettingsView() }
-        .sheet(isPresented: $showingNewRoutineModal) {
-            NavigationView {
-                VStack(spacing: 20) {
-                    Text("Create New Routine")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                        .padding(.top)
-                    
-                    TextField("Routine Name", text: $newRoutineName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                    
-                    Spacer()
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Cancel") {
-                            showingNewRoutineModal = false
-                            newRoutineName = ""
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Continue") {
-                            showingNewRoutineModal = false
-                            newRoutineName = ""
-                            navigateToRoutineEdit = true
-                        }
-                        .disabled(newRoutineName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    }
-                }
-            }
         }
+        .sheet(isPresented: $showingSettings) { SettingsView() }
         .navigationDestination(isPresented: $navigateToRoutineEdit) {
-            RoutineEditView() // Navigate to RoutineEditView
+            RoutineEditView()
         }
     }
-    
+
     private func handleDeleteAllData() async {
         isDeleting = true
-        
+
         do {
             try dataManager.deleteAllData(from: modelContext)
             // Optionally reload initial data
@@ -117,7 +82,7 @@ struct HomeView: View {
         } catch {
             print("Failed to delete data: \(error)")
         }
-        
+
         isDeleting = false
     }
 }
