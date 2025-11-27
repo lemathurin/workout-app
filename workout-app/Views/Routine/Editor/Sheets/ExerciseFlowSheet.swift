@@ -37,11 +37,11 @@ struct ExerciseFlowSheet: View {
             .navigationTitle("Exercise Type")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showTimedPicker) {
-                TimedPickerSheet(
+                TimedPickerSheetWithExercisePicker(
                     seconds: $timedSeconds,
-                    onNext: {
-                        showTimedPicker = false
-                        showExercisePicker = true
+                    onAddExercise: { exerciseId, name in
+                        onAddExercise(exerciseId, name, .exerciseTimed(seconds: timedSeconds))
+                        dismiss()
                     },
                     onCancel: {
                         showTimedPicker = false
@@ -51,11 +51,11 @@ struct ExerciseFlowSheet: View {
                 .interactiveDismissDisabled(true)
             }
             .sheet(isPresented: $showRepsPicker) {
-                RepsPickerSheet(
+                RepsPickerSheetWithExercisePicker(
                     reps: $repsCount,
-                    onNext: {
-                        showRepsPicker = false
-                        showExercisePicker = true
+                    onAddExercise: { exerciseId, name in
+                        onAddExercise(exerciseId, name, .exerciseReps(count: repsCount))
+                        dismiss()
                     },
                     onCancel: {
                         showRepsPicker = false
@@ -66,12 +66,94 @@ struct ExerciseFlowSheet: View {
             }
             .sheet(isPresented: $showExercisePicker) {
                 ExercisePickerSheet(
-                    mode: selectedMode ?? .open,
-                    seconds: timedSeconds,
-                    reps: repsCount,
+                    mode: .open,
+                    seconds: 0,
+                    reps: 0,
                     onSelectExercise: { exerciseId, name, stepMode in
                         onAddExercise(exerciseId, name, stepMode)
                         dismiss()
+                    },
+                    onCancel: {
+                        showExercisePicker = false
+                    }
+                )
+                .presentationDetents([.large])
+                .interactiveDismissDisabled(true)
+            }
+        }
+    }
+}
+
+// Wrapper for TimedPickerSheet that includes the exercise picker as a nested sheet
+private struct TimedPickerSheetWithExercisePicker: View {
+    @Binding var seconds: Int
+    @State private var showExercisePicker = false
+    let onAddExercise: (String, String) -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            TimedPicker(
+                seconds: $seconds,
+                primaryLabel: "Next",
+                secondaryLabel: "Back",
+                onPrimary: {
+                    showExercisePicker = true
+                },
+                onSecondary: {
+                    onCancel()
+                }
+            )
+            .navigationTitle("Timed")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showExercisePicker) {
+                ExercisePickerSheet(
+                    mode: .timed,
+                    seconds: seconds,
+                    reps: 0,
+                    onSelectExercise: { exerciseId, name, _ in
+                        onAddExercise(exerciseId, name)
+                    },
+                    onCancel: {
+                        showExercisePicker = false
+                    }
+                )
+                .presentationDetents([.large])
+                .interactiveDismissDisabled(true)
+            }
+        }
+    }
+}
+
+// Wrapper for RepsPickerSheet that includes the exercise picker as a nested sheet
+private struct RepsPickerSheetWithExercisePicker: View {
+    @Binding var reps: Int
+    @State private var showExercisePicker = false
+    let onAddExercise: (String, String) -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            RepsPicker(
+                reps: $reps,
+                primaryLabel: "Next",
+                secondaryLabel: "Back",
+                onPrimary: {
+                    showExercisePicker = true
+                },
+                onSecondary: {
+                    onCancel()
+                }
+            )
+            .navigationTitle("Reps")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showExercisePicker) {
+                ExercisePickerSheet(
+                    mode: .reps,
+                    seconds: 0,
+                    reps: reps,
+                    onSelectExercise: { exerciseId, name, _ in
+                        onAddExercise(exerciseId, name)
                     },
                     onCancel: {
                         showExercisePicker = false
