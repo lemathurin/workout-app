@@ -4,17 +4,24 @@ import SwiftUI
 struct RoutineDetailView: View {
     let routine: Routine
     @Query private var exercises: [Exercise]
-    @State private var showEditSheet = false
+    @State private var showEditView = false
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 // Routine Name
-                Text("Routine Name")
-                    .font(.headline)
+//                Text("Routine Name")
+//                    .font(.headline)
+//                    .fontWeight(.semibold)
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    .padding(.vertical, 12)
+                
+                Text(routine.getName())
+                    .font(.largeTitle)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 17)
 
                 Text(routine.getName())
                     .font(.title2)
@@ -114,13 +121,16 @@ struct RoutineDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    // showEditSheet = true
+                    showEditView = true
+
                 }) {
                     Text("Edit")
                 }
             }
         }
-
+        .fullScreenCover(isPresented: $showEditView) {
+            RoutineEditView(routine: routine)
+        }
     }
 
     // MARK: - View Builders

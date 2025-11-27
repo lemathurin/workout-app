@@ -4,6 +4,8 @@ import SwiftUI
 /// ViewModel for RoutineEditView that manages all state and business logic
 @Observable
 class RoutineEditViewModel {
+    var editingRoutine: Routine? = nil
+
     // MARK: - State Properties
 
     var routineName: String = ""
@@ -316,4 +318,63 @@ class RoutineEditViewModel {
             return (0, nil)
         }
     }
+
+    
+    private func convertToExerciseMode(duration: Int, count: Int?) -> ExerciseStepMode {
+        if duration > 0 {
+            return .timed(seconds: duration)
+        } else if let count = count, count > 0 {
+            return .reps(count: count)
+        } else {
+            return .open
+        }
+    }
+    
+    private func convertToRestMode(duration: Int) -> RestStepMode {
+        if duration > 0 {
+            return .timed(seconds: duration)
+        } else {
+            return .open
+        }
+    }
+
+
+    
+    // MARK: - Loading
+    
+    func loadRoutine(_ routine: Routine, exercises: [Exercise]) {
+        editingRoutine = routine
+        routineName = routine.getName()
+        items = routine.steps.sorted(by: { $0.order < $1.order }).map { convertRoutineStepToStepItem($0, exercises: exercises) }
+    }
+    
+    private func convertRoutineStepToStepItem(_ step: RoutineStep, exercises: [Exercise]) -> StepItem {
+        switch step.type {
+        case .exercise:
+            let mode = convertToExerciseMode(duration: step.duration, count: step.count)
+            let name = exercises.first { $0.id == step.exerciseId }?.getName() ?? "Unknown Exercise"
+            return .exercise(id: UUID(), exerciseId: step.exerciseId ?? "", name: name, mode: mode)
+        case .rest:
+            let mode = convertToRestMode(duration: step.duration)
+            return .rest(id: UUID(), mode: mode)
+        case .repeats:
+            let items = step.steps?.sorted(by: { $0.order < $1.order }).map { convertRoutineStepToRepeatItem($0, exercises: exercises) } ?? []
+            return .repeatGroup(id: UUID(), repeatCount: step.count ?? 1, items: items)
+        }
+    }
+    
+    private func convertRoutineStepToRepeatItem(_ step: RoutineStep, exercises: [Exercise]) -> RepeatItem {
+        switch step.type {
+        case .exercise:
+            let mode = convertToExerciseMode(duration: step.duration, count: step.count)
+            let name = exercises.first { $0.id == step.exerciseId }?.getName() ?? "Unknown Exercise"
+            return .exercise(id: UUID(), exerciseId: step.exerciseId ?? "", name: name, mode: mode)
+        case .rest:
+            let mode = convertToRestMode(duration: step.duration)
+            return .rest(id: UUID(), mode: mode)
+        case .repeats:
+            fatalError("Nested repeats not supported")
+        }
+    }
+
 }
