@@ -30,14 +30,6 @@ struct RoutineCard: View {
                 }
 
                 HStack {
-                    Text(routine.metadata.difficulty)
-                        .font(.caption2)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.1))
-                        .foregroundColor(.blue)
-                        .cornerRadius(8)
-
                     if !routine.metadata.equipment.isEmpty {
                         Text(routine.metadata.equipment.joined(separator: ", "))
                             .font(.caption2)
