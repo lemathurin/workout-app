@@ -14,59 +14,61 @@ struct RoutineDetailView: View {
                     .fontWeight(.bold)
                     .fontDesign(.rounded)
                     .frame(maxWidth: .infinity, alignment: .leading)
-//                    .padding(.vertical, 15)
-                
+                //                    .padding(.vertical, 15)
+
                 HStack(spacing: 20) {
                     VStack(alignment: .leading) {
                         Text("Steps")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        
-                        Text(routine.calculateExerciseCount().description)
-                            .font(.title2)
-                            .fontDesign(.rounded)
-                            .fontWeight(.semibold)
+
+                        Text(
+                            (routine.metadata.stepCount ?? routine.calculateStepCount()).description
+                        )
+                        .font(.title2)
+                        .fontDesign(.rounded)
+                        .fontWeight(.semibold)
                     }
-                    
-                    
+
                     VStack(alignment: .leading) {
                         Text("Duration")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        
-                        Text(formatDuration(routine.calculateTotalDuration()))
-                            .font(.title2)
-                            .fontDesign(.rounded)
-                            .fontWeight(.semibold)
+
+                        Text(
+                            formatDuration(
+                                routine.metadata.totalDuration ?? routine.calculateTotalDuration())
+                        )
+                        .font(.title2)
+                        .fontDesign(.rounded)
+                        .fontWeight(.semibold)
                     }
-                    
-                    
+
                     VStack(alignment: .leading) {
                         Text("Created")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        
+
                         Text(formatDate(routine.metadata.createdAt))
                             .font(.title2)
                             .fontDesign(.rounded)
                             .fontWeight(.semibold)
                     }
-                    
-//                    if routine.metadata.updatedAt != routine.metadata.createdAt {
-//                        VStack(alignment: .leading) {
-//                            Text("Created")
-//                                .font(.subheadline)
-//                            
-//                            Text(formatDate(routine.metadata.updatedAt))
-//                                .font(.title2)
-//                                .fontDesign(.rounded)
-//                                .fontWeight(.semibold)
-//                        }
-//                    }
-                    
+
+                    //                    if routine.metadata.updatedAt != routine.metadata.createdAt {
+                    //                        VStack(alignment: .leading) {
+                    //                            Text("Created")
+                    //                                .font(.subheadline)
+                    //
+                    //                            Text(formatDate(routine.metadata.updatedAt))
+                    //                                .font(.title2)
+                    //                                .fontDesign(.rounded)
+                    //                                .fontWeight(.semibold)
+                    //                        }
+                    //                    }
+
                     Spacer()
                 }
-                
 
                 if routine.steps.isEmpty {
                     ContentUnavailableView(
@@ -226,7 +228,7 @@ struct MetadataRow: View {
     NavigationStack {
         let sampleRoutine = Routine(
             name: "Core Crusher"
-            
+
         )
 
         RoutineDetailView(routine: sampleRoutine)

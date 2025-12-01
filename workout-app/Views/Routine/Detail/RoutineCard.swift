@@ -18,14 +18,18 @@ struct RoutineCard: View {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("\(routine.calculateTotalDuration()) min")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.blue)
+                        Text(
+                            "\(routine.metadata.totalDuration ?? routine.calculateTotalDuration()) min"
+                        )
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
 
-                        Text("\(routine.calculateExerciseCount()) exercises")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                        Text(
+                            "\(routine.metadata.stepCount ?? routine.calculateStepCount()) exercises"
+                        )
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                     }
                 }
 

@@ -1,6 +1,5 @@
-import SwiftUI
 import SwiftData
-
+import SwiftUI
 import UniformTypeIdentifiers
 
 struct RoutineEditView: View {
@@ -10,7 +9,7 @@ struct RoutineEditView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RoutineEditViewModel()
-    
+
     init(routine: Routine? = nil) {
         self.routine = routine
     }
@@ -188,11 +187,12 @@ struct RoutineEditView: View {
                             if let updatedRoutine = viewModel.buildRoutine() {
                                 routine.translations = updatedRoutine.translations
                                 routine.steps = updatedRoutine.steps
-                                routine.metadata.updateTimestamp()
+                                routine.updateMetadata()
                             }
                         } else {
                             // Create new routine
                             if let routine = viewModel.buildRoutine() {
+                                routine.updateMetadata()
                                 modelContext.insert(routine)
                             }
                         }
