@@ -8,92 +8,65 @@ struct RoutineDetailView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
-                // Routine Name
-//                Text("Routine Name")
-//                    .font(.headline)
-//                    .fontWeight(.semibold)
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .padding(.vertical, 12)
-                
+            LazyVStack(spacing: 15) {
                 Text(routine.getName())
                     .font(.largeTitle)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
+                    .fontDesign(.rounded)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 15)
-                    .padding(.horizontal, 17)
-
-                Text(routine.getName())
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 15)
-                    .padding(.horizontal, 17)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(UIColor.secondarySystemGroupedBackground))
-                    )
-                    .cornerRadius(20)
-                    .padding(.bottom, 12)
-
-                // Metadata Section
-                Text("Details")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 12)
-                    .padding(.bottom, 6)
-
-                VStack(spacing: 0) {
-                    MetadataRow(
-                        icon: "clock",
-                        label: "Duration",
-                        value: formatDuration(routine.calculateTotalDuration())
-                    )
-
-                    Divider()
-                        .padding(.leading, 17)
-
-                    MetadataRow(
-                        icon: "figure.strengthtraining.functional",
-                        label: "Exercises",
-                        value: "\(routine.calculateExerciseCount())"
-                    )
-
-                    Divider()
-                        .padding(.leading, 17)
-
-                    MetadataRow(
-                        icon: "calendar",
-                        label: "Created",
-                        value: formatDate(routine.metadata.createdAt)
-                    )
-
-                    if routine.metadata.updatedAt != routine.metadata.createdAt {
-                        Divider()
-                            .padding(.leading, 17)
-
-                        MetadataRow(
-                            icon: "calendar.badge.clock",
-                            label: "Updated",
-                            value: formatDate(routine.metadata.updatedAt)
-                        )
+//                    .padding(.vertical, 15)
+                
+                HStack(spacing: 20) {
+                    VStack(alignment: .leading) {
+                        Text("Steps")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        
+                        Text(routine.calculateExerciseCount().description)
+                            .font(.title2)
+                            .fontDesign(.rounded)
+                            .fontWeight(.semibold)
                     }
+                    
+                    
+                    VStack(alignment: .leading) {
+                        Text("Duration")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        
+                        Text(formatDuration(routine.calculateTotalDuration()))
+                            .font(.title2)
+                            .fontDesign(.rounded)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    
+                    VStack(alignment: .leading) {
+                        Text("Created")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        
+                        Text(formatDate(routine.metadata.createdAt))
+                            .font(.title2)
+                            .fontDesign(.rounded)
+                            .fontWeight(.semibold)
+                    }
+                    
+//                    if routine.metadata.updatedAt != routine.metadata.createdAt {
+//                        VStack(alignment: .leading) {
+//                            Text("Created")
+//                                .font(.subheadline)
+//                            
+//                            Text(formatDate(routine.metadata.updatedAt))
+//                                .font(.title2)
+//                                .fontDesign(.rounded)
+//                                .fontWeight(.semibold)
+//                        }
+//                    }
+                    
+                    Spacer()
                 }
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(UIColor.secondarySystemGroupedBackground))
-                )
-                .cornerRadius(20)
-                .padding(.bottom, 12)
-
-                // Steps Section
-                Text("Steps")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 12)
-                    .padding(.bottom, 6)
+                
 
                 if routine.steps.isEmpty {
                     ContentUnavailableView(
@@ -101,7 +74,7 @@ struct RoutineDetailView: View {
                         systemImage: "figure.walk",
                         description: Text("This routine doesn't have any steps yet")
                     )
-                    .padding(.vertical, 40)
+                    .padding(.vertical, 200)
                 } else {
                     VStack(spacing: 12) {
                         ForEach(routine.steps.sorted(by: { $0.order < $1.order }), id: \.id) {
@@ -116,8 +89,6 @@ struct RoutineDetailView: View {
             .padding(.horizontal, 16)
         }
         .background(Color(UIColor.systemGroupedBackground))
-        .navigationTitle("Routine")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
@@ -255,6 +226,7 @@ struct MetadataRow: View {
     NavigationStack {
         let sampleRoutine = Routine(
             name: "Core Crusher"
+            
         )
 
         RoutineDetailView(routine: sampleRoutine)
