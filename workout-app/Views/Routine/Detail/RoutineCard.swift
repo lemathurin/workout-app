@@ -18,26 +18,22 @@ struct RoutineCard: View {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: 4) {
-                        Text("\(routine.calculateTotalDuration()) min")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.blue)
+                        Text(
+                            "\(routine.metadata.totalDuration ?? routine.calculateTotalDuration()) min"
+                        )
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
 
-                        Text("\(routine.calculateExerciseCount()) exercises")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                        Text(
+                            "\(routine.metadata.stepCount ?? routine.calculateStepCount()) exercises"
+                        )
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                     }
                 }
 
                 HStack {
-                    Text(routine.metadata.difficulty)
-                        .font(.caption2)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.1))
-                        .foregroundColor(.blue)
-                        .cornerRadius(8)
-
                     if !routine.metadata.equipment.isEmpty {
                         Text(routine.metadata.equipment.joined(separator: ", "))
                             .font(.caption2)

@@ -56,6 +56,20 @@ class Routine {
             total + step.countExercises()
         }
     }
+
+    /// Counts total number of all steps (exercises, rests, and repeat contents)
+    func calculateStepCount() -> Int {
+        return steps.reduce(0) { total, step in
+            total + step.countSteps()
+        }
+    }
+
+    /// Updates metadata with current step count and duration
+    func updateMetadata() {
+        metadata.stepCount = calculateStepCount()
+        metadata.totalDuration = calculateTotalDuration()
+        metadata.updateTimestamp()
+    }
 }
 
 @Model
@@ -104,6 +118,18 @@ class RoutineStep {
             return stepsExerciseCount * count
         }
     }
+
+    /// Counts all steps (exercises, rests, and repeat contents) in this step and nested steps
+    func countSteps() -> Int {
+        switch type {
+        case .exercise, .rest:
+            return 1
+        case .repeats:
+            guard let count = count, let steps = steps else { return 0 }
+            let nestedStepCount = steps.reduce(0) { $0 + $1.countSteps() }
+            return nestedStepCount * count
+        }
+    }
 }
 
 enum StepType: String, Codable, CaseIterable {
@@ -143,11 +169,14 @@ class RoutineMetadata {
     var equipment: [String]
     var targetMuscles: [String]
     var author: String?
+    var stepCount: Int?
+    var totalDuration: Int?
 
     init(
         createdAt: Date = Date(), updatedAt: Date = Date(), categories: [String] = [],
         difficulty: String = "", tags: [String] = [], equipment: [String] = [],
-        targetMuscles: [String] = [], author: String? = nil
+        targetMuscles: [String] = [], author: String? = nil, stepCount: Int? = nil,
+        totalDuration: Int? = nil
     ) {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -157,6 +186,8 @@ class RoutineMetadata {
         self.equipment = equipment
         self.targetMuscles = targetMuscles
         self.author = author
+        self.stepCount = stepCount
+        self.totalDuration = totalDuration
     }
 
     func updateTimestamp() {

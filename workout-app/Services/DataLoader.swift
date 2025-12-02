@@ -284,6 +284,9 @@ class DataLoader {
                     }
                 }
 
+                // Calculate and store metadata
+                routine.updateMetadata()
+
                 modelContext.insert(routine)
             }
         }

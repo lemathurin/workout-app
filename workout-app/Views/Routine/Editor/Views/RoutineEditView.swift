@@ -1,10 +1,19 @@
+import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
 
 struct RoutineEditView: View {
+    let routine: Routine?
+    @Query private var exercises: [Exercise]
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = RoutineEditViewModel()
+
+    init(routine: Routine? = nil) {
+        self.routine = routine
+    }
+
     @State private var showDiscardAlert = false
 
     var body: some View {
@@ -156,7 +165,7 @@ struct RoutineEditView: View {
                 .presentationDetents([.height(300)])
                 .interactiveDismissDisabled(true)
             }
-            .navigationTitle("New Routine")
+            .navigationTitle(routine == nil ? "New Routine" : "Edit Routine")
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -168,32 +177,32 @@ struct RoutineEditView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    let isInvalid =
-                        viewModel.routineName.trimmingCharacters(in: .whitespaces).isEmpty
-                        || viewModel.items.isEmpty
+                    let isValid =
+                        !viewModel.routineName.trimmingCharacters(in: .whitespaces).isEmpty
+                        && !viewModel.items.isEmpty
 
-                    if isInvalid {
-                        Button(action: {
-                            if let routine = viewModel.buildRoutine() {
-                                modelContext.insert(routine)
-                                dismiss()
+                    Button(action: {
+                        if let routine = viewModel.editingRoutine {
+                            // Update existing routine
+                            if let updatedRoutine = viewModel.buildRoutine() {
+                                routine.translations = updatedRoutine.translations
+                                routine.steps = updatedRoutine.steps
+                                routine.updateMetadata()
                             }
-                        }) {
-                            Image(systemName: "checkmark")
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .disabled(true)
-                    } else {
-                        Button(action: {
+                        } else {
+                            // Create new routine
                             if let routine = viewModel.buildRoutine() {
+                                routine.updateMetadata()
                                 modelContext.insert(routine)
-                                dismiss()
                             }
-                        }) {
-                            Image(systemName: "checkmark")
                         }
-                        .buttonStyle(GlassProminentButtonStyle())
+                        dismiss()
+                    }) {
+                        Image(systemName: "checkmark")
                     }
+                    .buttonStyle(.borderedProminent)
+                    .opacity(isValid ? 1.0 : 0.5)
+                    .disabled(!isValid)
                 }
             }
 
@@ -206,6 +215,12 @@ struct RoutineEditView: View {
                 Text("Your changes won't be saved.")
             }
         }
+        .task {
+            if let routine = routine {
+                viewModel.loadRoutine(routine, exercises: exercises)
+            }
+        }
+
     }
 
     // MARK: - View Builders
