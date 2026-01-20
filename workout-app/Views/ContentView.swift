@@ -18,8 +18,8 @@ struct ContentView: View {
             Tab("Home", systemImage: "figure.cooldown") {
                 HomeView()
             }
-            Tab("Catalog", systemImage: "magazine") {
-                CatalogView()
+            Tab("Activity", systemImage: "chevron.up.forward.2") {
+                ActivityView()
             }
             Tab(role: .search) {
                 NavigationStack {
