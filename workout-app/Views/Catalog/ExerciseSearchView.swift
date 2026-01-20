@@ -26,6 +26,12 @@ struct ExerciseSearchView: View {
             || selectedCategory != nil || selectedMechanic != nil || selectedMuscle != nil
     }
 
+    private var activeFilterCount: Int {
+        selectedEquipment.count + (selectedLevel != nil ? 1 : 0) + (selectedForce != nil ? 1 : 0)
+            + (selectedCategory != nil ? 1 : 0) + (selectedMechanic != nil ? 1 : 0)
+            + (selectedMuscle != nil ? 1 : 0)
+    }
+
     private var filteredExercises: [Exercise] {
         var result = exercises
         
@@ -86,16 +92,9 @@ struct ExerciseSearchView: View {
                     Button {
                         showingFilters = true
                     } label: {
-                        ZStack(alignment: .topTrailing) {
-                            Image(systemName: "line.3.horizontal.decrease")
-                            if hasActiveFilters {
-                                Circle()
-                                    .fill(.red)
-                                    .frame(width: 8, height: 8)
-                                    .offset(x: 4, y: -4)
-                            }
-                        }
+                        Image(systemName: "line.3.horizontal.decrease")
                     }
+                    .badge(activeFilterCount > 0 ? activeFilterCount : 0)
                 }
             }
             .sheet(isPresented: $showingFilters) {
