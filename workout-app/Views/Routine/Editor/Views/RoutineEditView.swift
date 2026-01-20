@@ -215,6 +215,7 @@ struct RoutineEditView: View {
                 Text("Your changes won't be saved.")
             }
         }
+        .toolbar(.hidden, for: .tabBar)
         .task {
             if let routine = routine {
                 viewModel.loadRoutine(routine, exercises: exercises)
