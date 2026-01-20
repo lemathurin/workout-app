@@ -4,30 +4,13 @@ import SwiftUI
 struct HomeView: View {
     @State private var showingSettings = false
     @State private var isDeleting = false
-    @State private var navigationPath: [String] = []
     @Environment(\.modelContext) private var modelContext
     @StateObject private var dataManager = DataManager.shared
     @Query private var routines: [Routine]
 
     var body: some View {
-        NavigationStack(path: $navigationPath) {
+        NavigationStack {
             VStack(spacing: 0) {
-                HStack {
-                    Button(action: {
-                        showingSettings = true
-                    }) {
-                        Image(systemName: "gear")
-                    }
-
-                    Spacer()
-
-                    NavigationLink(value: "newRoutine") {
-                        Text("New Routine")
-                    }
-                }
-                .padding(.horizontal)
-                .buttonStyle(.bordered)
-
                 ScrollView {
                     VStack(spacing: 20) {
                         Text("Ready for some exercise?")
@@ -66,9 +49,19 @@ struct HomeView: View {
                     .padding(.vertical)
                 }
             }
-            .navigationDestination(for: String.self) { value in
-                if value == "newRoutine" {
-                    RoutineEditView()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Settings", systemImage: "gear") {
+                        showingSettings = true
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        RoutineEditView()
+                    } label: {
+                        Label("New Routine", systemImage: "plus")
+                            .labelStyle(.iconOnly)
+                    }
                 }
             }
         }
