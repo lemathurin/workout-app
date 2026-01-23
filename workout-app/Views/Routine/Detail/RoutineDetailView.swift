@@ -100,10 +100,21 @@ struct RoutineDetailView: View {
                     Text("Edit")
                 }
             }
+            ToolbarItem(placement: .bottomBar) {
+                Button(action: {
+//                    action
+                }) {
+                    Text("Start routine").padding()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+                .controlSize(.large)
+            }
         }
         .fullScreenCover(isPresented: $showEditView) {
             RoutineEditView(routine: routine)
         }
+       .toolbar(.hidden, for: .tabBar)
     }
 
     // MARK: - View Builders
