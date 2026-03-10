@@ -187,7 +187,7 @@ struct RoutinePlayerView: View {
                     in: .rect
                 )
                 .frame(height: geometry.size.height * viewModel.restProgress)
-                .frame(maxHeight: .infinity, alignment: .top)
+                .frame(maxHeight: .infinity, alignment: .bottom)
                 .animation(
                     .interpolatingSpring(stiffness: 100, damping: 10), value: viewModel.restProgress
                 )

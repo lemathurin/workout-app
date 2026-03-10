@@ -122,25 +122,26 @@ final class RoutinePlayerViewModel {
     // MARK: - Private Methods
 
     private func beginCurrentStep() {
-        guard let step = currentStep else {
-            state = .completed
-            return
-        }
-
-        exerciseProgress = 0
-        restProgress = 0
-
-        if step.isTimed {
-            secondsRemaining = step.duration
-            totalStepDuration = step.duration
-            if state == .playing {
-                startTimer()
-            }
-        } else {
-            secondsRemaining = 0
-            totalStepDuration = 0
-        }
+    guard let step = currentStep else {
+        state = .completed
+        return
     }
+
+    exerciseProgress = 0
+    restProgress = 0
+
+    if step.isTimed {
+        secondsRemaining = step.duration
+        totalStepDuration = step.duration
+        if state == .playing {
+            updateActiveProgress()
+            startTimer()
+        }
+    } else {
+        secondsRemaining = 0
+        totalStepDuration = 0
+    }
+}
 
     private func startTimer() {
         timerTask?.cancel()
