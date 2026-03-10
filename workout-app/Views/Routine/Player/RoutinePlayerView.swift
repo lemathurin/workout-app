@@ -5,6 +5,7 @@ struct RoutinePlayerView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var exercises: [Exercise]
     @State private var viewModel: RoutinePlayerViewModel
+    @State private var showCancelConfirmation = false
 
     let routine: Routine
 
@@ -14,86 +15,87 @@ struct RoutinePlayerView: View {
     }
 
     var body: some View {
-        ZStack {
-            backgroundGradient
+        NavigationStack {
+            ZStack {
+                backgroundGradient
 
-            switch viewModel.state {
-            case .playing, .paused:
-                playerContent
-            case .completed:
-                completionContent
-            case .cancelled:
-                EmptyView()
+                switch viewModel.state {
+                case .playing, .paused:
+                    playerContent
+                case .completed:
+                    completionContent
+                case .cancelled:
+                    EmptyView()
+                }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Close", systemImage: "xmark") {
+                        showCancelConfirmation = true
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(
+                        viewModel.state == .paused ? "Resume" : "Pause",
+                        systemImage: viewModel.state == .paused ? "play" : "pause"
+                    ) {
+                        viewModel.togglePause()
+                    }
+                }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button("Previous Step", systemImage: "chevron.left") {
+                            viewModel.goToPreviousStep()
+                        }
+                        .disabled(viewModel.currentStepIndex == 0)
+                    
+                    Spacer()
+
+                    Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {}
+
+                    Spacer()
+                    
+                    Button("Next Step", systemImage: "chevron.right") {
+                           viewModel.completeCurrentStep()
+                       }
+                }
+            }
+            .toolbarVisibility(
+                viewModel.state == .completed ? .hidden : .automatic,
+                for: .bottomBar
+            )
         }
         .onChange(of: viewModel.state) { _, newState in
             if newState == .cancelled {
                 dismiss()
             }
         }
+        .confirmationDialog(
+            "End Routine?",
+            isPresented: $showCancelConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("End Routine", role: .destructive) {
+                viewModel.cancelRoutine()
+            }
+        } message: {
+            Text("Your progress will be lost.")
+        }
     }
 
     // MARK: - Player Content
 
     private var playerContent: some View {
-        VStack(spacing: 32) {
-            headerSection
-
-            Spacer()
-
-            stepDisplaySection
-
-            Spacer()
-
-            controlsSection
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 40)
-    }
-
-    // MARK: - Header Section
-
-    private var headerSection: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Button("Cancel", systemImage: "xmark") {
-                    viewModel.cancelRoutine()
-                }
-                .font(.body)
-                .foregroundStyle(.secondary)
-
-                Spacer()
-
-                Text("Step \(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            ProgressView(value: viewModel.progress)
-                .tint(.green)
-        }
-    }
-
-    // MARK: - Step Display Section
-
-    private var stepDisplaySection: some View {
         VStack(spacing: 24) {
             if let step = viewModel.currentStep {
-                // Step type indicator
-                Image(systemName: step.isRest ? "pause.circle.fill" : "figure.run")
-                    .font(.system(size: 48))
-                    .foregroundStyle(step.isRest ? .blue : .green)
+                stepModeDisplay(for: step)
 
-                // Step name
                 Text(stepName(for: step))
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.center)
                     .accessibilityLabel(step.isRest ? "Rest" : stepName(for: step))
-
-                // Mode-specific display
-                stepModeDisplay(for: step)
             }
         }
     }
@@ -104,12 +106,13 @@ struct RoutinePlayerView: View {
         case .exerciseTimed, .restTimed:
             CountdownDisplayView(seconds: viewModel.secondsRemaining)
         case .exerciseReps(let count):
-            VStack(spacing: 8) {
+            VStack() {
                 Text("\(count)")
-                    .font(.system(size: 80, weight: .bold, design: .rounded))
+                    .font(.system(size: 80, weight: .semibold, design: .rounded))
+                    .font(.caption)
                     .foregroundStyle(.primary)
                 Text("reps")
-                    .font(.title2)
+                    .font(.title)
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .combine)
@@ -118,58 +121,6 @@ struct RoutinePlayerView: View {
             Text("Complete when ready")
                 .font(.title3)
                 .foregroundStyle(.secondary)
-        }
-    }
-
-    // MARK: - Controls Section
-
-    private var controlsSection: some View {
-        VStack(spacing: 16) {
-            if let step = viewModel.currentStep {
-                if step.isTimed {
-                    // Timed steps: pause/resume button
-                    Button {
-                        viewModel.togglePause()
-                    } label: {
-                        Label(
-                            viewModel.state == .paused ? "Resume" : "Pause",
-                            systemImage: viewModel.state == .paused ? "play.fill" : "pause.fill"
-                        )
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(.secondary)
-                    .accessibilityHint(
-                        "Tap to \(viewModel.state == .paused ? "resume" : "pause") the timer")
-
-                    // Skip button for timed steps
-                    Button {
-                        viewModel.completeCurrentStep()
-                    } label: {
-                        Text("Skip")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                    }
-                    .accessibilityLabel("Skip this step")
-                } else {
-                    // Reps/Open steps: done button
-                    Button {
-                        viewModel.completeCurrentStep()
-                    } label: {
-                        Label("Done", systemImage: "checkmark")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 18)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.green)
-                    .accessibilityHint("Tap when you have completed this step")
-                }
-            }
         }
     }
 
@@ -206,7 +157,6 @@ struct RoutinePlayerView: View {
             .buttonStyle(.borderedProminent)
             .tint(.green)
             .padding(.horizontal, 24)
-            .padding(.bottom, 40)
         }
     }
 
@@ -247,9 +197,8 @@ struct CountdownDisplayView: View {
 
     var body: some View {
         Text(formattedTime)
-            .font(.system(size: 96, weight: .bold, design: .rounded))
+            .font(.system(size: 80, weight: .semibold, design: .rounded))
             .monospacedDigit()
-            .foregroundStyle(.primary)
             .contentTransition(.numericText())
             .animation(.easeInOut(duration: 0.2), value: seconds)
             .accessibilityLabel("\(minutes) minutes and \(remainingSeconds) seconds remaining")
@@ -269,7 +218,7 @@ struct CountdownDisplayView: View {
     let routine = Routine(
         name: "Test Routine",
         steps: [
-            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 30, order: 0),
+            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 600, order: 0),
             RoutineStep(type: .rest, duration: 10, order: 1),
             RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 2),
         ])
