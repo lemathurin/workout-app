@@ -6,6 +6,7 @@ struct RoutinePlayerView: View {
     @Query private var exercises: [Exercise]
     @State private var viewModel: RoutinePlayerViewModel
     @State private var showCancelConfirmation = false
+    @State private var wasPlayingBeforeCancel = false
 
     let routine: Routine
 
@@ -31,9 +32,15 @@ struct RoutinePlayerView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Close", systemImage: "xmark") {
+                    Button("Close", systemImage: "xmark", role: .destructive) {
+                        wasPlayingBeforeCancel = viewModel.state == .playing
+                        if wasPlayingBeforeCancel {
+                            viewModel.togglePause()
+                        }
                         showCancelConfirmation = true
                     }
+//                    .buttonStyle(.glassProminent)
+//                    .tint(.red)
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -43,6 +50,8 @@ struct RoutinePlayerView: View {
                     ) {
                         viewModel.togglePause()
                     }
+//                    .buttonStyle(.glassProminent)
+//                    .tint(.yellow)
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Button("Previous Step", systemImage: "chevron.left") {
@@ -71,6 +80,11 @@ struct RoutinePlayerView: View {
                 dismiss()
             }
         }
+        .onChange(of: showCancelConfirmation) { _, isShowing in
+            if !isShowing && wasPlayingBeforeCancel && viewModel.state == .paused {
+                viewModel.togglePause()
+            }
+        }
         .confirmationDialog(
             "End Routine?",
             isPresented: $showCancelConfirmation,
@@ -79,6 +93,7 @@ struct RoutinePlayerView: View {
             Button("End Routine", role: .destructive) {
                 viewModel.cancelRoutine()
             }
+            Button("Continue") {}
         } message: {
             Text("Your progress will be lost.")
         }
@@ -183,7 +198,7 @@ struct RoutinePlayerView: View {
     GeometryReader { geometry in
         Rectangle()
             .glassEffect(
-                .clear.tint(Color.blue.opacity(0.5)),
+                .clear.tint(Color.cyan.opacity(0.5)),
                 in: .rect
             )
             .frame(height: geometry.size.height * viewModel.restProgress)
@@ -242,9 +257,9 @@ struct CountdownDisplayView: View {
     let routine = Routine(
         name: "Test Routine",
         steps: [
-            RoutineStep(type: .rest, duration: 5, order: 0),
-            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 1),
-            RoutineStep(type: .rest, exerciseId: "pushups", duration: 5, order: 2),
+            RoutineStep(type: .rest, duration: 15, order: 0),
+            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 30, order: 1),
+            RoutineStep(type: .rest, exerciseId: "pushups", duration: 15, order: 2),
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 3),
             RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 4),
         ])
