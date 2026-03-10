@@ -44,14 +44,17 @@ struct RoutinePlayerView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(
-                        viewModel.state == .paused ? "Resume" : "Pause",
-                        systemImage: viewModel.state == .paused ? "play" : "pause"
-                    ) {
-                        viewModel.togglePause()
+                    if viewModel.state == .paused {
+                        Button("Resume", systemImage: "play") {
+                            viewModel.togglePause()
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(pausedFillColor)
+                    } else {
+                        Button("Pause", systemImage: "pause") {
+                            viewModel.togglePause()
+                        }
                     }
-//                    .buttonStyle(.glassProminent)
-//                    .tint(.yellow)
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Button("Previous Step", systemImage: "chevron.left") {
@@ -176,15 +179,31 @@ struct RoutinePlayerView: View {
         }
     }
 
+    // MARK: - Progress Fill Colors
+
+    private let exerciseFillColor = Color(red: 0.3, green: 1, blue: 0.4).opacity(0.6)
+    private let restFillColor = Color.cyan.opacity(0.5)
+//    private let pausedFillColor = Color(red: 1.0, green: 0.9, blue: 0.49)
+    private let pausedFillColor = Color.yellow
+
+    private var exerciseTint: Color {
+        viewModel.state == .paused ? pausedFillColor.opacity(0.6) : exerciseFillColor
+    }
+
+    private var restTint: Color {
+        viewModel.state == .paused ? pausedFillColor.opacity(0.5) : restFillColor
+    }
+
     // MARK: - Progress Fills
 
     private var exerciseProgressFill: some View {
         GeometryReader { geometry in
             Rectangle()
                 .glassEffect(
-                    .clear.tint(Color(red: 0.3, green: 1, blue: 0.4).opacity(0.6)),
+                    .clear.tint(exerciseTint),
                     in: .rect
                 )
+                .animation(.easeInOut(duration: 0.5), value: viewModel.state)
                 .frame(height: geometry.size.height * viewModel.exerciseProgress)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .animation(
@@ -195,22 +214,23 @@ struct RoutinePlayerView: View {
     }
 
     private var restProgressFill: some View {
-    GeometryReader { geometry in
-        Rectangle()
-            .glassEffect(
-                .clear.tint(Color.cyan.opacity(0.5)),
-                in: .rect
-            )
-            .frame(height: geometry.size.height * viewModel.restProgress)
-            .frame(maxHeight: .infinity, alignment: .bottom)
-            .scaleEffect(y: -1, anchor: .center)
-            .animation(
-                .interpolatingSpring(stiffness: 100, damping: 10),
-                value: viewModel.restProgress
-            )
+        GeometryReader { geometry in
+            Rectangle()
+                .glassEffect(
+                    .clear.tint(restTint),
+                    in: .rect
+                )
+                .animation(.easeInOut(duration: 0.5), value: viewModel.state)
+                .frame(height: geometry.size.height * viewModel.restProgress)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .scaleEffect(y: -1, anchor: .center)
+                .animation(
+                    .interpolatingSpring(stiffness: 100, damping: 10),
+                    value: viewModel.restProgress
+                )
+        }
+        .ignoresSafeArea()
     }
-    .ignoresSafeArea()
-}
 
     // MARK: - Helpers
 
@@ -257,7 +277,7 @@ struct CountdownDisplayView: View {
     let routine = Routine(
         name: "Test Routine",
         steps: [
-            RoutineStep(type: .rest, duration: 15, order: 0),
+            RoutineStep(type: .rest, duration: 3, order: 0),
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 30, order: 1),
             RoutineStep(type: .rest, exerciseId: "pushups", duration: 15, order: 2),
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 3),
