@@ -27,6 +27,10 @@ struct RoutinePlayerView: View {
                 case .cancelled:
                     EmptyView()
                 }
+
+                if viewModel.currentStep?.isTimed == true {
+                    timerProgressFill
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -160,6 +164,19 @@ struct RoutinePlayerView: View {
         }
     }
 
+    // MARK: - Timer Progress Fill
+
+    private var timerProgressFill: some View {
+        GeometryReader { geometry in
+            Rectangle()
+                .glassEffect(.clear.tint(.green.opacity(0.5)), in: .rect)
+                .frame(height: geometry.size.height * viewModel.timerProgress)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .animation(.linear(duration: 1), value: viewModel.secondsRemaining)
+        }
+        .ignoresSafeArea()
+    }
+
     // MARK: - Background
 
     private var backgroundGradient: some View {
@@ -218,7 +235,7 @@ struct CountdownDisplayView: View {
     let routine = Routine(
         name: "Test Routine",
         steps: [
-            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 600, order: 0),
+            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 100, order: 0),
             RoutineStep(type: .rest, duration: 10, order: 1),
             RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 2),
         ])

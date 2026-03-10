@@ -48,6 +48,7 @@ final class RoutinePlayerViewModel {
     private(set) var steps: [PlayableStep] = []
     private(set) var currentStepIndex: Int = 0
     private(set) var secondsRemaining: Int = 0
+    private(set) var totalStepDuration: Int = 0
     private(set) var state: PlayerState = .playing
 
     var currentStep: PlayableStep? {
@@ -62,6 +63,11 @@ final class RoutinePlayerViewModel {
 
     var isLastStep: Bool {
         currentStepIndex == steps.count - 1
+    }
+
+    var timerProgress: Double {
+        guard totalStepDuration > 0 else { return 0 }
+        return 1.0 - Double(secondsRemaining) / Double(totalStepDuration)
     }
 
     // MARK: - Private State
@@ -121,11 +127,13 @@ final class RoutinePlayerViewModel {
 
         if step.isTimed {
             secondsRemaining = step.duration
+            totalStepDuration = step.duration
             if state == .playing {
                 startTimer()
             }
         } else {
             secondsRemaining = 0
+            totalStepDuration = 0
         }
     }
 
