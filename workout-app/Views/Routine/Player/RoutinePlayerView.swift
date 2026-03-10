@@ -172,7 +172,7 @@ struct RoutinePlayerView: View {
                 .glassEffect(.clear.tint(.green.opacity(0.5)), in: .rect)
                 .frame(height: geometry.size.height * viewModel.timerProgress)
                 .frame(maxHeight: .infinity, alignment: .bottom)
-                .animation(.linear(duration: 1), value: viewModel.secondsRemaining)
+                .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: viewModel.secondsRemaining)
         }
         .ignoresSafeArea()
     }
