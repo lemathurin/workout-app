@@ -104,6 +104,8 @@ struct RoutinePlayerView: View {
                 steps: viewModel.steps,
                 currentStepIndex: viewModel.currentStepIndex
             )
+            .presentationDragIndicator(.visible)
+            .presentationDetents([.medium, .large])
         }
         .confirmationDialog(
             "End Routine?",

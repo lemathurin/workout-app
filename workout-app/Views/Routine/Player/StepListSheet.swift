@@ -19,15 +19,16 @@ struct StepListSheet: View {
                     detail: stepDetail(for: step)
                 )
             }
-            .navigationTitle("Steps")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
+            .scrollContentBackground(.hidden)
+            // .navigationTitle("Steps")
+            // .navigationBarTitleDisplayMode(.inline)
+            // .toolbar {
+            //     ToolbarItem(placement: .confirmationAction) {
+            //         Button("Done") {
+            //             dismiss()
+            //         }
+            //     }
+            // }
         }
     }
 
