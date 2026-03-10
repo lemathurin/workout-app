@@ -122,6 +122,7 @@ struct RoutineEditView: View {
                     }
                 )
 
+                // TODO: change to .toolbar ToolbarItem(placement: .bottomBar)
                 Button(
                     action: {
                         viewModel.showChooseStepKindSheet = true
