@@ -49,6 +49,8 @@ final class RoutinePlayerViewModel {
     private(set) var currentStepIndex: Int = 0
     private(set) var secondsRemaining: Int = 0
     private(set) var totalStepDuration: Int = 0
+    private(set) var exerciseProgress: Double = 0
+    private(set) var restProgress: Double = 0
     private(set) var state: PlayerState = .playing
 
     var currentStep: PlayableStep? {
@@ -125,6 +127,9 @@ final class RoutinePlayerViewModel {
             return
         }
 
+        exerciseProgress = 0
+        restProgress = 0
+
         if step.isTimed {
             secondsRemaining = step.duration
             totalStepDuration = step.duration
@@ -148,6 +153,7 @@ final class RoutinePlayerViewModel {
                     try await Task.sleep(for: .seconds(1))
                     if self.state == .playing {
                         self.secondsRemaining -= 1
+                        self.updateActiveProgress()
                         if self.secondsRemaining == 0 {
                             self.advanceToNextStep()
                         }
@@ -159,11 +165,30 @@ final class RoutinePlayerViewModel {
         }
     }
 
+    private func updateActiveProgress() {
+        if currentStep?.isRest == true {
+            restProgress = timerProgress
+        } else {
+            exerciseProgress = timerProgress
+        }
+    }
+
     private func pauseTimer() {
         timerTask?.cancel()
     }
 
     private func advanceToNextStep() {
+    // Snap progress to full before moving on
+    if currentStep?.isRest == true {
+        restProgress = 1.0
+    } else {
+        exerciseProgress = 1.0
+    }
+
+    Task { @MainActor in
+        // Brief delay so the fill animation can complete visually
+        try? await Task.sleep(for: .milliseconds(400))
+        
         if currentStepIndex < steps.count - 1 {
             currentStepIndex += 1
             beginCurrentStep()
@@ -171,6 +196,7 @@ final class RoutinePlayerViewModel {
             state = .completed
         }
     }
+}
 
     // MARK: - Step Flattening
 
