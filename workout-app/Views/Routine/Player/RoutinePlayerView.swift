@@ -180,20 +180,22 @@ struct RoutinePlayerView: View {
     }
 
     private var restProgressFill: some View {
-        GeometryReader { geometry in
-            Rectangle()
-                .glassEffect(
-                    .clear.tint(Color.blue.opacity(0.5)),
-                    in: .rect
-                )
-                .frame(height: geometry.size.height * viewModel.restProgress)
-                .frame(maxHeight: .infinity, alignment: .bottom)
-                .animation(
-                    .interpolatingSpring(stiffness: 100, damping: 10), value: viewModel.restProgress
-                )
-        }
-        .ignoresSafeArea()
+    GeometryReader { geometry in
+        Rectangle()
+            .glassEffect(
+                .clear.tint(Color.blue.opacity(0.5)),
+                in: .rect
+            )
+            .frame(height: geometry.size.height * viewModel.restProgress)
+            .frame(maxHeight: .infinity, alignment: .bottom)
+            .scaleEffect(y: -1, anchor: .center)
+            .animation(
+                .interpolatingSpring(stiffness: 100, damping: 10),
+                value: viewModel.restProgress
+            )
     }
+    .ignoresSafeArea()
+}
 
     // MARK: - Helpers
 
@@ -240,9 +242,9 @@ struct CountdownDisplayView: View {
     let routine = Routine(
         name: "Test Routine",
         steps: [
-            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 1),
             RoutineStep(type: .rest, duration: 5, order: 0),
-            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 2),
+            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 1),
+            RoutineStep(type: .rest, exerciseId: "pushups", duration: 5, order: 2),
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 3),
             RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 4),
         ])
