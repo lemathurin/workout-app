@@ -6,7 +6,8 @@ struct RoutinePlayerView: View {
     @Query private var exercises: [Exercise]
     @State private var viewModel: RoutinePlayerViewModel
     @State private var showCancelConfirmation = false
-    @State private var wasPlayingBeforeCancel = false
+    @State private var wasPlayingBeforeInterruption = false
+    @State private var showStepList = false
 
     let routine: Routine
 
@@ -33,8 +34,8 @@ struct RoutinePlayerView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Close", systemImage: "xmark", role: .destructive) {
-                        wasPlayingBeforeCancel = viewModel.state == .playing
-                        if wasPlayingBeforeCancel {
+                        wasPlayingBeforeInterruption = viewModel.state == .playing
+                        if wasPlayingBeforeInterruption {
                             viewModel.togglePause()
                         }
                         showCancelConfirmation = true
@@ -64,7 +65,13 @@ struct RoutinePlayerView: View {
 
                     Spacer()
 
-                    Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {}
+                    Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {
+                        wasPlayingBeforeInterruption = viewModel.state == .playing
+                        if wasPlayingBeforeInterruption {
+                            viewModel.togglePause()
+                        }
+                        showStepList = true
+                    }
 
                     Spacer()
 
@@ -84,9 +91,19 @@ struct RoutinePlayerView: View {
             }
         }
         .onChange(of: showCancelConfirmation) { _, isShowing in
-            if !isShowing && wasPlayingBeforeCancel && viewModel.state == .paused {
+            if !isShowing && wasPlayingBeforeInterruption && viewModel.state == .paused {
                 viewModel.togglePause()
             }
+        }
+        .sheet(isPresented: $showStepList, onDismiss: {
+            if wasPlayingBeforeInterruption && viewModel.state == .paused {
+                viewModel.togglePause()
+            }
+        }) {
+            StepListSheet(
+                steps: viewModel.steps,
+                currentStepIndex: viewModel.currentStepIndex
+            )
         }
         .confirmationDialog(
             "End Routine?",
