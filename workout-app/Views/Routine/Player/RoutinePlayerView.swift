@@ -17,8 +17,6 @@ struct RoutinePlayerView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                backgroundGradient
-
                 switch viewModel.state {
                 case .playing, .paused:
                     playerContent
@@ -28,9 +26,7 @@ struct RoutinePlayerView: View {
                     EmptyView()
                 }
 
-                if viewModel.currentStep?.isTimed == true {
-                    timerProgressFill
-                }
+                timerProgressFill
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -169,25 +165,13 @@ struct RoutinePlayerView: View {
     private var timerProgressFill: some View {
         GeometryReader { geometry in
             Rectangle()
-                .glassEffect(.clear.tint(.green.opacity(0.5)), in: .rect)
+//                .glassEffect(.clear.tint(.green.opacity(0.6)), in: .rect)
+                .glassEffect(.clear.tint(Color(red: 0.3, green: 1, blue: 0.4).opacity(0.6)), in: .rect)
                 .frame(height: geometry.size.height * viewModel.timerProgress)
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: viewModel.secondsRemaining)
+                .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: viewModel.currentStepIndex)
         }
-        .ignoresSafeArea()
-    }
-
-    // MARK: - Background
-
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: [
-                Color(UIColor.systemBackground),
-                Color(UIColor.secondarySystemBackground),
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
         .ignoresSafeArea()
     }
 
@@ -215,6 +199,7 @@ struct CountdownDisplayView: View {
     var body: some View {
         Text(formattedTime)
             .font(.system(size: 80, weight: .semibold, design: .rounded))
+            .foregroundStyle(.primary)
             .monospacedDigit()
             .contentTransition(.numericText())
             .animation(.easeInOut(duration: 0.2), value: seconds)
@@ -235,7 +220,7 @@ struct CountdownDisplayView: View {
     let routine = Routine(
         name: "Test Routine",
         steps: [
-            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 100, order: 0),
+            RoutineStep(type: .exercise, exerciseId: "pushups", duration: 10, order: 0),
             RoutineStep(type: .rest, duration: 10, order: 1),
             RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 2),
         ])
