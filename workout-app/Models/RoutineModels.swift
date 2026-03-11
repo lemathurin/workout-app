@@ -153,6 +153,15 @@ enum StepMode: Codable, Equatable {
     case exerciseOpen
     case restTimed(seconds: Int)
     case restOpen
+
+    var isManualCompletion: Bool {
+        switch self {
+        case .exerciseReps, .exerciseOpen, .restOpen:
+            true
+        case .exerciseTimed, .restTimed:
+            false
+        }
+    }
 }
 
 // Exercise and Rest mode variants for editing logic

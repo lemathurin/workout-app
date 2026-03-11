@@ -98,12 +98,23 @@ struct RoutinePlayerView: View {
 
                         Spacer()
 
-                        Button("Next Step", systemImage: "chevron.right") {
-                            viewModel.completeCurrentStep()
+                        if let step = viewModel.currentStep, step.mode.isManualCompletion {
+                            Button("Complete") {
+                                viewModel.completeCurrentStep()
+                            }
+                            .buttonStyle(.glassProminent)
+                            .tint(.green)
+                            .transition(.blurReplace)
+                        } else {
+                            Button("Next Step", systemImage: "chevron.right") {
+                                viewModel.completeCurrentStep()
+                            }
+                            .transition(.blurReplace)
                         }
                     }
                 }
             }
+            .animation(.smooth, value: viewModel.currentStepIndex)
             .toolbarVisibility(
                 viewModel.state == .completed ? .hidden : .automatic,
                 for: .navigationBar
