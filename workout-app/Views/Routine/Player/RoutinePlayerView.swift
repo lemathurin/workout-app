@@ -3,6 +3,7 @@ import SwiftUI
 
 struct RoutinePlayerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var exercises: [Exercise]
     @State private var viewModel: RoutinePlayerViewModel
     @State private var showCancelConfirmation = false
@@ -159,6 +160,13 @@ struct RoutinePlayerView: View {
             )
             .presentationDragIndicator(.visible)
             .presentationDetents([.medium, .large])
+        }
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
+        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase != .active && viewModel.state == .playing {
+                viewModel.togglePause()
+            }
         }
         .confirmationDialog(
             "End Routine?",
