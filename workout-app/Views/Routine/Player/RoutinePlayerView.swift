@@ -127,6 +127,7 @@ struct RoutinePlayerView: View {
                 }
             }
             .animation(.smooth, value: viewModel.currentStepIndex)
+            .animation(.smooth, value: viewModel.state)
             .toolbarVisibility(
                 viewModel.state == .completed ? .hidden : .automatic,
                 for: .navigationBar
