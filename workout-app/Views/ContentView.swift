@@ -3,29 +3,17 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var selection: Tab = .home
-    
-    enum Tab {
-        case home
-        case catalog
-    }
 
     var body: some View {
-        NavigationStack {
-            TabView(selection: $selection) {
+        TabView {
+            Tab("Home", systemImage: "figure.cooldown") {
                 HomeView()
-                    .tabItem {
-                        Label ("Home",
-                               systemImage: "figure.cooldown")
-                    }
-                    .tag(Tab.home)
-                
-                CatalogView()
-                    .tabItem {
-                        Label ("Catalog",
-                               systemImage: "magazine")
-                    }
-                    .tag(Tab.catalog)
+            }
+            Tab("Activity", systemImage: "chevron.up.forward.2") {
+                ActivityView()
+            }
+            Tab(role: .search) {
+                ExerciseSearchView()
             }
         }
         .task {

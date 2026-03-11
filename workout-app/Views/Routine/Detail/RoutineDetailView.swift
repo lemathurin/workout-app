@@ -5,6 +5,7 @@ struct RoutineDetailView: View {
     let routine: Routine
     @Query private var exercises: [Exercise]
     @State private var showEditView = false
+    @State private var showPlayer = false
 
     var body: some View {
         ScrollView {
@@ -100,10 +101,24 @@ struct RoutineDetailView: View {
                     Text("Edit")
                 }
             }
+            ToolbarItem(placement: .bottomBar) {
+                Button(action: {
+                    showPlayer = true
+                }) {
+                    Text("Start routine").padding()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.green)
+                .controlSize(.large)
+            }
         }
         .fullScreenCover(isPresented: $showEditView) {
             RoutineEditView(routine: routine)
         }
+        .fullScreenCover(isPresented: $showPlayer) {
+            RoutinePlayerView(routine: routine)
+        }
+        .toolbar(.hidden, for: .tabBar)
     }
 
     // MARK: - View Builders

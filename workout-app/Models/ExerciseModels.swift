@@ -82,6 +82,7 @@ class Translation {
 class ExerciseTranslation {
     var languageCode: String
     var name: String
+    var exercise: Exercise?
     
     init(languageCode: String, name: String) {
         self.languageCode = languageCode
@@ -99,7 +100,7 @@ class Exercise {
     var categoryId: String
     var primaryMuscleId: String
     var secondaryMuscles: [String]
-    var translations: [ExerciseTranslation]
+    @Relationship(deleteRule: .cascade, inverse: \ExerciseTranslation.exercise) var translations: [ExerciseTranslation]
     
     init(id: String, forceId: String, levelId: String, mechanicId: String, equipmentId: String, categoryId: String, primaryMuscleId: String, secondaryMuscles: [String] = [], translations: [ExerciseTranslation] = []) {
         self.id = id

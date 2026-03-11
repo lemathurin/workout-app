@@ -122,6 +122,7 @@ struct RoutineEditView: View {
                     }
                 )
 
+                // TODO: change to .toolbar ToolbarItem(placement: .bottomBar)
                 Button(
                     action: {
                         viewModel.showChooseStepKindSheet = true
@@ -215,6 +216,7 @@ struct RoutineEditView: View {
                 Text("Your changes won't be saved.")
             }
         }
+        .toolbar(.hidden, for: .tabBar)
         .task {
             if let routine = routine {
                 viewModel.loadRoutine(routine, exercises: exercises)
