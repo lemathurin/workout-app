@@ -4,6 +4,7 @@ import SwiftUI
 struct StepListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var exercises: [Exercise]
+    @Query private var equipment: [Equipment]
 
     let steps: [PlayableStep]
     let currentStepIndex: Int
@@ -39,18 +40,35 @@ struct StepListSheet: View {
     }
 
     private func stepDetail(for step: PlayableStep) -> String {
+        var parts: [String] = []
+
         switch step.mode {
         case .exerciseTimed(let seconds):
-            return "Timed · \(formattedDuration(seconds))"
+            parts.append("Timed · \(formattedDuration(seconds))")
         case .restTimed(let seconds):
-            return "Timed · \(formattedDuration(seconds))"
+            parts.append("Timed · \(formattedDuration(seconds))")
         case .exerciseReps(let count):
-            return "\(count) reps"
+            parts.append("\(count) reps")
         case .exerciseOpen:
-            return "Open"
+            parts.append("Open")
         case .restOpen:
-            return "Open"
+            parts.append("Open")
         }
+
+        if let equipmentName = equipmentName(for: step) {
+            parts.append(equipmentName)
+        }
+
+        return parts.joined(separator: " · ")
+    }
+
+    private func equipmentName(for step: PlayableStep) -> String? {
+        guard let exerciseId = step.exerciseId,
+              let exercise = exercises.first(where: { $0.id == exerciseId })
+        else { return nil }
+        guard exercise.equipmentId != "body_only" else { return nil }
+        return equipment.first { $0.id == exercise.equipmentId }?
+            .translations.first { $0.languageCode == "en" }?.text
     }
 
     private func formattedDuration(_ seconds: Int) -> String {
@@ -120,5 +138,5 @@ private struct ProgressFillBackground: View {
     ]
 
     StepListSheet(steps: steps, currentStepIndex: 1, currentStepProgress: 0.5)
-        .modelContainer(for: [Exercise.self])
+        .modelContainer(for: [Exercise.self, Equipment.self])
 }
