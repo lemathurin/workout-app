@@ -7,6 +7,7 @@ struct StepListSheet: View {
 
     let steps: [PlayableStep]
     let currentStepIndex: Int
+    let currentStepProgress: Double
 
     var body: some View {
         NavigationStack {
@@ -15,6 +16,7 @@ struct StepListSheet: View {
                     index: index,
                     step: step,
                     isCurrent: index == currentStepIndex,
+                    progress: index == currentStepIndex ? (step.isTimed ? currentStepProgress : 1) : 0,
                     name: stepName(for: step),
                     detail: stepDetail(for: step)
                 )
@@ -67,6 +69,7 @@ private struct StepListRow: View {
     let index: Int
     let step: PlayableStep
     let isCurrent: Bool
+    let progress: Double
     let name: String
     let detail: String
 
@@ -89,10 +92,22 @@ private struct StepListRow: View {
             Spacer()
         }
         .listRowBackground(
-            isCurrent
-            ? Color.accentColor.opacity(0.2)
-                : Color.clear
+            ProgressFillBackground(progress: progress)
         )
+    }
+}
+
+// MARK: - Progress Fill Background
+
+private struct ProgressFillBackground: View {
+    let progress: Double
+
+    var body: some View {
+        GeometryReader { geometry in
+            Color.secondary.opacity(0.2)
+                .frame(width: geometry.size.width * max(0, min(1, progress)))
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
 
@@ -104,6 +119,6 @@ private struct StepListRow: View {
         PlayableStep(exerciseId: "squats", type: .exercise, mode: .exerciseReps(count: 15)),
     ]
 
-    StepListSheet(steps: steps, currentStepIndex: 1)
+    StepListSheet(steps: steps, currentStepIndex: 1, currentStepProgress: 0.5)
         .modelContainer(for: [Exercise.self])
 }

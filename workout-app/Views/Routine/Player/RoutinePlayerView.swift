@@ -126,7 +126,8 @@ struct RoutinePlayerView: View {
         }) {
             StepListSheet(
                 steps: viewModel.steps,
-                currentStepIndex: viewModel.currentStepIndex
+                currentStepIndex: viewModel.currentStepIndex,
+                currentStepProgress: viewModel.timerProgress
             )
             .presentationDragIndicator(.visible)
             .presentationDetents([.medium, .large])
@@ -311,7 +312,7 @@ struct CountdownDisplayView: View {
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 30, order: 1),
             RoutineStep(type: .rest, exerciseId: "pushups", duration: 15, order: 2),
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 3),
-//            RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 4),
+            RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 4),
         ])
 
     RoutinePlayerView(routine: routine)
