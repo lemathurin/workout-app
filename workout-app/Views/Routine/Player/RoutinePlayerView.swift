@@ -57,14 +57,16 @@ struct RoutinePlayerView: View {
                         }
                     }
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    if viewModel.state == .completed {
+                if viewModel.state == .completed {
+                    ToolbarItem(placement: .bottomBar) {
                         Button("Restart") {
                             viewModel.restart()
                         }
+                    }
 
-                        Spacer()
+                    ToolbarSpacer(.fixed, placement: .bottomBar)
 
+                    ToolbarItem(placement: .bottomBar) {
                         Button("\(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)") {
                             wasPlayingBeforeInterruption = viewModel.state == .playing
                             if wasPlayingBeforeInterruption {
@@ -72,22 +74,28 @@ struct RoutinePlayerView: View {
                             }
                             showStepList = true
                         }
+                    }
 
-                        Spacer()
+                    ToolbarSpacer(.fixed, placement: .bottomBar)
 
+                    ToolbarItem(placement: .bottomBar) {
                         Button("Finish", role: .confirm) {
                             dismiss()
                         }
                         .buttonStyle(.glassProminent)
                         .tint(.green)
-                    } else {
+                    }
+                } else {
+                    ToolbarItem(placement: .bottomBar) {
                         Button("Previous Step", systemImage: "chevron.left") {
                             viewModel.goToPreviousStep()
                         }
                         .disabled(viewModel.currentStepIndex == 0)
+                    }
 
-                        Spacer()
+                    ToolbarSpacer(.fixed, placement: .bottomBar)
 
+                    ToolbarItem(placement: .bottomBar) {
                         Button("\(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)") {
                             wasPlayingBeforeInterruption = viewModel.state == .playing
                             if wasPlayingBeforeInterruption {
@@ -95,17 +103,21 @@ struct RoutinePlayerView: View {
                             }
                             showStepList = true
                         }
+                    }
 
-                        Spacer()
+                    ToolbarSpacer(.fixed, placement: .bottomBar)
 
-                        if let step = viewModel.currentStep, step.mode.isManualCompletion {
-                            Button("Complete") {
+                    if let step = viewModel.currentStep, step.mode.isManualCompletion {
+                        ToolbarItem(placement: .bottomBar) {
+                            Button("Next") {
                                 viewModel.completeCurrentStep()
                             }
                             .buttonStyle(.glassProminent)
                             .tint(.green)
                             .transition(.blurReplace)
-                        } else {
+                        }
+                    } else {
+                        ToolbarItem(placement: .bottomBar) {
                             Button("Next Step", systemImage: "chevron.right") {
                                 viewModel.completeCurrentStep()
                             }
