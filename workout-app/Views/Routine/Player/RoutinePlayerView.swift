@@ -58,31 +58,55 @@ struct RoutinePlayerView: View {
                     }
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
-                    Button("Previous Step", systemImage: "chevron.left") {
-                        viewModel.goToPreviousStep()
-                    }
-                    .disabled(viewModel.currentStepIndex == 0)
-
-                    Spacer()
-
-                    Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {
-                        wasPlayingBeforeInterruption = viewModel.state == .playing
-                        if wasPlayingBeforeInterruption {
-                            viewModel.togglePause()
+                    if viewModel.state == .completed {
+                        Button("Restart") {
+                            viewModel.restart()
                         }
-                        showStepList = true
-                    }
 
-                    Spacer()
+                        Spacer()
 
-                    Button("Next Step", systemImage: "chevron.right") {
-                        viewModel.completeCurrentStep()
+                        Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {
+                            wasPlayingBeforeInterruption = viewModel.state == .playing
+                            if wasPlayingBeforeInterruption {
+                                viewModel.togglePause()
+                            }
+                            showStepList = true
+                        }
+
+                        Spacer()
+
+                        Button("Finish", role: .confirm) {
+                            dismiss()
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(.green)
+                    } else {
+                        Button("Previous Step", systemImage: "chevron.left") {
+                            viewModel.goToPreviousStep()
+                        }
+                        .disabled(viewModel.currentStepIndex == 0)
+
+                        Spacer()
+
+                        Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {
+                            wasPlayingBeforeInterruption = viewModel.state == .playing
+                            if wasPlayingBeforeInterruption {
+                                viewModel.togglePause()
+                            }
+                            showStepList = true
+                        }
+
+                        Spacer()
+
+                        Button("Next Step", systemImage: "chevron.right") {
+                            viewModel.completeCurrentStep()
+                        }
                     }
                 }
             }
             .toolbarVisibility(
                 viewModel.state == .completed ? .hidden : .automatic,
-                for: .bottomBar
+                for: .navigationBar
             )
         }
         .onChange(of: viewModel.state) { _, newState in
@@ -165,7 +189,7 @@ struct RoutinePlayerView: View {
     // MARK: - Completion Content
 
     private var completionContent: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 20) {
             Spacer()
 
             Image(systemName: "checkmark.circle.fill")
@@ -182,19 +206,6 @@ struct RoutinePlayerView: View {
                 .foregroundStyle(.secondary)
 
             Spacer()
-
-            Button {
-                dismiss()
-            } label: {
-                Text("Done")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
-            .padding(.horizontal, 24)
         }
     }
 
@@ -300,7 +311,7 @@ struct CountdownDisplayView: View {
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 30, order: 1),
             RoutineStep(type: .rest, exerciseId: "pushups", duration: 15, order: 2),
             RoutineStep(type: .exercise, exerciseId: "pushups", duration: 5, order: 3),
-            RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 4),
+//            RoutineStep(type: .exercise, exerciseId: "squats", count: 15, order: 4),
         ])
 
     RoutinePlayerView(routine: routine)

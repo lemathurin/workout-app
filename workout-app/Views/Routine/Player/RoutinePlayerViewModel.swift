@@ -119,6 +119,13 @@ final class RoutinePlayerViewModel {
         state = .cancelled
     }
 
+    func restart() {
+        timerTask?.cancel()
+        currentStepIndex = 0
+        state = .playing
+        beginCurrentStep()
+    }
+
     // MARK: - Private Methods
 
     private func beginCurrentStep() {
@@ -194,6 +201,8 @@ final class RoutinePlayerViewModel {
             currentStepIndex += 1
             beginCurrentStep()
         } else {
+            exerciseProgress = 0
+            restProgress = 0
             state = .completed
         }
     }
