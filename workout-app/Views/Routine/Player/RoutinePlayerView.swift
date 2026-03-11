@@ -65,7 +65,7 @@ struct RoutinePlayerView: View {
 
                         Spacer()
 
-                        Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {
+                        Button("\(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)") {
                             wasPlayingBeforeInterruption = viewModel.state == .playing
                             if wasPlayingBeforeInterruption {
                                 viewModel.togglePause()
@@ -88,7 +88,7 @@ struct RoutinePlayerView: View {
 
                         Spacer()
 
-                        Button("\(viewModel.currentStepIndex + 1)/\(viewModel.steps.count)") {
+                        Button("\(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)") {
                             wasPlayingBeforeInterruption = viewModel.state == .playing
                             if wasPlayingBeforeInterruption {
                                 viewModel.togglePause()
@@ -127,7 +127,11 @@ struct RoutinePlayerView: View {
             StepListSheet(
                 steps: viewModel.steps,
                 currentStepIndex: viewModel.currentStepIndex,
-                currentStepProgress: viewModel.timerProgress
+                currentStepProgress: viewModel.timerProgress,
+                onStepSelected: { index in
+                    viewModel.goToStep(at: index)
+                    showStepList = false
+                }
             )
             .presentationDragIndicator(.visible)
             .presentationDetents([.medium, .large])

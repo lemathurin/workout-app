@@ -114,6 +114,14 @@ final class RoutinePlayerViewModel {
         beginCurrentStep()
     }
 
+    func goToStep(at index: Int) {
+        guard index >= 0, index < steps.count else { return }
+        timerTask?.cancel()
+        currentStepIndex = index
+        state = .playing
+        beginCurrentStep()
+    }
+
     func cancelRoutine() {
         timerTask?.cancel()
         state = .cancelled

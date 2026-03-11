@@ -9,17 +9,26 @@ struct StepListSheet: View {
     let steps: [PlayableStep]
     let currentStepIndex: Int
     let currentStepProgress: Double
+    var onStepSelected: ((Int) -> Void)?
 
     var body: some View {
         NavigationStack {
             List(Array(steps.enumerated()), id: \.element.id) { index, step in
-                StepListRow(
-                    index: index,
-                    step: step,
-                    isCurrent: index == currentStepIndex,
-                    progress: index == currentStepIndex ? (step.isTimed ? currentStepProgress : 1) : 0,
-                    name: stepName(for: step),
-                    detail: stepDetail(for: step)
+                Button {
+                    onStepSelected?(index)
+                } label: {
+                    StepListRow(
+                        index: index,
+                        step: step,
+                        name: stepName(for: step),
+                        detail: stepDetail(for: step)
+                    )
+                }
+                .tint(.primary)
+                .listRowBackground(
+                    ProgressFillBackground(
+                        progress: index == currentStepIndex ? (step.isTimed ? currentStepProgress : 1) : 0
+                    )
                 )
             }
             .listRowSpacing(5)
@@ -86,8 +95,6 @@ struct StepListSheet: View {
 private struct StepListRow: View {
     let index: Int
     let step: PlayableStep
-    let isCurrent: Bool
-    let progress: Double
     let name: String
     let detail: String
 
@@ -109,9 +116,6 @@ private struct StepListRow: View {
 
             Spacer()
         }
-        .listRowBackground(
-            ProgressFillBackground(progress: progress)
-        )
     }
 }
 
