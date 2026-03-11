@@ -150,7 +150,7 @@ struct RoutinePlayerView: View {
         }) {
             StepListSheet(
                 steps: viewModel.steps,
-                currentStepIndex: viewModel.currentStepIndex,
+                currentStepIndex: viewModel.state == .completed ? -1 : viewModel.currentStepIndex,
                 currentStepProgress: viewModel.timerProgress,
                 onStepSelected: { index in
                     viewModel.goToStep(at: index)
