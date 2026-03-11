@@ -19,16 +19,8 @@ struct StepListSheet: View {
                     detail: stepDetail(for: step)
                 )
             }
+            .listRowSpacing(5)
             .scrollContentBackground(.hidden)
-            // .navigationTitle("Steps")
-            // .navigationBarTitleDisplayMode(.inline)
-            // .toolbar {
-            //     ToolbarItem(placement: .confirmationAction) {
-            //         Button("Done") {
-            //             dismiss()
-            //         }
-            //     }
-            // }
         }
     }
 
@@ -82,14 +74,12 @@ private struct StepListRow: View {
         HStack {
             Text("\(index + 1)")
                 .font(.headline)
-                .fontDesign(.rounded)
                 .foregroundStyle(.secondary)
                 .frame(width: 32, alignment: .leading)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(name)
                     .font(.body)
-                    .fontWeight(isCurrent ? .bold : .regular)
 
                 Text(detail)
                     .font(.caption)
@@ -97,16 +87,10 @@ private struct StepListRow: View {
             }
 
             Spacer()
-
-            if isCurrent {
-                Image(systemName: "play.fill")
-                    .foregroundStyle(.tint)
-                    .accessibilityLabel("Current step")
-            }
         }
         .listRowBackground(
             isCurrent
-                ? Color.accentColor.opacity(0.1)
+            ? Color.accentColor.opacity(0.2)
                 : Color.clear
         )
     }
