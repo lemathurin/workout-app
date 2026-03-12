@@ -6,63 +6,48 @@ struct RoutineCard: View {
 
     var body: some View {
         NavigationLink(destination: RoutineDetailView(routine: routine)) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(routine.getName())
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                    }
+            HStack {
+                
+                Text(routine.getName())
+            
+                Text(
+                    "\(routine.metadata.totalDuration ?? routine.calculateTotalDuration()) min"
+                )
 
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text(
-                            "\(routine.metadata.totalDuration ?? routine.calculateTotalDuration()) min"
-                        )
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.blue)
-
-                        Text(
-                            "\(routine.metadata.stepCount ?? routine.calculateStepCount()) exercises"
-                        )
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                    }
-                }
-
-                HStack {
-                    if !routine.metadata.equipment.isEmpty {
-                        Text(routine.metadata.equipment.joined(separator: ", "))
-                            .font(.caption2)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.1))
-                            .foregroundColor(.green)
-                            .cornerRadius(8)
-                    }
-
-                    Spacer()
+                Text(
+                    "\(routine.metadata.stepCount ?? routine.calculateStepCount()) exercises"
+                )
+                
+                if !routine.metadata.equipment.isEmpty {
+                    Text(routine.metadata.equipment.joined(separator: ", "))
                 }
             }
-            .padding(16)
             .background(Color(.systemBackground))
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
-        .buttonStyle(PlainButtonStyle())
     }
 }
 
 #Preview {
-    // Preview with sample data
-    let sampleRoutine = Routine(
-        name: "Core Crusher",
-        steps: []
-    )
+    let sampleRoutine: Routine = {
+        let r = Routine(
+            name: "Core Crusher",
+            steps: [
+                RoutineStep(type: .exercise, exerciseId: "plank", duration: 45, order: 0),
+                RoutineStep(type: .rest, duration: 15, order: 1),
+                RoutineStep(type: .exercise, exerciseId: "crunches", duration: 30, order: 2),
+                RoutineStep(type: .rest, duration: 15, order: 3),
+                RoutineStep(type: .exercise, exerciseId: "mountain-climbers", duration: 30, order: 4),
+            ]
+        )
+        r.metadata.equipment = ["Kettlebell", "Exercise ball"]
+        r.metadata.stepCount = r.calculateStepCount()
+        r.metadata.totalDuration = r.calculateTotalDuration()
+        return r
+    }()
 
-    RoutineCard(routine: sampleRoutine)
-        .padding()
+    NavigationStack {
+        RoutineCard(routine: sampleRoutine)
+            .padding()
+            .background(Color(.red).opacity(0.4))
+    }
 }
