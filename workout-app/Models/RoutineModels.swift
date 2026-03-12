@@ -180,12 +180,13 @@ class RoutineMetadata {
     var author: String?
     var stepCount: Int?
     var totalDuration: Int?
+    var lastPlayedAt: Date?
 
     init(
         createdAt: Date = Date(), updatedAt: Date = Date(), categories: [String] = [],
         difficulty: String = "", tags: [String] = [], equipment: [String] = [],
         targetMuscles: [String] = [], author: String? = nil, stepCount: Int? = nil,
-        totalDuration: Int? = nil
+        totalDuration: Int? = nil, lastPlayedAt: Date? = nil
     ) {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -197,6 +198,7 @@ class RoutineMetadata {
         self.author = author
         self.stepCount = stepCount
         self.totalDuration = totalDuration
+        self.lastPlayedAt = lastPlayedAt
     }
 
     func updateTimestamp() {
