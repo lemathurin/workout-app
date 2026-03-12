@@ -3,9 +3,6 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var showingSettings = false
-    @State private var isDeleting = false
-    @Environment(\.modelContext) private var modelContext
-    @StateObject private var dataManager = DataManager.shared
     @Query private var routines: [Routine]
 
     var body: some View {
@@ -37,14 +34,6 @@ struct HomeView: View {
                                 }
                             }
                         }
-
-                        // Delete all data button
-                        Button("Delete All Data") {
-                            Task {
-                                await handleDeleteAllData()
-                            }
-                        }
-                        .disabled(isDeleting)
                     }
                     .padding(.vertical)
                 }
@@ -66,18 +55,6 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $showingSettings) { SettingsView() }
-    }
-
-    private func handleDeleteAllData() async {
-        isDeleting = true
-
-        do {
-            try dataManager.deleteAllData(from: modelContext)
-        } catch {
-            print("Failed to delete data: \(error)")
-        }
-
-        isDeleting = false
     }
 }
 
