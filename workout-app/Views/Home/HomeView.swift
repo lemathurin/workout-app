@@ -65,7 +65,7 @@ struct HomeView: View {
                 }
                 .padding(.bottom)
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Settings", systemImage: "gear") {
