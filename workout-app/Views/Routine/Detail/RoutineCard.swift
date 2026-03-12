@@ -4,26 +4,49 @@ import SwiftUI
 struct RoutineCard: View {
     let routine: Routine
 
+    private var duration: Int {
+        routine.metadata.totalDuration ?? routine.calculateTotalDuration()
+    }
+
+    private var exerciseCount: Int {
+        routine.metadata.stepCount ?? routine.calculateStepCount()
+    }
+
     var body: some View {
         NavigationLink(destination: RoutineDetailView(routine: routine)) {
-            HStack {
-                
+            VStack(alignment: .leading, spacing: 12) {
                 Text(routine.getName())
-            
-                Text(
-                    "\(routine.metadata.totalDuration ?? routine.calculateTotalDuration()) min"
-                )
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
 
-                Text(
-                    "\(routine.metadata.stepCount ?? routine.calculateStepCount()) exercises"
-                )
-                
+                HStack(spacing: 16) {
+                    Label("\(duration) min", systemImage: "clock")
+                    Label("\(exerciseCount) exercises", systemImage: "figure.strengthtraining.traditional")
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
                 if !routine.metadata.equipment.isEmpty {
-                    Text(routine.metadata.equipment.joined(separator: ", "))
+                    HStack(spacing: 6) {
+                        Image(systemName: "dumbbell")
+                        Text(routine.metadata.equipment.joined(separator: ", "))
+                            .lineLimit(1)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
             }
-            .background(Color(.systemBackground))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 15)
+            .padding(.horizontal, 17)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(UIColor.secondarySystemGroupedBackground))
+            )
+            .clipShape(.rect(cornerRadius: 12))
         }
+        .buttonStyle(.plain)
     }
 }
 
@@ -48,6 +71,5 @@ struct RoutineCard: View {
     NavigationStack {
         RoutineCard(routine: sampleRoutine)
             .padding()
-            .background(Color(.red).opacity(0.4))
     }
 }
