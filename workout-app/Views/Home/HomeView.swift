@@ -1,14 +1,47 @@
 import SwiftData
 import SwiftUI
 
+enum RoutineSortOption: String, CaseIterable {
+    case recentlyPlayed = "Most recent"
+    case duration = "Duration"
+}
+
 struct HomeView: View {
     @State private var showingSettings = false
+    @State private var sortOption: RoutineSortOption = .recentlyPlayed
+    @State private var selectedEquipment: String?
     @Query private var routines: [Routine]
+
+    private var allEquipment: [String] {
+        Array(Set(routines.flatMap { $0.metadata.equipment })).sorted()
+    }
+
+    private var filteredAndSortedRoutines: [Routine] {
+        var result = routines
+
+        if let equipment = selectedEquipment {
+            result = result.filter { $0.metadata.equipment.contains(equipment) }
+        }
+
+        switch sortOption {
+        case .recentlyPlayed:
+            result.sort {
+                ($0.metadata.lastPlayedAt ?? .distantPast) > ($1.metadata.lastPlayedAt ?? .distantPast)
+            }
+        case .duration:
+            result.sort {
+                ($0.metadata.totalDuration ?? $0.calculateTotalDuration()) <
+                ($1.metadata.totalDuration ?? $1.calculateTotalDuration())
+            }
+        }
+
+        return result
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
+                VStack(spacing: 20) {
                     VStack {
                         Text("Ready for some exercise?")
                             .font(.largeTitle)
@@ -19,19 +52,18 @@ struct HomeView: View {
                     .padding(.vertical, 30)
                     .padding(.horizontal)
 
-                    VStack(alignment: .leading, spacing: 12) {
-                        if !routines.isEmpty {
-                            LazyVStack(spacing: 20) {
-                                ForEach(routines) { routine in
-                                    RoutineCard(routine: routine)
-                                        .padding(.horizontal)
-                                }
+                    sortAndFilterBar
+
+                    if !filteredAndSortedRoutines.isEmpty {
+                        LazyVStack(spacing: 20) {
+                            ForEach(filteredAndSortedRoutines) { routine in
+                                RoutineCard(routine: routine)
+                                    .padding(.horizontal)
                             }
                         }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.vertical)
                 }
+                .padding(.bottom)
             }
             .background(Color(.secondarySystemBackground))
             .toolbar {
@@ -51,6 +83,57 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $showingSettings) { SettingsView() }
+    }
+
+    // MARK: - Sort & Filter Bar
+
+    private var sortAndFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Menu {
+                    Picker("Sort by", selection: $sortOption) {
+                        ForEach(RoutineSortOption.allCases, id: \.self) { option in
+                            Text(option.rawValue)
+                        }
+                    }
+                } label: {
+                    Label(sortOption.rawValue, systemImage: "arrow.up.arrow.down")
+                        .font(.subheadline)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color(.systemGray5), in: .capsule)
+                }
+                .buttonStyle(.plain)
+
+                if !allEquipment.isEmpty {
+                    equipmentFilterChips
+                }
+            }
+            .padding(.horizontal) 
+        }
+    }
+
+    private var equipmentFilterChips: some View {
+        ForEach(allEquipment, id: \.self) { equipment in
+            Button {
+                withAnimation {
+                    selectedEquipment = selectedEquipment == equipment ? nil : equipment
+                }
+            } label: {
+                Text(equipment)
+                    .font(.subheadline)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(.primary)
+                    .background(
+                        selectedEquipment == equipment
+                        ? Color(.systemGray5)
+                        : Color(.clear),
+                        in: Capsule()
+                    )
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 
