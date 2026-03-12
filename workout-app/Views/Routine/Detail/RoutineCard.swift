@@ -18,7 +18,7 @@ struct RoutineCard: View {
                 Text(routine.getName())
                     .font(.headline)
                     .foregroundStyle(.primary)
-                    .lineLimit(2)
+                    .lineLimit(1)
 
                 HStack(spacing: 16) {
                     Label("\(duration) min", systemImage: "clock")
@@ -27,15 +27,19 @@ struct RoutineCard: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-                if !routine.metadata.equipment.isEmpty {
-                    HStack(spacing: 6) {
+                HStack(spacing: 6) {
+                    if routine.metadata.equipment.isEmpty {
+                        Image(systemName: "figure.stand")
+                        Text("body_only")
+                            .lineLimit(1)
+                    } else {
                         Image(systemName: "dumbbell")
                         Text(routine.metadata.equipment.joined(separator: ", "))
                             .lineLimit(1)
                     }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
                 }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 15)
