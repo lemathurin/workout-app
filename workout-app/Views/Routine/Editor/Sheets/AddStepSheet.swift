@@ -139,6 +139,8 @@ private struct ChooseKindStep: View {
     let onRepeat: () -> Void
     let onCancel: () -> Void
 
+    @State private var showInfo = false
+
     var body: some View {
         VStack(spacing: 18) {
             HStack {
@@ -147,13 +149,12 @@ private struct ChooseKindStep: View {
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Button {
-//                    info sheet
-                } label: {
-                    Image(systemName: "questionmark.circle.fill")
-                        .font(.title)
-                        .foregroundStyle(Color.gray, Color.primary.opacity(0.1))
+                Button("Info", systemImage: "questionmark.circle.fill") {
+                    showInfo = true
                 }
+                .labelStyle(.iconOnly)
+                .font(.title)
+                .foregroundStyle(Color.gray, Color.primary.opacity(0.1))
             }
             
             BigCardButton(
@@ -181,6 +182,9 @@ private struct ChooseKindStep: View {
                 .controlSize(.large)
                 .buttonSizing(.flexible)
                 .foregroundStyle(.primary)
+        }
+        .sheet(isPresented: $showInfo) {
+            AddStepInfoSheet()
         }
     }
 }
