@@ -22,7 +22,7 @@ struct RoutineCard: View {
 
                 HStack(spacing: 16) {
                     Label("\(duration) min", systemImage: "clock")
-                    Label("\(exerciseCount) exercises", systemImage: "figure.strengthtraining.traditional")
+                    Label("\(exerciseCount) steps", systemImage: "arrow.trianglehead.clockwise")
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
