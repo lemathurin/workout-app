@@ -2,10 +2,7 @@ import SwiftUI
 
 enum StepEditAction { case changeType, changeAmount, delete }
 
-private enum EditStep { case selectType, selectAmount, confirmDelete }
-
 struct EditStepSheet: View {
-    @Binding var sheetDetent: PresentationDetent
     let stepName: String
     let stepMode: StepMode
     let action: StepEditAction
@@ -13,17 +10,13 @@ struct EditStepSheet: View {
     let onDelete: () -> Void
     let onCancel: () -> Void
 
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var exerciseName: String
-    @State private var exerciseModeSelection: ExerciseMode? = .open
-    @State private var restModeSelection: RestMode? = .open
+    @State private var exerciseModeSelection: ExerciseMode?
+    @State private var restModeSelection: RestMode?
     @State private var timerSeconds: Int = 60
     @State private var repsCount: Int = 10
-    @State private var editStep: EditStep
+    @State private var showAmountPicker: Bool
 
     init(
-        sheetDetent: Binding<PresentationDetent>,
         stepName: String,
         stepMode: StepMode,
         action: StepEditAction,
@@ -31,7 +24,6 @@ struct EditStepSheet: View {
         onDelete: @escaping () -> Void,
         onCancel: @escaping () -> Void
     ) {
-        _sheetDetent = sheetDetent
         self.stepName = stepName
         self.stepMode = stepMode
         self.action = action
@@ -39,228 +31,179 @@ struct EditStepSheet: View {
         self.onDelete = onDelete
         self.onCancel = onCancel
 
-        _exerciseName = State(initialValue: stepName)
-
-        // Extract mode and amounts from StepMode
-        let (exerciseMode, restMode, seconds, reps) = EditStepSheet.extractFromStepMode(stepMode)
+        let (exerciseMode, restMode, seconds, reps) = Self.extractFromStepMode(stepMode)
         _exerciseModeSelection = State(initialValue: exerciseMode)
         _restModeSelection = State(initialValue: restMode)
         _timerSeconds = State(initialValue: seconds)
         _repsCount = State(initialValue: reps)
-
-        switch action {
-        case .changeType:
-            _editStep = State(initialValue: .selectType)
-        case .changeAmount:
-            _editStep = State(initialValue: .selectAmount)
-        case .delete:
-            _editStep = State(initialValue: .confirmDelete)
-        }
+        _showAmountPicker = State(initialValue: action == .changeAmount)
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                switch editStep {
-                case .selectType:
-                    if isExercise {
-                        ExerciseModeSelector(
-                            currentMode: exerciseModeSelection,
-                            primaryLabel: "Save",
-                            secondaryLabel: "Cancel",
-                            onSelectTimed: {
-                                exerciseModeSelection = .timed
-                                editStep = .selectAmount
-                            },
-                            onSelectReps: {
-                                exerciseModeSelection = .reps
-                                editStep = .selectAmount
-                            },
-                            onSelectOpen: {
-                                exerciseModeSelection = .open
-                                applyUpdateAndClose()
-                            },
-                            onSecondary: { onCancel() }
-                        )
-                    } else {
-                        RestModeSelector(
-                            currentMode: restModeSelection,
-                            primaryLabel: "Save",
-                            secondaryLabel: "Cancel",
-                            onSelectTimed: {
-                                restModeSelection = .timed
-                                editStep = .selectAmount
-                            },
-                            onSelectOpen: {
-                                restModeSelection = .open
-                                applyUpdateAndClose()
-                            },
-                            onSecondary: { onCancel() }
-                        )
-                    }
-                case .selectAmount:
-                    if isExercise {
-                        switch exerciseModeSelection {
-                        case .timed:
-                            TimedPicker(
-                                seconds: $timerSeconds,
-                                primaryLabel: "Save",
-                                secondaryLabel: "Cancel",
-                                onPrimary: { applyUpdateAndClose() },
-                                onSecondary: { onCancel() }
-                            )
-                        case .reps:
-                            RepsPicker(
-                                reps: $repsCount,
-                                primaryLabel: "Save",
-                                secondaryLabel: "Cancel",
-                                onPrimary: { applyUpdateAndClose() },
-                                onSecondary: { onCancel() }
-                            )
-                        case .open, .none:
-                            InfoView(
-                                title: "No amount to change",
-                                message: "Open exercises have no duration or reps.",
-                                onClose: { onCancel() }
-                            )
-                        }
-                    } else {
-                        switch restModeSelection {
-                        case .timed:
-                            RestTimedPicker(
-                                seconds: $timerSeconds,
-                                primaryLabel: "Save",
-                                secondaryLabel: "Cancel",
-                                onPrimary: { applyUpdateAndClose() },
-                                onSecondary: { onCancel() }
-                            )
-                        case .open, .none:
-                            InfoView(
-                                title: "No duration to change",
-                                message: "Open rest has no duration.",
-                                onClose: { onCancel() }
-                            )
-                        }
-                    }
-                case .confirmDelete:
-                    DeleteConfirmView(
-                        onCancel: { onCancel() },
-                        onDeleteConfirm: {
-                            onDelete()
-                        }
-                    )
+        DynamicSheet(animation: .smooth(duration: 0.25, extraBounce: 0)) {
+            VStack(spacing: 12) {
+                HStack {
+                    Text(stepName)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Button("Cancel", action: onCancel)
                 }
+
+                ZStack {
+                    switch action {
+                    case .delete:
+                        deleteContent
+                            .transition(.blurReplace(.upUp))
+                    case .changeType, .changeAmount:
+                        if showAmountPicker {
+                            amountContent
+                                .transition(.blurReplace(.downUp))
+                        } else {
+                            typeContent
+                                .transition(.blurReplace(.upUp))
+                        }
+                    }
+                }
+                .geometryGroup()
             }
-            .navigationTitle(navigationTitle)
-            .navigationBarTitleDisplayMode(.inline)
+            .padding([.horizontal, .top], 20)
         }
     }
 
     private var isExercise: Bool {
         switch stepMode {
-        case .exerciseTimed, .exerciseReps, .exerciseOpen:
-            return true
-        case .restTimed, .restOpen:
-            return false
+        case .exerciseTimed, .exerciseReps, .exerciseOpen: true
+        case .restTimed, .restOpen: false
         }
     }
 
-    private var navigationTitle: String {
-        switch editStep {
-        case .selectType, .selectAmount:
-            if isExercise {
-                if exerciseModeSelection == .open || exerciseModeSelection == .none {
-                    return "No amount to change"
+    // MARK: - Type Selection
+
+    @ViewBuilder
+    private var typeContent: some View {
+        if isExercise {
+            VStack(spacing: 12) {
+                Button("Timed") {
+                    exerciseModeSelection = .timed
+                    withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
                 }
-            } else {
-                if restModeSelection == .open || restModeSelection == .none {
-                    return "No duration to change"
+                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+                Button("Reps") {
+                    exerciseModeSelection = .reps
+                    withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
                 }
+                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+                Button("Open") {
+                    exerciseModeSelection = .open
+                    applyAndClose()
+                }
+                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
             }
-            return stepName
-        case .confirmDelete:
-            return "Delete Step"
+            .controlSize(.large)
+        } else {
+            VStack(spacing: 12) {
+                Button("Timed") {
+                    restModeSelection = .timed
+                    withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
+                }
+                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+                Button("Open") {
+                    restModeSelection = .open
+                    applyAndClose()
+                }
+                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+            }
+            .controlSize(.large)
         }
     }
 
-    private func applyUpdateAndClose() {
-        let newStepMode: StepMode
+    // MARK: - Amount Picker
 
+    @ViewBuilder
+    private var amountContent: some View {
         if isExercise {
             switch exerciseModeSelection {
             case .timed:
-                newStepMode = .exerciseTimed(seconds: timerSeconds)
+                TimedPicker(
+                    seconds: $timerSeconds,
+                    primaryLabel: "Save",
+                    secondaryLabel: "Back",
+                    onPrimary: { applyAndClose() },
+                    onSecondary: { withAnimation(.smooth(duration: 0.25)) { showAmountPicker = false } }
+                )
             case .reps:
-                newStepMode = .exerciseReps(count: repsCount)
-            case .open, .none:
-                newStepMode = .exerciseOpen
+                RepsPicker(
+                    reps: $repsCount,
+                    primaryLabel: "Save",
+                    secondaryLabel: "Back",
+                    onPrimary: { applyAndClose() },
+                    onSecondary: { withAnimation(.smooth(duration: 0.25)) { showAmountPicker = false } }
+                )
+            default:
+                Text("No amount to change for open mode.")
+                    .foregroundStyle(.secondary)
             }
         } else {
             switch restModeSelection {
             case .timed:
-                newStepMode = .restTimed(seconds: timerSeconds)
-            case .open, .none:
-                newStepMode = .restOpen
+                RestTimedPicker(
+                    seconds: $timerSeconds,
+                    primaryLabel: "Save",
+                    secondaryLabel: "Back",
+                    onPrimary: { applyAndClose() },
+                    onSecondary: { withAnimation(.smooth(duration: 0.25)) { showAmountPicker = false } }
+                )
+            default:
+                Text("No duration to change for open rest.")
+                    .foregroundStyle(.secondary)
             }
         }
+    }
 
+    // MARK: - Delete Confirmation
+
+    private var deleteContent: some View {
+        VStack(spacing: 16) {
+            Text("Are you sure you want to delete this step?")
+                .foregroundStyle(.secondary)
+            HStack {
+                Button("Cancel") { onCancel() }
+                    .buttonStyle(.bordered)
+                Button("Delete", role: .destructive) { onDelete() }
+                    .buttonStyle(.bordered)
+            }
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func applyAndClose() {
+        let newStepMode: StepMode
+        if isExercise {
+            switch exerciseModeSelection {
+            case .timed: newStepMode = .exerciseTimed(seconds: timerSeconds)
+            case .reps: newStepMode = .exerciseReps(count: repsCount)
+            case .open, .none: newStepMode = .exerciseOpen
+            }
+        } else {
+            switch restModeSelection {
+            case .timed: newStepMode = .restTimed(seconds: timerSeconds)
+            case .open, .none: newStepMode = .restOpen
+            }
+        }
         onUpdateSummary(newStepMode)
-        sheetDetent = .height(300)
     }
 
     private static func extractFromStepMode(_ stepMode: StepMode) -> (
         exerciseMode: ExerciseMode?, restMode: RestMode?, seconds: Int, reps: Int
     ) {
         switch stepMode {
-        case .exerciseTimed(let seconds):
-            return (.timed, nil, seconds, 10)
-        case .exerciseReps(let count):
-            return (.reps, nil, 60, count)
-        case .exerciseOpen:
-            return (.open, nil, 60, 10)
-        case .restTimed(let seconds):
-            return (nil, .timed, seconds, 10)
-        case .restOpen:
-            return (nil, .open, 60, 10)
+        case .exerciseTimed(let seconds): (.timed, nil, seconds, 10)
+        case .exerciseReps(let count): (.reps, nil, 60, count)
+        case .exerciseOpen: (.open, nil, 60, 10)
+        case .restTimed(let seconds): (nil, .timed, seconds, 10)
+        case .restOpen: (nil, .open, 60, 10)
         }
-    }
-}
-
-// MARK: - Subviews unique to EditStepSheet
-
-private struct DeleteConfirmView: View {
-    let onCancel: () -> Void
-    let onDeleteConfirm: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Are you sure you want to delete this step?")
-                .foregroundColor(.secondary)
-            HStack {
-                Button("Cancel") { onCancel() }
-                Button(role: .destructive) {
-                    onDeleteConfirm()
-                } label: {
-                    Text("Delete")
-                }
-            }
-            .buttonStyle(.bordered)
-        }
-        .padding()
-    }
-}
-
-private struct InfoView: View {
-    let title: String
-    let message: String
-    let onClose: () -> Void
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text(message).foregroundColor(.secondary)
-            Button("Close") { onClose() }
-                .buttonStyle(.bordered)
-        }
-        .padding()
     }
 }
