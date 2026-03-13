@@ -4,65 +4,77 @@ import SwiftUI
 struct RoutineCard: View {
     let routine: Routine
 
+    private var duration: Int {
+        routine.metadata.totalDuration ?? routine.calculateTotalDuration()
+    }
+
+    private var exerciseCount: Int {
+        routine.metadata.stepCount ?? routine.calculateStepCount()
+    }
+
     var body: some View {
         NavigationLink(destination: RoutineDetailView(routine: routine)) {
             VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(routine.getName())
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                    }
+                Text(routine.getName())
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
 
-                    Spacer()
+                HStack(spacing: 16) {
+                    Label("\(duration) min", systemImage: "clock")
+                    Label("\(exerciseCount) steps", systemImage: "arrow.trianglehead.clockwise")
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
 
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text(
-                            "\(routine.metadata.totalDuration ?? routine.calculateTotalDuration()) min"
-                        )
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.blue)
-
-                        Text(
-                            "\(routine.metadata.stepCount ?? routine.calculateStepCount()) exercises"
-                        )
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                HStack(spacing: 6) {
+                    let realEquipment = routine.metadata.equipment.filter { $0 != "body_only" }
+                    if realEquipment.isEmpty {
+                        Image(systemName: "figure.stand")
+                        Text("Body only")
+                            .lineLimit(1)
+                    } else {
+                        Image(systemName: "dumbbell")
+                        Text(realEquipment.joined(separator: ", "))
+                            .lineLimit(1)
                     }
                 }
-
-                HStack {
-                    if !routine.metadata.equipment.isEmpty {
-                        Text(routine.metadata.equipment.joined(separator: ", "))
-                            .font(.caption2)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.green.opacity(0.1))
-                            .foregroundColor(.green)
-                            .cornerRadius(8)
-                    }
-
-                    Spacer()
-                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            .padding(16)
-            .background(Color(.systemBackground))
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 15)
+            .padding(.horizontal, 17)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(UIColor.secondarySystemGroupedBackground))
+            )
+            .clipShape(.rect(cornerRadius: 20))
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(.plain)
     }
 }
 
 #Preview {
-    // Preview with sample data
-    let sampleRoutine = Routine(
-        name: "Core Crusher",
-        steps: []
-    )
+    let sampleRoutine: Routine = {
+        let r = Routine(
+            name: "Core Crusher",
+            steps: [
+                RoutineStep(type: .exercise, exerciseId: "plank", duration: 45, order: 0),
+                RoutineStep(type: .rest, duration: 15, order: 1),
+                RoutineStep(type: .exercise, exerciseId: "crunches", duration: 30, order: 2),
+                RoutineStep(type: .rest, duration: 15, order: 3),
+                RoutineStep(type: .exercise, exerciseId: "mountain-climbers", duration: 30, order: 4),
+            ]
+        )
+        r.metadata.equipment = ["Kettlebell", "Exercise ball"]
+        r.metadata.stepCount = r.calculateStepCount()
+        r.metadata.totalDuration = r.calculateTotalDuration()
+        return r
+    }()
 
-    RoutineCard(routine: sampleRoutine)
-        .padding()
+    NavigationStack {
+        RoutineCard(routine: sampleRoutine)
+            .padding()
+    }
 }

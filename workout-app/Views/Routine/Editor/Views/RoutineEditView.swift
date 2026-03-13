@@ -188,12 +188,12 @@ struct RoutineEditView: View {
                             if let updatedRoutine = viewModel.buildRoutine() {
                                 routine.translations = updatedRoutine.translations
                                 routine.steps = updatedRoutine.steps
-                                routine.updateMetadata()
+                                routine.updateMetadata(exercises: exercises)
                             }
                         } else {
                             // Create new routine
                             if let routine = viewModel.buildRoutine() {
-                                routine.updateMetadata()
+                                routine.updateMetadata(exercises: exercises)
                                 modelContext.insert(routine)
                             }
                         }

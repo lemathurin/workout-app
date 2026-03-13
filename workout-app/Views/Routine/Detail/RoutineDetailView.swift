@@ -118,6 +118,11 @@ struct RoutineDetailView: View {
         .fullScreenCover(isPresented: $showPlayer) {
             RoutinePlayerView(routine: routine)
         }
+        .onChange(of: showPlayer) { _, isShowing in
+            if isShowing {
+                routine.metadata.lastPlayedAt = Date()
+            }
+        }
         .toolbar(.hidden, for: .tabBar)
     }
 

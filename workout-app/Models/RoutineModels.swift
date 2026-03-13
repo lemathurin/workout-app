@@ -64,11 +64,41 @@ class Routine {
         }
     }
 
-    /// Updates metadata with current step count and duration
-    func updateMetadata() {
+    /// Updates metadata with current step count, duration, and equipment
+    /// - Parameter exercises: Available exercises to look up equipment from exercise steps.
+    ///   When provided, equipment is aggregated from the routine's exercises.
+    func updateMetadata(exercises: [Exercise] = []) {
         metadata.stepCount = calculateStepCount()
         metadata.totalDuration = calculateTotalDuration()
+        if !exercises.isEmpty {
+            metadata.equipment = collectEquipment(from: exercises)
+        }
         metadata.updateTimestamp()
+    }
+
+    /// Collects unique equipment IDs from all exercise steps in this routine
+    private func collectEquipment(from exercises: [Exercise]) -> [String] {
+        let exerciseIds = collectExerciseIds(from: steps)
+        let equipmentIds = Set(
+            exerciseIds.compactMap { id in
+                exercises.first { $0.id == id }?.equipmentId
+            }
+        )
+        return equipmentIds.sorted()
+    }
+
+    /// Recursively collects all exerciseIds from steps (including nested repeats)
+    private func collectExerciseIds(from steps: [RoutineStep]) -> [String] {
+        steps.flatMap { step -> [String] in
+            switch step.type {
+            case .exercise:
+                if let id = step.exerciseId { return [id] } else { return [] }
+            case .rest:
+                return []
+            case .repeats:
+                return collectExerciseIds(from: step.steps ?? [])
+            }
+        }
     }
 }
 
@@ -180,12 +210,13 @@ class RoutineMetadata {
     var author: String?
     var stepCount: Int?
     var totalDuration: Int?
+    var lastPlayedAt: Date?
 
     init(
         createdAt: Date = Date(), updatedAt: Date = Date(), categories: [String] = [],
         difficulty: String = "", tags: [String] = [], equipment: [String] = [],
         targetMuscles: [String] = [], author: String? = nil, stepCount: Int? = nil,
-        totalDuration: Int? = nil
+        totalDuration: Int? = nil, lastPlayedAt: Date? = nil
     ) {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -197,6 +228,7 @@ class RoutineMetadata {
         self.author = author
         self.stepCount = stepCount
         self.totalDuration = totalDuration
+        self.lastPlayedAt = lastPlayedAt
     }
 
     func updateTimestamp() {
