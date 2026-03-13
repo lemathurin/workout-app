@@ -12,29 +12,34 @@ struct ExerciseDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text(exercise.getName())
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
-                VStack(alignment: .leading, spacing: 8) {
-                    DetailRow(title: "Equipment", value: getEquipmentName())
-                    DetailRow(title: "Level", value: getLevelName())
-                    DetailRow(title: "Force", value: getForceName())
-                    DetailRow(title: "Category", value: getCategoryName())
-                    DetailRow(title: "Mechanic", value: getMechanicName())
-                    DetailRow(title: "Primary Muscle", value: getPrimaryMuscleName())
+                VStack(spacing: 20) {
+                    DetailPairRow(
+                        leftTitle: "Equipment", leftValue: getEquipmentName(),
+                        rightTitle: "Level", rightValue: getLevelName()
+                    )
+                    DetailPairRow(
+                        leftTitle: "Force", leftValue: getForceName(),
+                        rightTitle: "Category", rightValue: getCategoryName()
+                    )
+                    DetailPairRow(
+                        leftTitle: "Mechanic", leftValue: getMechanicName(),
+                        rightTitle: "Primary Muscle", rightValue: getPrimaryMuscleName()
+                    )
                     
                     if !exercise.secondaryMuscles.isEmpty {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Secondary Muscles:")
-                                .font(.headline)
-                            ForEach(exercise.secondaryMuscles, id: \.self) { muscleId in
-                                Text("• \(getMuscleName(for: muscleId))")
-                                    .font(.body)
-                                    .foregroundColor(.secondary)
-                            }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Secondary Muscles")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Text(exercise.secondaryMuscles.map { getMuscleName(for: $0) }.joined(separator: ", "))
+                                .font(.title2)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
                 
@@ -75,18 +80,33 @@ struct ExerciseDetailView: View {
     }
 }
 
-struct DetailRow: View {
+struct DetailPairRow: View {
+    let leftTitle: String
+    let leftValue: String
+    let rightTitle: String
+    let rightValue: String
+    
+    var body: some View {
+        HStack(alignment: .top) {
+            DetailCell(title: leftTitle, value: leftValue)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            DetailCell(title: rightTitle, value: rightValue)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+struct DetailCell: View {
     let title: String
     let value: String
     
     var body: some View {
-        HStack {
-            Text("\(title):")
-                .font(.headline)
-            Spacer()
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             Text(value)
-                .font(.body)
-                .foregroundColor(.secondary)
+                .font(.title2)
         }
     }
 }
