@@ -140,29 +140,48 @@ private struct ChooseKindStep: View {
     let onCancel: () -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
-            Text("Add a Step")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: 18) {
+            HStack {
+                Text("Add a Step")
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Button {
+//                    info sheet
+                } label: {
+                    Image(systemName: "questionmark.circle.fill")
+                        .font(.title)
+                        .foregroundStyle(Color.gray, Color.primary.opacity(0.1))
+                }
+            }
+            
+            BigCardButton(
+                title: "Exercise",
+                description: "Perform a specific movement or activity.",
+                action: onExercise
+            )
+            
+            HStack(spacing: 12) {
+                BigCardButton(
+                    title: "Rest",
+                    description: "A pause to recover between activities.",
+                    action: onRest
+                )
 
-            Button("Exercise", action: onExercise)
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
-
-            Button("Rest", action: onRest)
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
-
-            Button("Repeat", action: onRepeat)
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
+                BigCardButton(
+                    title: "Repeat",
+                    description: "Loop the previous steps multiple times",
+                    action: onRepeat
+                )
+            }
 
             Button("Cancel", action: onCancel)
                 .buttonStyle(.bordered)
-                .frame(maxWidth: .infinity)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
         }
-        .controlSize(.large)
     }
 }
 
