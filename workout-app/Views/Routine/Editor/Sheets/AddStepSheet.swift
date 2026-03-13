@@ -181,7 +181,6 @@ private struct PickExerciseStep: View {
             onBack: onBack,
             onDone: onNext
         )
-        .clipShape(.rect(cornerRadius: 12))
     }
 }
 
