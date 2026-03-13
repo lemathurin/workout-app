@@ -70,26 +70,23 @@ struct TimedPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -112,26 +109,23 @@ struct RepsPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -195,26 +189,23 @@ struct RestTimedPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -237,26 +228,23 @@ struct RepeatCountPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 

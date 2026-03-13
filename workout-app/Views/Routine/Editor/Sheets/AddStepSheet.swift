@@ -221,13 +221,12 @@ private struct ChooseModeStep: View {
     @State private var showAmountPicker = false
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 18) {
             HStack {
                 Text("Choose Mode")
-                    .font(.title2)
+                    .font(.title)
                     .fontWeight(.semibold)
-                Spacer()
-                Button("Back", action: onBack)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if showAmountPicker {
@@ -241,40 +240,61 @@ private struct ChooseModeStep: View {
     @ViewBuilder
     private var modeSelectionContent: some View {
         if isExercise {
-            Button("Timed") {
+            BigCardButton(
+                title: "Timed",
+                description: "Perform the exercise for a set duration."
+            ) {
                 exerciseMode = .timed
                 showAmountPicker = true
             }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
 
-            Button("Reps") {
-                exerciseMode = .reps
-                showAmountPicker = true
-            }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
+            HStack(spacing: 12) {
+                BigCardButton(
+                    title: "Reps",
+                    description: "Count a specific number of repetitions."
+                ) {
+                    exerciseMode = .reps
+                    showAmountPicker = true
+                }
 
-            Button("Open") {
-                exerciseMode = .open
-                onDone()
+                BigCardButton(
+                    title: "Open",
+                    description: "No timer or count, finish when ready."
+                ) {
+                    exerciseMode = .open
+                    onDone()
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
+
+            Button("Back", action: onBack)
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
         } else {
-            Button("Timed") {
-                restMode = .timed
-                showAmountPicker = true
-            }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
+            HStack(spacing: 12) {
+                BigCardButton(
+                    title: "Timed",
+                    description: "Rest for a set duration."
+                ) {
+                    restMode = .timed
+                    showAmountPicker = true
+                }
 
-            Button("Open") {
-                restMode = .open
-                onDone()
+                BigCardButton(
+                    title: "Open",
+                    description: "Rest as long as you need."
+                ) {
+                    restMode = .open
+                    onDone()
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .frame(maxWidth: .infinity)
+            
+            Button("Back", action: onBack)
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
         }
     }
 
@@ -316,14 +336,11 @@ private struct RepeatCountStep: View {
     let onBack: () -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("Repeat Count")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                Spacer()
-                Button("Back", action: onBack)
-            }
+        VStack(spacing: 18) {
+            Text("Repeat Count")
+                .font(.title)
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             RepeatCountPicker(
                 count: $count,
