@@ -46,10 +46,10 @@ struct RoutineCard: View {
             .padding(.vertical, 15)
             .padding(.horizontal, 17)
             .background(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 20)
                     .fill(Color(UIColor.secondarySystemGroupedBackground))
             )
-            .clipShape(.rect(cornerRadius: 12))
+            .clipShape(.rect(cornerRadius: 20))
         }
         .buttonStyle(.plain)
     }
