@@ -220,10 +220,20 @@ private struct ChooseModeStep: View {
 
     @State private var showAmountPicker = false
 
+    private var titleText: String {
+        guard showAmountPicker else { return "Choose Mode" }
+        if (isExercise && exerciseMode == .timed) || (!isExercise && restMode == .timed) {
+            return "How long?"
+        } else if isExercise && exerciseMode == .reps {
+            return "How many?"
+        }
+        return "Choose Mode"
+    }
+
     var body: some View {
         VStack(spacing: 18) {
             HStack {
-                Text("Choose Mode")
+                Text(titleText)
                     .font(.title)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
