@@ -32,7 +32,7 @@ struct AddStepSheet: View {
     let onAddRepeat: (Int) -> Void
 
     var body: some View {
-        DynamicSheet(animation: .smooth(duration: 0.25, extraBounce: 0)) {
+        DynamicSheet(animation: .smooth(duration: 0.25, extraBounce: 0), maximized: currentFlow == .pickExercise) {
             VStack(spacing: 20) {
                 ZStack {
                     switch currentFlow {
@@ -92,7 +92,7 @@ struct AddStepSheet: View {
                 }
                 .geometryGroup()
             }
-            .padding([.horizontal, .top], 20)
+            .padding([.horizontal, .top], currentFlow == .pickExercise ? 0 : 20)
         }
     }
 
@@ -175,24 +175,13 @@ private struct PickExerciseStep: View {
     let onBack: () -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("Choose Exercise")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                Spacer()
-                Button("Back", action: onBack)
-            }
-
-            ExercisePickerView(
-                selectedId: $selectedExerciseId,
-                selectedName: $selectedExerciseName,
-                onBack: onBack,
-                onDone: onNext
-            )
-            .frame(height: 400)
-            .clipShape(.rect(cornerRadius: 12))
-        }
+        ExercisePickerView(
+            selectedId: $selectedExerciseId,
+            selectedName: $selectedExerciseName,
+            onBack: onBack,
+            onDone: onNext
+        )
+        .clipShape(.rect(cornerRadius: 12))
     }
 }
 
