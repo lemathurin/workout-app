@@ -456,19 +456,16 @@ struct ExercisePickerView: View {
             }
             .safeAreaPadding(.bottom, 90)
             .overlay(alignment: .bottom) {
-                Button {
-                    onBack()
-                } label: {
-                    Text("Back")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .background {
+                Button("Back", action: onBack)
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .buttonSizing(.flexible)
+                    .foregroundStyle(.primary)
+                    .background {
                         Capsule()
                             .fill(.regularMaterial)
                     }
-                .padding()
+                    .padding()
             }
             .background(.clear)
         }
