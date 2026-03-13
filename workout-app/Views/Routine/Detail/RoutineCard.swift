@@ -28,13 +28,14 @@ struct RoutineCard: View {
                 .foregroundStyle(.secondary)
 
                 HStack(spacing: 6) {
-                    if routine.metadata.equipment.isEmpty {
+                    let realEquipment = routine.metadata.equipment.filter { $0 != "body_only" }
+                    if realEquipment.isEmpty {
                         Image(systemName: "figure.stand")
-                        Text("body_only")
+                        Text("Body only")
                             .lineLimit(1)
                     } else {
                         Image(systemName: "dumbbell")
-                        Text(routine.metadata.equipment.joined(separator: ", "))
+                        Text(realEquipment.joined(separator: ", "))
                             .lineLimit(1)
                     }
                 }

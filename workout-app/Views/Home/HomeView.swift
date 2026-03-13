@@ -12,15 +12,31 @@ struct HomeView: View {
     @State private var selectedEquipment: String?
     @Query private var routines: [Routine]
 
+    private var hasBodyOnlyRoutines: Bool {
+        routines.contains { $0.metadata.equipment.isEmpty || $0.metadata.equipment == ["body_only"] }
+    }
+
     private var allEquipment: [String] {
-        Array(Set(routines.flatMap { $0.metadata.equipment })).sorted()
+        let unique = Set(routines.flatMap { $0.metadata.equipment })
+            .filter { $0 != "body_only" }
+            .sorted()
+        if hasBodyOnlyRoutines {
+            return ["body_only"] + unique
+        }
+        return unique
     }
 
     private var filteredAndSortedRoutines: [Routine] {
         var result = routines
 
         if let equipment = selectedEquipment {
-            result = result.filter { $0.metadata.equipment.contains(equipment) }
+            if equipment == "body_only" {
+                result = result.filter {
+                    $0.metadata.equipment.isEmpty || $0.metadata.equipment == ["body_only"]
+                }
+            } else {
+                result = result.filter { $0.metadata.equipment.contains(equipment) }
+            }
         }
 
         switch sortOption {
@@ -120,7 +136,7 @@ struct HomeView: View {
                     selectedEquipment = selectedEquipment == equipment ? nil : equipment
                 }
             } label: {
-                Text(equipment)
+                Text(equipment == "body_only" ? "Body only" : equipment)
                     .font(.subheadline)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
