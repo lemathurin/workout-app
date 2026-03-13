@@ -375,6 +375,7 @@ struct ExercisePickerView: View {
             }
             .scrollDismissesKeyboard(.immediately)
             .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
             .listSectionIndexVisibility(.visible)
             .safeAreaInset(edge: .top) {
                 if showingSearch {
@@ -481,7 +482,7 @@ struct ExercisePickerView: View {
                     }
                 .padding()
             }
-            .background(Color(UIColor.systemGroupedBackground))
+            .background(.clear)
         }
     }
 }
