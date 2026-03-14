@@ -63,10 +63,10 @@ struct ContentView: View {
 //         }
         
         TabView {
-            Tab("Home", systemImage: "figure.cooldown") {
+            Tab("tabBar.home", systemImage: "figure.cooldown") {
                 HomeView()
             }
-            Tab("Activity", systemImage: "chevron.up.forward.2") {
+            Tab("tabBar.activity", systemImage: "chevron.up.forward.2") {
                 ActivityView()
             }
             Tab(role: .search) {
