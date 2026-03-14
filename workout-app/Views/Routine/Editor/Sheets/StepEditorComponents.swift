@@ -267,6 +267,7 @@ struct ExercisePickerView: View {
     @State private var searchText = ""
     @State private var showingFilters = false
     @State private var showingSearch = false
+    @State private var detailExercise: Exercise?
 
     // Filter states
     @State private var selectedEquipment: Set<String> = []
@@ -349,19 +350,43 @@ struct ExercisePickerView: View {
                 ForEach(sectionTitles, id: \.self) { letter in
                     Section(header: Text(letter)) {
                         ForEach(groupedExercises[letter] ?? [], id: \.id) { exercise in
-                            Button {
-                                selectedId = exercise.id
-                                selectedName = exercise.getName(for: "en")
-                                onDone()
-                            } label: {
-                                Text(exercise.getName(for: "en"))
+                            HStack {
+                                Button {
+                                    selectedId = exercise.id
+                                    selectedName = exercise.getName()
+                                    onDone()
+                                } label: {
+                                    Text(exercise.getName())
+                                        .foregroundStyle(.primary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .contentShape(.rect)
+                                }
+                                .buttonStyle(.plain)
+                                Button("Details", systemImage: "info.circle") {
+                                    detailExercise = exercise
+                                }
+                                .labelStyle(.iconOnly)
+                                .buttonStyle(.borderless)
                             }
                         }
                     }
                     .sectionIndexLabel(Text(letter))
                 }
             }
-            .foregroundStyle(.primary)
+            .sheet(item: $detailExercise) { exercise in
+                NavigationStack {
+                    ExerciseDetailView(exercise: exercise)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button {
+                                    detailExercise = nil
+                                } label: {
+                                    Image(systemName: "xmark")
+                                }
+                            }
+                        }
+                }
+            }
             .scrollDismissesKeyboard(.immediately)
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
