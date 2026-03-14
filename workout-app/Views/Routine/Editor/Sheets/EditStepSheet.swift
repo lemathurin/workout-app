@@ -41,13 +41,12 @@ struct EditStepSheet: View {
 
     var body: some View {
         DynamicSheet(animation: .smooth(duration: 0.25, extraBounce: 0)) {
-            VStack(spacing: 12) {
+            VStack(spacing: 18) {
                 HStack {
                     Text(stepName)
-                        .font(.title2)
+                        .font(.title)
                         .fontWeight(.semibold)
-                    Spacer()
-                    Button("Cancel", action: onCancel)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 ZStack {
@@ -83,38 +82,65 @@ struct EditStepSheet: View {
     @ViewBuilder
     private var typeContent: some View {
         if isExercise {
-            VStack(spacing: 12) {
-                Button("Timed") {
+            VStack(spacing: 18) {
+                BigCardButton(
+                    title: "Timed",
+                    description: "Perform the exercise for a set duration."
+                ) {
                     exerciseModeSelection = .timed
                     withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
                 }
-                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
-                Button("Reps") {
-                    exerciseModeSelection = .reps
-                    withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
+
+                HStack(spacing: 12) {
+                    BigCardButton(
+                        title: "Reps",
+                        description: "Count a specific number of repetitions."
+                    ) {
+                        exerciseModeSelection = .reps
+                        withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
+                    }
+
+                    BigCardButton(
+                        title: "Open",
+                        description: "No timer or count, finish when ready."
+                    ) {
+                        exerciseModeSelection = .open
+                        applyAndClose()
+                    }
                 }
-                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
-                Button("Open") {
-                    exerciseModeSelection = .open
-                    applyAndClose()
-                }
-                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+
+                Button("Cancel", action: onCancel)
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .buttonSizing(.flexible)
+                    .foregroundStyle(.primary)
             }
-            .controlSize(.large)
         } else {
-            VStack(spacing: 12) {
-                Button("Timed") {
-                    restModeSelection = .timed
-                    withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
+            VStack(spacing: 18) {
+                HStack(spacing: 12) {
+                    BigCardButton(
+                        title: "Timed",
+                        description: "Rest for a set duration."
+                    ) {
+                        restModeSelection = .timed
+                        withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
+                    }
+
+                    BigCardButton(
+                        title: "Open",
+                        description: "Rest as long as you need."
+                    ) {
+                        restModeSelection = .open
+                        applyAndClose()
+                    }
                 }
-                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
-                Button("Open") {
-                    restModeSelection = .open
-                    applyAndClose()
-                }
-                .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+
+                Button("Cancel", action: onCancel)
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .buttonSizing(.flexible)
+                    .foregroundStyle(.primary)
             }
-            .controlSize(.large)
         }
     }
 
@@ -164,15 +190,20 @@ struct EditStepSheet: View {
     // MARK: - Delete Confirmation
 
     private var deleteContent: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 18) {
             Text("Are you sure you want to delete this step?")
                 .foregroundStyle(.secondary)
-            HStack {
-                Button("Cancel") { onCancel() }
-                    .buttonStyle(.bordered)
-                Button("Delete", role: .destructive) { onDelete() }
-                    .buttonStyle(.bordered)
-            }
+
+            Button("Delete", role: .destructive) { onDelete() }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+
+            Button("Cancel", action: onCancel)
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
         }
     }
 
