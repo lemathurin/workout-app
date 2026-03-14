@@ -361,6 +361,7 @@ struct ExercisePickerView: View {
                     .sectionIndexLabel(Text(letter))
                 }
             }
+            .foregroundStyle(.primary)
             .scrollDismissesKeyboard(.immediately)
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
@@ -623,6 +624,7 @@ struct ExerciseFilterSheet: View {
                     }
                 }
             }
+            .foregroundStyle(.primary)
             .navigationTitle("Filter Exercises")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
