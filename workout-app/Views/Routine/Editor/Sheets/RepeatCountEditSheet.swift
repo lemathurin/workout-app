@@ -1,23 +1,17 @@
 import SwiftUI
 
 struct RepeatCountEditSheet: View {
-    @Binding var sheetDetent: PresentationDetent
     let currentCount: Int
     let onSave: (Int) -> Void
     let onCancel: () -> Void
 
-    @Environment(\.dismiss) private var dismiss
     @State private var selectedCount: Int
 
-    private let options = Array(2...50)
-
     init(
-        sheetDetent: Binding<PresentationDetent>,
         currentCount: Int,
         onSave: @escaping (Int) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        _sheetDetent = sheetDetent
         self.currentCount = currentCount
         self.onSave = onSave
         self.onCancel = onCancel
@@ -25,36 +19,22 @@ struct RepeatCountEditSheet: View {
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                Picker("Repeat count", selection: $selectedCount) {
-                    ForEach(options, id: \.self) { count in
-                        Text("\(count)x").tag(count)
-                    }
-                }
-                .pickerStyle(.wheel)
-                HStack {
-                    Button {
-                        onCancel()
-                    } label: {
-                        Text("Cancel")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
+        DynamicSheet(animation: .smooth(duration: 0.25, extraBounce: 0)) {
+            VStack(spacing: 12) {
+                Text("Repeat Count")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Button {
-                        onSave(selectedCount)
-                    } label: {
-                        Text("Save")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-                .controlSize(.large)
+                RepeatCountPicker(
+                    count: $selectedCount,
+                    primaryLabel: "Save",
+                    secondaryLabel: "Cancel",
+                    onPrimary: { onSave(selectedCount) },
+                    onSecondary: onCancel
+                )
             }
-            .padding()
-            .navigationTitle("Repeat Count")
-            .navigationBarTitleDisplayMode(.inline)
+            .padding([.horizontal, .top], 20)
         }
     }
 }

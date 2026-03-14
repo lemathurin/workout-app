@@ -70,26 +70,23 @@ struct TimedPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -112,26 +109,23 @@ struct RepsPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -195,26 +189,23 @@ struct RestTimedPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -237,26 +228,23 @@ struct RepeatCountPicker: View {
                 }
             }
             .pickerStyle(.wheel)
-            HStack {
-                Button {
-                    onSecondary()
-                } label: {
+            HStack(spacing: 12) {
+                Button(action: onSecondary) {
                     Text(secondaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
+                .foregroundStyle(.primary)
 
-                Button {
-                    onPrimary()
-                } label: {
+                Button(action: onPrimary) {
                     Text(primaryLabel)
-                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .buttonSizing(.flexible)
             }
-            .controlSize(.large)
         }
-        .padding()
     }
 }
 
@@ -279,6 +267,7 @@ struct ExercisePickerView: View {
     @State private var searchText = ""
     @State private var showingFilters = false
     @State private var showingSearch = false
+    @State private var detailExercise: Exercise?
 
     // Filter states
     @State private var selectedEquipment: Set<String> = []
@@ -361,20 +350,46 @@ struct ExercisePickerView: View {
                 ForEach(sectionTitles, id: \.self) { letter in
                     Section(header: Text(letter)) {
                         ForEach(groupedExercises[letter] ?? [], id: \.id) { exercise in
-                            Button {
-                                selectedId = exercise.id
-                                selectedName = exercise.getName(for: "en")
-                                onDone()
-                            } label: {
-                                Text(exercise.getName(for: "en"))
+                            HStack {
+                                Button {
+                                    selectedId = exercise.id
+                                    selectedName = exercise.getName()
+                                    onDone()
+                                } label: {
+                                    Text(exercise.getName())
+                                        .foregroundStyle(.primary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .contentShape(.rect)
+                                }
+                                .buttonStyle(.plain)
+                                Button("Details", systemImage: "info.circle") {
+                                    detailExercise = exercise
+                                }
+                                .labelStyle(.iconOnly)
+                                .buttonStyle(.borderless)
                             }
                         }
                     }
                     .sectionIndexLabel(Text(letter))
                 }
             }
+            .sheet(item: $detailExercise) { exercise in
+                NavigationStack {
+                    ExerciseDetailView(exercise: exercise)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button {
+                                    detailExercise = nil
+                                } label: {
+                                    Image(systemName: "xmark")
+                                }
+                            }
+                        }
+                }
+            }
             .scrollDismissesKeyboard(.immediately)
             .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
             .listSectionIndexVisibility(.visible)
             .safeAreaInset(edge: .top) {
                 if showingSearch {
@@ -467,21 +482,18 @@ struct ExercisePickerView: View {
             }
             .safeAreaPadding(.bottom, 90)
             .overlay(alignment: .bottom) {
-                Button {
-                    onBack()
-                } label: {
-                    Text("Back")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .background {
+                Button("Back", action: onBack)
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .buttonSizing(.flexible)
+                    .foregroundStyle(.primary)
+                    .background {
                         Capsule()
                             .fill(.regularMaterial)
                     }
-                .padding()
+                    .padding()
             }
-            .background(Color(UIColor.systemGroupedBackground))
+            .background(.clear)
         }
     }
 }
@@ -637,6 +649,7 @@ struct ExerciseFilterSheet: View {
                     }
                 }
             }
+            .foregroundStyle(.primary)
             .navigationTitle("Filter Exercises")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

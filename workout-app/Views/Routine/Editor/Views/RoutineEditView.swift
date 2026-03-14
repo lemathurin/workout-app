@@ -125,7 +125,7 @@ struct RoutineEditView: View {
                 // TODO: change to .toolbar ToolbarItem(placement: .bottomBar)
                 Button(
                     action: {
-                        viewModel.showChooseStepKindSheet = true
+                        viewModel.showAddStepSheet = true
                     },
                     label: {
                         Label("Add a step", systemImage: "plus")
@@ -138,32 +138,25 @@ struct RoutineEditView: View {
             }
             .sheet(isPresented: .constant(viewModel.isEditingStep)) {
                 editStepSheet
-                    .presentationDetents([.height(300)])
                     .interactiveDismissDisabled(true)
             }
             .sheet(isPresented: .constant(viewModel.isEditingRepeatCount)) {
                 editRepeatCountSheet
-                    .presentationDetents([.height(300)])
                     .interactiveDismissDisabled(true)
             }
-            .sheet(isPresented: $viewModel.showChooseStepKindSheet) {
-                ChooseStepKindSheet(
+            .sheet(isPresented: $viewModel.showAddStepSheet) {
+                AddStepSheet(
                     onAddExercise: { exerciseId, name, mode in
-                        if let exerciseMode = stepModeToExerciseMode(mode) {
-                            viewModel.handleAddExercise(
-                                exerciseId: exerciseId, name: name, mode: exerciseMode)
-                        }
+                        viewModel.handleAddExercise(
+                            exerciseId: exerciseId, name: name, mode: mode)
                     },
                     onAddRest: { mode in
-                        if let restMode = stepModeToRestMode(mode) {
-                            viewModel.handleAddRest(mode: restMode)
-                        }
+                        viewModel.handleAddRest(mode: mode)
                     },
-                    onStartRepeatFlow: { count in
+                    onAddRepeat: { count in
                         viewModel.handleStartRepeatFlow(count: count)
                     }
                 )
-                .presentationDetents([.height(300)])
                 .interactiveDismissDisabled(true)
             }
             .navigationTitle(routine == nil ? "New Routine" : "Edit Routine")
@@ -408,13 +401,11 @@ struct RoutineEditView: View {
             case .repeatGroup(_, _, let repeatItems) = viewModel.items[repeatIndex],
             let itemIndex = repeatItems.firstIndex(where: { $0.id == itemId })
         {
-
             let repeatItem = repeatItems[itemIndex]
 
             switch repeatItem {
             case .exercise(_, _, let name, let mode):
                 EditStepSheet(
-                    sheetDetent: $viewModel.sheetDetent,
                     stepName: name,
                     stepMode: exerciseModeToStepMode(mode),
                     action: action,
@@ -429,13 +420,10 @@ struct RoutineEditView: View {
                         viewModel.removeItemFromRepeat(repeatId: repeatId, itemId: itemId)
                         viewModel.closeEditSheet()
                     },
-                    onCancel: {
-                        viewModel.closeEditSheet()
-                    }
+                    onCancel: { viewModel.closeEditSheet() }
                 )
             case .rest(_, let mode):
                 EditStepSheet(
-                    sheetDetent: $viewModel.sheetDetent,
                     stepName: "Rest",
                     stepMode: restModeToStepMode(mode),
                     action: action,
@@ -450,9 +438,7 @@ struct RoutineEditView: View {
                         viewModel.removeItemFromRepeat(repeatId: repeatId, itemId: itemId)
                         viewModel.closeEditSheet()
                     },
-                    onCancel: {
-                        viewModel.closeEditSheet()
-                    }
+                    onCancel: { viewModel.closeEditSheet() }
                 )
             }
         }
@@ -466,7 +452,6 @@ struct RoutineEditView: View {
             switch item {
             case .exercise(_, _, let name, let mode):
                 EditStepSheet(
-                    sheetDetent: $viewModel.sheetDetent,
                     stepName: name,
                     stepMode: exerciseModeToStepMode(mode),
                     action: action,
@@ -480,13 +465,10 @@ struct RoutineEditView: View {
                         viewModel.removeItem(id: itemId)
                         viewModel.closeEditSheet()
                     },
-                    onCancel: {
-                        viewModel.closeEditSheet()
-                    }
+                    onCancel: { viewModel.closeEditSheet() }
                 )
             case .rest(_, let mode):
                 EditStepSheet(
-                    sheetDetent: $viewModel.sheetDetent,
                     stepName: "Rest",
                     stepMode: restModeToStepMode(mode),
                     action: action,
@@ -500,9 +482,7 @@ struct RoutineEditView: View {
                         viewModel.removeItem(id: itemId)
                         viewModel.closeEditSheet()
                     },
-                    onCancel: {
-                        viewModel.closeEditSheet()
-                    }
+                    onCancel: { viewModel.closeEditSheet() }
                 )
             case .repeatGroup:
                 EmptyView()
@@ -517,15 +497,12 @@ struct RoutineEditView: View {
             case .repeatGroup(_, let count, _) = viewModel.items[repeatIndex]
         {
             RepeatCountEditSheet(
-                sheetDetent: $viewModel.repeatCountSheetDetent,
                 currentCount: count,
                 onSave: { newCount in
                     viewModel.updateRepeatCount(repeatId: repeatId, newCount: newCount)
                     viewModel.closeRepeatCountSheet()
                 },
-                onCancel: {
-                    viewModel.closeRepeatCountSheet()
-                }
+                onCancel: { viewModel.closeRepeatCountSheet() }
             )
         }
     }
