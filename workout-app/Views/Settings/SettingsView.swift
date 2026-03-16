@@ -9,10 +9,10 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Text("App language")
+                Text("settings.language")
 
                 Section {
-                    Button("Delete All Data", role: .destructive) {
+                    Button("settings.deleteData", role: .destructive) {
                         Task {
                             await handleDeleteAllData()
                         }
@@ -20,10 +20,10 @@ struct SettingsView: View {
                     .disabled(isDeleting)
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("settings.title")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close", systemImage: "xmark") {
+                    Button("common.close", systemImage: "xmark") {
                         dismiss()
                     }
                 }
@@ -38,7 +38,7 @@ struct SettingsView: View {
         do {
             try DataManager.shared.deleteAllData(from: modelContext)
         } catch {
-            print("Failed to delete data: \(error)")
+            print("settings.dataDeletionFailure \(error)")
         }
     }
 }

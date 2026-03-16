@@ -80,9 +80,6 @@
     "Add a Step" : {
 
     },
-    "App language" : {
-
-    },
     "Are you sure you want to delete this step?" : {
 
     },
@@ -135,6 +132,9 @@
         }
       }
     },
+    "common.close" : {
+
+    },
     "Complete when ready" : {
 
     },
@@ -157,9 +157,6 @@
 
     },
     "Delete" : {
-
-    },
-    "Delete All Data" : {
 
     },
     "Details" : {
@@ -319,7 +316,68 @@
 
     },
     "Settings" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to delete data:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la suppression des données :"
+          }
+        }
+      }
+    },
+    "settings.deleteData" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete all data"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer toutes les données"
+          }
+        }
+      }
+    },
+    "settings.language" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App language"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Langue de l'application"
+          }
+        }
+      }
+    },
+    "settings.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
     },
     "Sort by" : {
 
