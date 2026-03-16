@@ -42,6 +42,38 @@
     "%lld times" : {
 
     },
+    "activity.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We’ll let you know when it’s ready :)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On te dira quand c'est prêt :)"
+          }
+        }
+      }
+    },
+    "activity.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coming soon"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bientôt disponible"
+          }
+        }
+      }
+    },
     "Add a step" : {
 
     },
@@ -102,9 +134,6 @@
           }
         }
       }
-    },
-    "Coming soon" : {
-
     },
     "Complete when ready" : {
 
@@ -346,9 +375,6 @@
 
     },
     "Try adjusting your filters" : {
-
-    },
-    "We'll let you know when it's ready" : {
 
     },
     "Your changes won't be saved." : {
