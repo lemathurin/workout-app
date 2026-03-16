@@ -83,7 +83,7 @@ struct ExerciseSearchView: View {
             }
             .listStyle(.insetGrouped)
             .listSectionIndexVisibility(.visible)
-            .navigationTitle("Exercises")
+            .navigationTitle("common.exercises")
             .navigationDestination(for: Exercise.self) { exercise in
                 ExerciseDetailView(exercise: exercise)
             }
@@ -114,7 +114,7 @@ struct ExerciseSearchView: View {
                 )
             }
         }
-        .searchable(text: $searchText, prompt: "Search exercises")
+        .searchable(text: $searchText, prompt: "common.search")
     }
 
     private var groupedExercises: [String: [Exercise]] {

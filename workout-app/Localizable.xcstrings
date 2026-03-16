@@ -180,6 +180,22 @@
         }
       }
     },
+    "common.exercises" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exercises"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exercices"
+          }
+        }
+      }
+    },
     "common.force" : {
       "localizations" : {
         "en" : {
@@ -240,6 +256,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muscle Principal"
+          }
+        }
+      }
+    },
+    "common.search" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher"
           }
         }
       }
@@ -337,9 +369,6 @@
 
     },
     "exerciseDetails.title" : {
-
-    },
-    "Exercises" : {
 
     },
     "Filter Exercises" : {
