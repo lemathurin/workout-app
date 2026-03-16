@@ -19,21 +19,21 @@ struct ExerciseDetailView: View {
                 
                 VStack(spacing: 20) {
                     DetailPairRow(
-                        leftTitle: "Equipment", leftValue: getEquipmentName(),
-                        rightTitle: "Level", rightValue: getLevelName()
+                        leftTitle: "common.equipment", leftValue: getEquipmentName(),
+                        rightTitle: "common.level", rightValue: getLevelName()
                     )
                     DetailPairRow(
-                        leftTitle: "Force", leftValue: getForceName(),
-                        rightTitle: "Category", rightValue: getCategoryName()
+                        leftTitle: "common.force", leftValue: getForceName(),
+                        rightTitle: "common.category", rightValue: getCategoryName()
                     )
                     DetailPairRow(
-                        leftTitle: "Mechanic", leftValue: getMechanicName(),
-                        rightTitle: "Primary Muscle", rightValue: getPrimaryMuscleName()
+                        leftTitle: "common.mechanic", leftValue: getMechanicName(),
+                        rightTitle: "common.primaryMuscle", rightValue: getPrimaryMuscleName()
                     )
                     
                     if !exercise.secondaryMuscles.isEmpty {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Secondary Muscles")
+                            Text(exercise.secondaryMuscles.count == 1 ? "common.secondaryMuscle" : "common.secondaryMuscles")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Text(exercise.secondaryMuscles.map { getMuscleName(for: $0) }.joined(separator: ", "))
@@ -47,7 +47,7 @@ struct ExerciseDetailView: View {
             }
             .padding()
         }
-        .navigationTitle("Exercise Details")
+        .navigationTitle("exerciseDetails.title")
         .navigationBarTitleDisplayMode(.inline)
     }
     
@@ -81,9 +81,9 @@ struct ExerciseDetailView: View {
 }
 
 struct DetailPairRow: View {
-    let leftTitle: String
+    let leftTitle: LocalizedStringKey
     let leftValue: String
-    let rightTitle: String
+    let rightTitle: LocalizedStringKey
     let rightValue: String
     
     var body: some View {
@@ -97,7 +97,7 @@ struct DetailPairRow: View {
 }
 
 struct DetailCell: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: String
     
     var body: some View {
