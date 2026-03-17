@@ -53,7 +53,7 @@ struct RepsPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Picker("Reps", selection: $reps) {
+            Picker("common.repetitions.plural", selection: $reps) {
                 ForEach(options, id: \.self) { value in
                     Text("\(value) common.repetitions").tag(value)
                 }

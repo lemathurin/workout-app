@@ -149,7 +149,7 @@ private struct ChooseKindStep: View {
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Button("Info", systemImage: "questionmark.circle.fill") {
+                Button("common.information", systemImage: "questionmark.circle.fill") {
                     showInfo = true
                 }
                 .labelStyle(.iconOnly)

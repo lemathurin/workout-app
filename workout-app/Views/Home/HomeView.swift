@@ -1,9 +1,9 @@
 import SwiftData
 import SwiftUI
 
-enum RoutineSortOption: String, CaseIterable {
-    case recentlyPlayed = "Most recent"
-    case duration = "Duration"
+enum RoutineSortOption: LocalizedStringKey, CaseIterable {
+    case recentlyPlayed = "common.mostRecent"
+    case duration = "common.duration"
 }
 
 struct HomeView: View {
@@ -59,7 +59,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     VStack {
-                        Text("Ready for some exercise?")
+                        Text("home.welcome")
                             .font(.largeTitle)
                             .fontDesign(.rounded)
                             .fontWeight(.semibold)
@@ -84,7 +84,7 @@ struct HomeView: View {
             .background(Color(.systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Settings", systemImage: "gear") {
+                    Button("common.settings", systemImage: "gear") {
                         showingSettings = true
                     }
                 }
@@ -92,7 +92,7 @@ struct HomeView: View {
                     NavigationLink {
                         RoutineEditView()
                     } label: {
-                        Label("New Routine", systemImage: "plus")
+                        Label("routine.title.newRoutine", systemImage: "plus")
                             .labelStyle(.iconOnly)
                     }
                 }
@@ -107,7 +107,7 @@ struct HomeView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 Menu {
-                    Picker("Sort by", selection: $sortOption) {
+                    Picker("common.sortBy", selection: $sortOption) {
                         ForEach(RoutineSortOption.allCases, id: \.self) { option in
                             Text(option.rawValue)
                         }

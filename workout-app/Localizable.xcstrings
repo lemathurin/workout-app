@@ -2,7 +2,14 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%lld" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
     },
     "%lld common.repetitions" : {
       "localizations" : {
@@ -120,16 +127,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "%lld of %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld of %2$lld"
           }
         }
       }
@@ -482,6 +479,22 @@
         }
       }
     },
+    "common.information" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Information"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Information"
+          }
+        }
+      }
+    },
     "common.level" : {
       "localizations" : {
         "en" : {
@@ -526,6 +539,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
+          }
+        }
+      }
+    },
+    "common.mostRecent" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most recent"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus récent"
           }
         }
       }
@@ -850,6 +879,38 @@
         }
       }
     },
+    "common.settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
+    },
+    "common.sortBy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort by"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier par"
+          }
+        }
+      }
+    },
     "common.steps" : {
       "localizations" : {
         "en" : {
@@ -918,9 +979,6 @@
     "Days" : {
 
     },
-    "Duration" : {
-
-    },
     "error.unkownExercise" : {
       "localizations" : {
         "en" : {
@@ -937,8 +995,21 @@
     "Explanation here" : {
 
     },
-    "Info" : {
-
+    "home.welcome" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready for some exercise?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "C’est parti pour bouger !"
+          }
+        }
+      }
     },
     "Month" : {
 
@@ -946,19 +1017,10 @@
     "Months" : {
 
     },
-    "New Routine" : {
-
-    },
     "No amount to change for open mode." : {
 
     },
     "No duration to change for open rest." : {
-
-    },
-    "Ready for some exercise?" : {
-
-    },
-    "Reps" : {
 
     },
     "routine.detail.emptyRepeat" : {
@@ -1681,6 +1743,22 @@
         }
       }
     },
+    "routine.player.stepCounter %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld of %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld sur %lld"
+          }
+        }
+      }
+    },
     "routine.title.editRoutine" : {
       "localizations" : {
         "en" : {
@@ -1709,22 +1787,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nouvelle routine"
-          }
-        }
-      }
-    },
-    "Settings" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Failed to delete data:"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de la suppression des données :"
           }
         }
       }
@@ -1776,9 +1838,6 @@
           }
         }
       }
-    },
-    "Sort by" : {
-
     },
     "Subscribe" : {
 

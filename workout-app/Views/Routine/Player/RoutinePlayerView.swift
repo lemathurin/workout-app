@@ -68,7 +68,7 @@ struct RoutinePlayerView: View {
                     ToolbarSpacer(.fixed, placement: .bottomBar)
 
                     ToolbarItem(placement: .bottomBar) {
-                        Button("\(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)") {
+                        Button("routine.player.stepCounter \(viewModel.currentStepIndex + 1) \(viewModel.steps.count)") {
                             wasPlayingBeforeInterruption = viewModel.state == .playing
                             if wasPlayingBeforeInterruption {
                                 viewModel.togglePause()
@@ -97,7 +97,7 @@ struct RoutinePlayerView: View {
                     ToolbarSpacer(.fixed, placement: .bottomBar)
 
                     ToolbarItem(placement: .bottomBar) {
-                        Button("\(viewModel.currentStepIndex + 1) of \(viewModel.steps.count)") {
+                        Button("routine.player.stepCounter \(viewModel.currentStepIndex + 1) \(viewModel.steps.count)") {
                             wasPlayingBeforeInterruption = viewModel.state == .playing
                             if wasPlayingBeforeInterruption {
                                 viewModel.togglePause()
