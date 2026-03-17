@@ -166,15 +166,6 @@
     "Body only" : {
 
     },
-    "Choose Period" : {
-
-    },
-    "Choose Subscription" : {
-
-    },
-    "Choose the period you want\nto get subscribed." : {
-
-    },
     "common.back" : {
       "localizations" : {
         "en" : {
@@ -967,16 +958,7 @@
         }
       }
     },
-    "Continue" : {
-
-    },
     "Creating a routine" : {
-
-    },
-    "Custom Duration" : {
-
-    },
-    "Days" : {
 
     },
     "error.unkownExercise" : {
@@ -1010,12 +992,6 @@
           }
         }
       }
-    },
-    "Month" : {
-
-    },
-    "Months" : {
-
     },
     "No amount to change for open mode." : {
 
@@ -1838,9 +1814,6 @@
           }
         }
       }
-    },
-    "Subscribe" : {
-
     },
     "tabBar.activity" : {
       "localizations" : {

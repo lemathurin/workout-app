@@ -47,7 +47,6 @@ struct ExerciseDetailView: View {
             }
             .padding()
         }
-        .navigationTitle("exerciseDetails.title")
         .navigationBarTitleDisplayMode(.inline)
     }
     
