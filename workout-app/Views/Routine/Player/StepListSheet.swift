@@ -40,28 +40,25 @@ struct StepListSheet: View {
 
     private func stepName(for step: PlayableStep) -> String {
         if step.isRest {
-            return "Rest"
+            return String(localized: "common.rest")
         }
         guard let exerciseId = step.exerciseId else {
-            return "Exercise"
+            return String(localized: "common.exercise")
         }
-        return exercises.first { $0.id == exerciseId }?.getName() ?? "Exercise"
+        return exercises.first { $0.id == exerciseId }?.getName() ?? String(localized: "common.exercise")
     }
 
     private func stepDetail(for step: PlayableStep) -> String {
         var parts: [String] = []
 
         switch step.mode {
-        case .exerciseTimed(let seconds):
-            parts.append("Timed · \(formattedDuration(seconds))")
-        case .restTimed(let seconds):
-            parts.append("Timed · \(formattedDuration(seconds))")
+        case .exerciseTimed(let seconds), .restTimed(let seconds):
+            let duration = Duration.seconds(seconds).formatted(.units(width: .abbreviated))
+            parts.append(String(localized: "routine.edit.timed") + " · " + duration)
         case .exerciseReps(let count):
-            parts.append("\(count) reps")
-        case .exerciseOpen:
-            parts.append("Open")
-        case .restOpen:
-            parts.append("Open")
+            parts.append(String(localized: "\(count) common.repetitions"))
+        case .exerciseOpen, .restOpen:
+            parts.append(String(localized: "common.open"))
         }
 
         if let equipmentName = equipmentName(for: step) {
@@ -78,15 +75,6 @@ struct StepListSheet: View {
         guard exercise.equipmentId != "body_only" else { return nil }
         return equipment.first { $0.id == exercise.equipmentId }?
             .translations.first { $0.languageCode == "en" }?.text
-    }
-
-    private func formattedDuration(_ seconds: Int) -> String {
-        if seconds >= 60 {
-            let m = seconds / 60
-            let s = seconds % 60
-            return s > 0 ? "\(m)m \(s)s" : "\(m)m"
-        }
-        return "\(seconds)s"
     }
 }
 
