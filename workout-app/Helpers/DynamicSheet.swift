@@ -1,3 +1,13 @@
+//
+// Huge thanks to Kavsoft for this excellent sheet
+//
+// Tutorial
+// https://www.youtube.com/watch?v=KM3nXKnOmvM
+//
+// Kavsoft
+// https://kavsoft.dev/
+//
+
 import SwiftUI
 
 struct DynamicSheet<Content: View>: View {
