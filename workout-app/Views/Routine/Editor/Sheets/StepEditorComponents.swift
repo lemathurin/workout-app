@@ -1,56 +1,6 @@
 import SwiftData
 import SwiftUI
 
-// MARK: - Exercise Mode Selector
-
-struct ExerciseModeSelector: View {
-    let currentMode: ExerciseMode?
-    let primaryLabel: String
-    let secondaryLabel: String
-    let onSelectTimed: () -> Void
-    let onSelectReps: () -> Void
-    let onSelectOpen: () -> Void
-    let onSecondary: () -> Void
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Button {
-                onSelectTimed()
-            } label: {
-                Text("Timed")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button {
-                onSelectReps()
-            } label: {
-                Text("Reps")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button {
-                onSelectOpen()
-            } label: {
-                Text("Open")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button {
-                onSecondary()
-            } label: {
-                Text(secondaryLabel)
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-        }
-        .controlSize(.large)
-        .padding()
-    }
-}
-
 // MARK: - Timed Picker
 
 struct TimedPicker: View {
@@ -64,9 +14,9 @@ struct TimedPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Picker("Seconds", selection: $seconds) {
+            Picker("common.seconds", selection: $seconds) {
                 ForEach(options, id: \.self) { sec in
-                    Text("\(sec) seconds").tag(sec)
+                    Text("\(sec) common.seconds").tag(sec)
                 }
             }
             .pickerStyle(.wheel)
@@ -103,9 +53,9 @@ struct RepsPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Picker("Reps", selection: $reps) {
+            Picker("common.repetitions.plural", selection: $reps) {
                 ForEach(options, id: \.self) { value in
-                    Text("\(value)").tag(value)
+                    Text("\(value) common.repetitions").tag(value)
                 }
             }
             .pickerStyle(.wheel)
@@ -129,47 +79,6 @@ struct RepsPicker: View {
     }
 }
 
-// MARK: - Rest Mode Selector
-
-struct RestModeSelector: View {
-    let currentMode: RestMode?
-    let primaryLabel: String
-    let secondaryLabel: String
-    let onSelectTimed: () -> Void
-    let onSelectOpen: () -> Void
-    let onSecondary: () -> Void
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Button {
-                onSelectTimed()
-            } label: {
-                Text("Timed")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button {
-                onSelectOpen()
-            } label: {
-                Text("Open")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-
-            Button {
-                onSecondary()
-            } label: {
-                Text(secondaryLabel)
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-        }
-        .controlSize(.large)
-        .padding()
-    }
-}
-
 // MARK: - Rest Timed Picker
 
 struct RestTimedPicker: View {
@@ -183,9 +92,9 @@ struct RestTimedPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Picker("Seconds", selection: $seconds) {
+            Picker("common.seconds", selection: $seconds) {
                 ForEach(options, id: \.self) { sec in
-                    Text("\(sec) sec").tag(sec)
+                    Text("\(sec) common.seconds").tag(sec)
                 }
             }
             .pickerStyle(.wheel)
@@ -222,9 +131,9 @@ struct RepeatCountPicker: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Picker("Count", selection: $count) {
+            Picker("routine.edit.repeatCount", selection: $count) {
                 ForEach(options, id: \.self) { value in
-                    Text("\(value) times").tag(value)
+                    Text("\(value) common.times").tag(value)
                 }
             }
             .pickerStyle(.wheel)
@@ -362,7 +271,7 @@ struct ExercisePickerView: View {
                                         .contentShape(.rect)
                                 }
                                 .buttonStyle(.plain)
-                                Button("Details", systemImage: "info.circle") {
+                                Button("common.details", systemImage: "info.circle") {
                                     detailExercise = exercise
                                 }
                                 .labelStyle(.iconOnly)
@@ -398,7 +307,7 @@ struct ExercisePickerView: View {
                         .animation(nil, value: showingSearch)
                 }
             }
-            .navigationTitle("Select Exercise")
+            .navigationTitle("routine.edit.selectExercise")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -429,7 +338,7 @@ struct ExercisePickerView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
 
-                        TextField("Search exercises", text: $searchText)
+                        TextField("common.search", text: $searchText)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
 
@@ -456,11 +365,11 @@ struct ExercisePickerView: View {
             .overlay {
                 if filteredExercises.isEmpty {
                     ContentUnavailableView(
-                        "No exercises found",
+                        "routine.edit.noExerciseFound",
                         systemImage: "dumbbell",
                         description: Text(
                             hasActiveFilters
-                                ? "Try adjusting your filters" : "No exercises available")
+                                ? "routine.edit.adjustFilters" : "routine.edit.searchAgain")
                     )
                 }
             }
@@ -482,7 +391,7 @@ struct ExercisePickerView: View {
             }
             .safeAreaPadding(.bottom, 90)
             .overlay(alignment: .bottom) {
-                Button("Back", action: onBack)
+                Button("common.back", action: onBack)
                     .buttonStyle(.bordered)
                     .controlSize(.large)
                     .buttonSizing(.flexible)
@@ -532,7 +441,7 @@ struct ExerciseFilterSheet: View {
         NavigationStack {
             Form {
                 // Equipment Section
-                Section("Equipment") {
+                Section("common.equipment") {
                     ForEach(equipment.sorted(by: { $0.id < $1.id }), id: \.id) { item in
                         Button {
                             if selectedEquipment.contains(item.id) {
@@ -555,7 +464,7 @@ struct ExerciseFilterSheet: View {
                 }
 
                 // Level Section
-                Section("Level") {
+                Section("common.level") {
                     ForEach(levels.sorted(by: { $0.id < $1.id }), id: \.id) { item in
                         Button {
                             selectedLevel = selectedLevel == item.id ? nil : item.id
@@ -574,7 +483,7 @@ struct ExerciseFilterSheet: View {
                 }
 
                 // Force Section
-                Section("Force Type") {
+                Section("common.force") {
                     ForEach(forces.sorted(by: { $0.id < $1.id }), id: \.id) { item in
                         Button {
                             selectedForce = selectedForce == item.id ? nil : item.id
@@ -593,7 +502,7 @@ struct ExerciseFilterSheet: View {
                 }
 
                 // Category Section
-                Section("Category") {
+                Section("common.category") {
                     ForEach(categories.sorted(by: { $0.id < $1.id }), id: \.id) { item in
                         Button {
                             selectedCategory = selectedCategory == item.id ? nil : item.id
@@ -612,7 +521,7 @@ struct ExerciseFilterSheet: View {
                 }
 
                 // Mechanic Section
-                Section("Mechanic") {
+                Section("common.mechanic") {
                     ForEach(mechanics.sorted(by: { $0.id < $1.id }), id: \.id) { item in
                         Button {
                             selectedMechanic = selectedMechanic == item.id ? nil : item.id
@@ -631,7 +540,7 @@ struct ExerciseFilterSheet: View {
                 }
 
                 // Primary Muscle Section
-                Section("Primary Muscle") {
+                Section("common.primaryMuscle") {
                     ForEach(muscles.sorted(by: { $0.id < $1.id }), id: \.id) { item in
                         Button {
                             selectedMuscle = selectedMuscle == item.id ? nil : item.id
@@ -650,12 +559,12 @@ struct ExerciseFilterSheet: View {
                 }
             }
             .foregroundStyle(.primary)
-            .navigationTitle("Filter Exercises")
+            .navigationTitle("routine.edit.filterExercises.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     if hasActiveFilters {
-                        Button("Clear All") {
+                        Button("common.clearAll") {
                             selectedEquipment.removeAll()
                             selectedLevel = nil
                             selectedForce = nil
@@ -666,7 +575,7 @@ struct ExerciseFilterSheet: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button("common.done") {
                         dismiss()
                     }
                     .fontWeight(.semibold)
@@ -796,3 +705,13 @@ struct ExerciseFilterSheet: View {
     )
     .modelContainer(container)
 }
+//
+//#Preview {
+//    RepeatCountPicker(
+//        count: .constant(60),
+//        primaryLabel: String(localized: "common.done"),
+//        secondaryLabel: String(localized: "common.back"),
+//        onPrimary: {},
+//        onSecondary: {}
+//    )
+//}

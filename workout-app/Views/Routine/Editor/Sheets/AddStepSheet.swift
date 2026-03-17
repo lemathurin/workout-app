@@ -144,12 +144,12 @@ private struct ChooseKindStep: View {
     var body: some View {
         VStack(spacing: 18) {
             HStack {
-                Text("Add a Step")
+                Text("routine.edit.addAStep")
                     .font(.title)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Button("Info", systemImage: "questionmark.circle.fill") {
+                Button("common.information", systemImage: "questionmark.circle.fill") {
                     showInfo = true
                 }
                 .labelStyle(.iconOnly)
@@ -158,26 +158,26 @@ private struct ChooseKindStep: View {
             }
             
             BigCardButton(
-                title: "Exercise",
-                description: "Perform a specific movement or activity.",
+                title: "common.exercise",
+                description: "routine.edit.exercice.description",
                 action: onExercise
             )
             
             HStack(spacing: 12) {
                 BigCardButton(
-                    title: "Rest",
-                    description: "A pause to recover between activities.",
+                    title: "common.rest",
+                    description: "routine.edit.rest.description",
                     action: onRest
                 )
 
                 BigCardButton(
-                    title: "Repeat",
-                    description: "Loop the previous steps multiple times",
+                    title: "common.repeat",
+                    description: "routine.edit.repeat.description",
                     action: onRepeat
                 )
             }
 
-            Button("Cancel", action: onCancel)
+            Button("common.cancel", action: onCancel)
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .buttonSizing(.flexible)
@@ -221,13 +221,13 @@ private struct ChooseModeStep: View {
     @State private var showAmountPicker = false
 
     private var titleText: String {
-        guard showAmountPicker else { return "Choose Mode" }
+        guard showAmountPicker else { return String(localized: "routine.edit.chooseMode") }
         if (isExercise && exerciseMode == .timed) || (!isExercise && restMode == .timed) {
-            return "How long?"
+            return String(localized: "routine.edit.howLong")
         } else if isExercise && exerciseMode == .reps {
-            return "How many?"
+            return String(localized: "routine.edit.howMany")
         }
-        return "Choose Mode"
+        return String(localized: "routine.edit.chooseMode")
     }
 
     var body: some View {
@@ -251,8 +251,8 @@ private struct ChooseModeStep: View {
     private var modeSelectionContent: some View {
         if isExercise {
             BigCardButton(
-                title: "Timed",
-                description: "Perform the exercise for a set duration."
+                title: "routine.edit.timed",
+                description: "routine.edit.timed.description"
             ) {
                 exerciseMode = .timed
                 showAmountPicker = true
@@ -260,23 +260,23 @@ private struct ChooseModeStep: View {
 
             HStack(spacing: 12) {
                 BigCardButton(
-                    title: "Reps",
-                    description: "Count a specific number of repetitions."
+                    title: "routine.edit.repetitions",
+                    description: "routine.edit.repetitions.description"
                 ) {
                     exerciseMode = .reps
                     showAmountPicker = true
                 }
 
                 BigCardButton(
-                    title: "Open",
-                    description: "No timer or count, finish when ready."
+                    title: "routine.edit.open",
+                    description: "routine.edit.open.description"
                 ) {
                     exerciseMode = .open
                     onDone()
                 }
             }
 
-            Button("Back", action: onBack)
+            Button("common.back", action: onBack)
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .buttonSizing(.flexible)
@@ -284,23 +284,23 @@ private struct ChooseModeStep: View {
         } else {
             HStack(spacing: 12) {
                 BigCardButton(
-                    title: "Timed",
-                    description: "Rest for a set duration."
+                    title: "routine.edit.timed",
+                    description: "routine.edit.timed.description"
                 ) {
                     restMode = .timed
                     showAmountPicker = true
                 }
 
                 BigCardButton(
-                    title: "Open",
-                    description: "Rest as long as you need."
+                    title: "routine.edit.open",
+                    description: "routine.edit.open.description"
                 ) {
                     restMode = .open
                     onDone()
                 }
             }
             
-            Button("Back", action: onBack)
+            Button("common.back", action: onBack)
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .buttonSizing(.flexible)
@@ -313,24 +313,24 @@ private struct ChooseModeStep: View {
         if isExercise && exerciseMode == .timed {
             TimedPicker(
                 seconds: $timedSeconds,
-                primaryLabel: "Done",
-                secondaryLabel: "Back",
+                primaryLabel: String(localized: "common.done"),
+                secondaryLabel: String(localized: "common.back"),
                 onPrimary: onDone,
                 onSecondary: { showAmountPicker = false }
             )
         } else if isExercise && exerciseMode == .reps {
             RepsPicker(
                 reps: $repsCount,
-                primaryLabel: "Done",
-                secondaryLabel: "Back",
+                primaryLabel: String(localized: "common.done"),
+                secondaryLabel: String(localized: "common.back"),
                 onPrimary: onDone,
                 onSecondary: { showAmountPicker = false }
             )
         } else if !isExercise && restMode == .timed {
             RestTimedPicker(
                 seconds: $timedSeconds,
-                primaryLabel: "Done",
-                secondaryLabel: "Back",
+                primaryLabel: String(localized: "common.done"),
+                secondaryLabel: String(localized: "common.back"),
                 onPrimary: onDone,
                 onSecondary: { showAmountPicker = false }
             )
@@ -347,15 +347,15 @@ private struct RepeatCountStep: View {
 
     var body: some View {
         VStack(spacing: 18) {
-            Text("Repeat Count")
+            Text("routine.edit.repeatCount")
                 .font(.title)
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             RepeatCountPicker(
                 count: $count,
-                primaryLabel: "Done",
-                secondaryLabel: "Back",
+                primaryLabel: String(localized: "common.done"),
+                secondaryLabel: String(localized: "common.back"),
                 onPrimary: onDone,
                 onSecondary: onBack
             )

@@ -21,8 +21,8 @@ struct RoutineCard: View {
                     .lineLimit(1)
 
                 HStack(spacing: 16) {
-                    Label("\(duration) min", systemImage: "clock")
-                    Label("\(exerciseCount) steps", systemImage: "arrow.trianglehead.clockwise")
+                    Label("common.min \(duration)", systemImage: "clock")
+                    Label("common.steps \(exerciseCount)", systemImage: "arrow.trianglehead.clockwise")
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -31,7 +31,7 @@ struct RoutineCard: View {
                     let realEquipment = routine.metadata.equipment.filter { $0 != "body_only" }
                     if realEquipment.isEmpty {
                         Image(systemName: "figure.stand")
-                        Text("Body only")
+                        Text("common.noEquipment")
                             .lineLimit(1)
                     } else {
                         Image(systemName: "dumbbell")

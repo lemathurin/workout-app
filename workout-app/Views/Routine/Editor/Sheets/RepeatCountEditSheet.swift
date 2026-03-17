@@ -21,15 +21,15 @@ struct RepeatCountEditSheet: View {
     var body: some View {
         DynamicSheet(animation: .smooth(duration: 0.25, extraBounce: 0)) {
             VStack(spacing: 12) {
-                Text("Repeat Count")
+                Text("routine.edit.repeatCount")
                     .font(.title2)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 RepeatCountPicker(
                     count: $selectedCount,
-                    primaryLabel: "Save",
-                    secondaryLabel: "Cancel",
+                    primaryLabel: String(localized: "common.save"),
+                    secondaryLabel: String(localized: "common.cancel"),
                     onPrimary: { onSave(selectedCount) },
                     onSecondary: onCancel
                 )

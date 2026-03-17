@@ -23,10 +23,10 @@ struct RepeatGroupView: View {
             HStack {
                 Image(systemName: "repeat")
                     .foregroundColor(.secondary)
-                Text("Repeat")
+                Text("common.repeat")
                     .font(.title3)
                     .foregroundColor(.primary)
-                Text("\(repeatCount) times")
+                Text("\(repeatCount) common.times")
                     .font(.callout)
                     .foregroundColor(.secondary)
 
@@ -37,18 +37,18 @@ struct RepeatGroupView: View {
                         onGroupChangeCount()
                     } label: {
                         Label(
-                            "Change repeat count",
+                            "routine.edit.repeat.changeCount",
                             systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
                     }
                     Button {
                         onGroupDuplicate()
                     } label: {
-                        Label("Duplicate", systemImage: "plus.square.on.square")
+                        Label("common.duplicate", systemImage: "plus.square.on.square")
                     }
                     Button(role: .destructive) {
                         onGroupDelete()
                     } label: {
-                        Label("Remove repeat", systemImage: "trash")
+                        Label("routine.edit.repeat.delete", systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis")
@@ -67,7 +67,7 @@ struct RepeatGroupView: View {
                     Divider()
 
                     HStack(spacing: 12) {
-                        Text("Drag steps here")
+                        Text("routine.edit.repeat.dragStepsHere")
                             .font(.callout)
                             .foregroundColor(.secondary)
                     }

@@ -15,15 +15,15 @@ struct StepRowView: View {
     private var modeDescription: String {
         switch stepMode {
         case .exerciseTimed(let seconds):
-            return "\(seconds) seconds"
+            return String(localized: "\(seconds) common.seconds")
         case .exerciseReps(let count):
-            return "\(count) reps"
+            return String(localized: "\(count) common.repetitions")
         case .exerciseOpen:
-            return "Open"
+            return String(localized: "common.open")
         case .restTimed(let seconds):
-            return "\(seconds) seconds"
+            return String(localized: "\(seconds) common.seconds")
         case .restOpen:
-            return "Open"
+            return String(localized: "common.open")
         }
     }
 
@@ -54,14 +54,14 @@ struct StepRowView: View {
                 Button {
                     onChangeType()
                 } label: {
-                    Label("Change type", systemImage: "figure.strengthtraining.functional")
+                    Label("routine.edit.step.changeType", systemImage: "figure.strengthtraining.functional")
                 }
                 if !isOpen {
                     Button {
                         onChangeAmount()
                     } label: {
                         Label(
-                            "Change amount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
+                            "routine.edit.step.changeAmount", systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
                         )
                     }
                 }
@@ -69,7 +69,7 @@ struct StepRowView: View {
                     Button {
                         onDuplicate()
                     } label: {
-                        Label("Duplicate", systemImage: "plus.square.on.square")
+                        Label("common.duplicate", systemImage: "plus.square.on.square")
                     }
                 }
                 if embedded, let onRemoveFromRepeat = onRemoveFromRepeat {
@@ -78,13 +78,13 @@ struct StepRowView: View {
                             onRemoveFromRepeat()
                         }
                     } label: {
-                        Label("Remove from repeat", systemImage: "arrow.up.right.square")
+                        Label("routine.edit.step.removeFromRepeat", systemImage: "arrow.up.right.square")
                     }
                 }
                 Button(role: .destructive) {
                     onDelete()
                 } label: {
-                    Label("Remove step", systemImage: "trash")
+                    Label("routine.edit.step.deleteStep", systemImage: "trash")
                 }
             } label: {
                 Image(systemName: "ellipsis")
