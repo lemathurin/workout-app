@@ -163,12 +163,21 @@ struct RoutineEditView: View {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(action: {
-                        showDiscardAlert = true
-                    }) {
-                        Image(systemName: "xmark")
+                        Button(action: {
+                            showDiscardAlert = true
+                        }) {
+                            Image(systemName: "xmark")
+                        }
+                        .confirmationDialog(
+                            "routine.edit.discardChanges.description",
+                            isPresented: $showDiscardAlert,
+                            titleVisibility: .visible
+                        ) {
+                            Button("common.discard", role: .destructive) {
+                                dismiss()
+                            }
+                        }
                     }
-                }
 
                 ToolbarItem(placement: .confirmationAction) {
                     let isValid =
@@ -198,15 +207,6 @@ struct RoutineEditView: View {
                     .opacity(isValid ? 1.0 : 0.5)
                     .disabled(!isValid)
                 }
-            }
-
-            .alert("routine.edit.discardChanges.title", isPresented: $showDiscardAlert) {
-                Button("common.cancel", role: .cancel) {}
-                Button("common.discard", role: .destructive) {
-                    dismiss()
-                }
-            } message: {
-                Text("routine.edit.discardChanges.description")
             }
         }
         .toolbar(.hidden, for: .tabBar)

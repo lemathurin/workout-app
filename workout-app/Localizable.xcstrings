@@ -1140,22 +1140,6 @@
         }
       }
     },
-    "routine.edit.discardChanges.title" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Discard changes"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Effacer les modifications"
-          }
-        }
-      }
-    },
     "routine.edit.exercice.description" : {
       "localizations" : {
         "en" : {
