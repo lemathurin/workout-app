@@ -84,8 +84,8 @@ struct EditStepSheet: View {
         if isExercise {
             VStack(spacing: 18) {
                 BigCardButton(
-                    title: "Timed",
-                    description: "Perform the exercise for a set duration."
+                    title: "routine.edit.timed",
+                    description: "routine.edit.timed.description"
                 ) {
                     exerciseModeSelection = .timed
                     withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
@@ -93,23 +93,23 @@ struct EditStepSheet: View {
 
                 HStack(spacing: 12) {
                     BigCardButton(
-                        title: "Reps",
-                        description: "Count a specific number of repetitions."
+                        title: "routine.edit.repetitions",
+                        description: "routine.edit.repetitions.description"
                     ) {
                         exerciseModeSelection = .reps
                         withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
                     }
 
                     BigCardButton(
-                        title: "Open",
-                        description: "No timer or count, finish when ready."
+                        title: "routine.edit.open",
+                        description: "routine.edit.open.description"
                     ) {
                         exerciseModeSelection = .open
                         applyAndClose()
                     }
                 }
 
-                Button("Cancel", action: onCancel)
+                Button("common.cancel", action: onCancel)
                     .buttonStyle(.bordered)
                     .controlSize(.large)
                     .buttonSizing(.flexible)
@@ -119,23 +119,23 @@ struct EditStepSheet: View {
             VStack(spacing: 18) {
                 HStack(spacing: 12) {
                     BigCardButton(
-                        title: "Timed",
-                        description: "Rest for a set duration."
+                        title: "routine.edit.timed",
+                        description: "routine.edit.timed.description"
                     ) {
                         restModeSelection = .timed
                         withAnimation(.smooth(duration: 0.25)) { showAmountPicker = true }
                     }
 
                     BigCardButton(
-                        title: "Open",
-                        description: "Rest as long as you need."
+                        title: "routine.edit.open",
+                        description: "routine.edit.open.description"
                     ) {
                         restModeSelection = .open
                         applyAndClose()
                     }
                 }
 
-                Button("Cancel", action: onCancel)
+                Button("common.cancel", action: onCancel)
                     .buttonStyle(.bordered)
                     .controlSize(.large)
                     .buttonSizing(.flexible)
@@ -153,16 +153,16 @@ struct EditStepSheet: View {
             case .timed:
                 TimedPicker(
                     seconds: $timerSeconds,
-                    primaryLabel: "Save",
-                    secondaryLabel: "Back",
+                    primaryLabel: String(localized: "common.save"),
+                    secondaryLabel: String(localized: "common.back"),
                     onPrimary: { applyAndClose() },
                     onSecondary: { withAnimation(.smooth(duration: 0.25)) { showAmountPicker = false } }
                 )
             case .reps:
                 RepsPicker(
                     reps: $repsCount,
-                    primaryLabel: "Save",
-                    secondaryLabel: "Back",
+                    primaryLabel: String(localized: "common.save"),
+                    secondaryLabel: String(localized: "common.back"),
                     onPrimary: { applyAndClose() },
                     onSecondary: { withAnimation(.smooth(duration: 0.25)) { showAmountPicker = false } }
                 )
@@ -175,8 +175,8 @@ struct EditStepSheet: View {
             case .timed:
                 RestTimedPicker(
                     seconds: $timerSeconds,
-                    primaryLabel: "Save",
-                    secondaryLabel: "Back",
+                    primaryLabel: String(localized: "common.save"),
+                    secondaryLabel: String(localized: "common.back"),
                     onPrimary: { applyAndClose() },
                     onSecondary: { withAnimation(.smooth(duration: 0.25)) { showAmountPicker = false } }
                 )
@@ -191,15 +191,15 @@ struct EditStepSheet: View {
 
     private var deleteContent: some View {
         VStack(spacing: 18) {
-            Text("Are you sure you want to delete this step?")
+            Text("routine.edit.deleteStepConfirmation")
                 .foregroundStyle(.secondary)
 
-            Button("Delete", role: .destructive) { onDelete() }
+            Button("common.delete", role: .destructive) { onDelete() }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .buttonSizing(.flexible)
 
-            Button("Cancel", action: onCancel)
+            Button("common.cancel", action: onCancel)
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .buttonSizing(.flexible)

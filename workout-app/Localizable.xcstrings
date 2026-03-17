@@ -111,9 +111,6 @@
     "Add a step" : {
 
     },
-    "Are you sure you want to delete this step?" : {
-
-    },
     "Back" : {
 
     },
@@ -239,6 +236,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Créé"
+          }
+        }
+      }
+    },
+    "common.delete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
           }
         }
       }
@@ -523,6 +536,22 @@
         }
       }
     },
+    "common.save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer"
+          }
+        }
+      }
+    },
     "common.search" : {
       "localizations" : {
         "en" : {
@@ -653,9 +682,6 @@
     "Count" : {
 
     },
-    "Count a specific number of repetitions." : {
-
-    },
     "Creating a routine" : {
 
     },
@@ -663,9 +689,6 @@
 
     },
     "Days" : {
-
-    },
-    "Delete" : {
 
     },
     "Details" : {
@@ -765,16 +788,10 @@
     "No Steps Yet" : {
 
     },
-    "No timer or count, finish when ready." : {
-
-    },
     "Open" : {
 
     },
     "Pause" : {
-
-    },
-    "Perform the exercise for a set duration." : {
 
     },
     "Previous Step" : {
@@ -805,12 +822,6 @@
 
     },
     "Reps" : {
-
-    },
-    "Rest as long as you need." : {
-
-    },
-    "Rest for a set duration." : {
 
     },
     "Restart" : {
@@ -917,6 +928,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choisir le mode"
+          }
+        }
+      }
+    },
+    "routine.edit.deleteStepConfirmation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete this step?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es-tu sûr de vouloir supprimer cette étape ?"
           }
         }
       }
