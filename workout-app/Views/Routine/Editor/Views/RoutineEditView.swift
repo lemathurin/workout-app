@@ -21,13 +21,13 @@ struct RoutineEditView: View {
             ZStack(alignment: .bottom) {
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        Text("Routine Name")
+                        Text("routine.edit.routineName")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 12)
 
-                        TextField("Routine Name", text: $viewModel.routineName, axis: .vertical)
+                        TextField("routine.edit.routineNamePlaceholder", text: $viewModel.routineName, axis: .vertical)
                             .lineLimit(1...5)
                             .font(.title2)
                             .fontWeight(.semibold)
@@ -47,7 +47,7 @@ struct RoutineEditView: View {
                                     for: nil)
                             }
 
-                        Text("Steps")
+                        Text("common.steps")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -56,10 +56,10 @@ struct RoutineEditView: View {
 
                         if viewModel.items.isEmpty {
                             ContentUnavailableView(
-                                "No Steps Yet",
+                                "routine.edit.noSteps.title",
                                 systemImage: "figure.walk",
                                 description: Text(
-                                    "Tap the button below to start building your routine")
+                                    "routine.edit.noSteps.description")
                             )
                             .padding(.vertical, 40)
                         }
@@ -128,7 +128,7 @@ struct RoutineEditView: View {
                         viewModel.showAddStepSheet = true
                     },
                     label: {
-                        Label("Add a step", systemImage: "plus")
+                        Label("routine.edit.addAStep", systemImage: "plus")
                     }
                 )
                 .controlSize(.large)
@@ -159,7 +159,7 @@ struct RoutineEditView: View {
                 )
                 .interactiveDismissDisabled(true)
             }
-            .navigationTitle(routine == nil ? "New Routine" : "Edit Routine")
+            .navigationTitle(routine == nil ? "routine.title.newRoutine" : "routine.title.editRoutine")
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -200,13 +200,13 @@ struct RoutineEditView: View {
                 }
             }
 
-            .alert("Discard Changes?", isPresented: $showDiscardAlert) {
-                Button("Cancel", role: .cancel) {}
-                Button("Discard", role: .destructive) {
+            .alert("routine.edit.discardChanges.title", isPresented: $showDiscardAlert) {
+                Button("common.cancel", role: .cancel) {}
+                Button("common.discard", role: .destructive) {
                     dismiss()
                 }
             } message: {
-                Text("Your changes won't be saved.")
+                Text("routine.edit.discardChanges.description")
             }
         }
         .toolbar(.hidden, for: .tabBar)
@@ -272,7 +272,7 @@ struct RoutineEditView: View {
 
     private func renderRest(id: UUID, mode: RestStepMode, item: StepItem) -> some View {
         StepRowView(
-            stepName: "Rest",
+            stepName: String(localized: "common.rest"),
             stepMode: restModeToStepMode(mode),
             onChangeType: {
                 viewModel.handleStepEdit(itemId: id, repeatId: nil, action: .changeType)
@@ -424,7 +424,7 @@ struct RoutineEditView: View {
                 )
             case .rest(_, let mode):
                 EditStepSheet(
-                    stepName: "Rest",
+                    stepName: String(localized: "common.rest"),
                     stepMode: restModeToStepMode(mode),
                     action: action,
                     onUpdateSummary: { newStepMode in
@@ -469,7 +469,7 @@ struct RoutineEditView: View {
                 )
             case .rest(_, let mode):
                 EditStepSheet(
-                    stepName: "Rest",
+                    stepName: String(localized: "common.rest"),
                     stepMode: restModeToStepMode(mode),
                     action: action,
                     onUpdateSummary: { newStepMode in

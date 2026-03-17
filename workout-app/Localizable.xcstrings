@@ -182,13 +182,7 @@
         }
       }
     },
-    "Add a step" : {
-
-    },
     "Body only" : {
-
-    },
-    "Cancel" : {
 
     },
     "Change amount" : {
@@ -346,6 +340,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Détails"
+          }
+        }
+      }
+    },
+    "common.discard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discard"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer"
           }
         }
       }
@@ -821,19 +831,10 @@
     "Days" : {
 
     },
-    "Discard" : {
-
-    },
-    "Discard Changes?" : {
-
-    },
     "Duplicate" : {
 
     },
     "Duration" : {
-
-    },
-    "Edit Routine" : {
 
     },
     "End Routine" : {
@@ -885,9 +886,6 @@
     "No duration to change for open rest." : {
 
     },
-    "No Steps Yet" : {
-
-    },
     "Open" : {
 
     },
@@ -919,9 +917,6 @@
 
     },
     "Routine Complete!" : {
-
-    },
-    "Routine Name" : {
 
     },
     "routine.detail.emptyRepeat" : {
@@ -1052,6 +1047,38 @@
         }
       }
     },
+    "routine.edit.discardChanges.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your changes won’t be saved, they will be lost forever"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tes modifications ne seront pas enregistrées ; elles seront perdues à jamais"
+          }
+        }
+      }
+    },
+    "routine.edit.discardChanges.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discard changes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer les modifications"
+          }
+        }
+      }
+    },
     "routine.edit.exercice.description" : {
       "localizations" : {
         "en" : {
@@ -1128,6 +1155,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucun résultat"
+          }
+        }
+      }
+    },
+    "routine.edit.noSteps.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the button below to start building your amazing routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuie sur le bouton du bas pour commencer à créer ta superbe routine"
+          }
+        }
+      }
+    },
+    "routine.edit.noSteps.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No steps yet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune étape pour l'instant"
           }
         }
       }
@@ -1292,6 +1351,38 @@
         }
       }
     },
+    "routine.edit.routineName" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routine name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de la routine"
+          }
+        }
+      }
+    },
+    "routine.edit.routineNamePlaceholder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My awesome lower body routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ma super routine bas du corps"
+          }
+        }
+      }
+    },
     "routine.edit.searchAgain" : {
       "localizations" : {
         "en" : {
@@ -1352,6 +1443,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fais l’étape pendant une durée donnée."
+          }
+        }
+      }
+    },
+    "routine.title.editRoutine" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier la routine"
+          }
+        }
+      }
+    },
+    "routine.title.newRoutine" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvelle routine"
           }
         }
       }
@@ -1423,9 +1546,6 @@
     "Sort by" : {
 
     },
-    "Steps" : {
-
-    },
     "Subscribe" : {
 
     },
@@ -1461,13 +1581,7 @@
         }
       }
     },
-    "Tap the button below to start building your routine" : {
-
-    },
     "Unknown Exercise" : {
-
-    },
-    "Your changes won't be saved." : {
 
     },
     "Your progress will be lost." : {
