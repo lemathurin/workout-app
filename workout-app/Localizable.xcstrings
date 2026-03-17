@@ -4,6 +4,86 @@
     "%lld" : {
 
     },
+    "%lld common.repetitions" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld repetition"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld repetitions"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld répétition"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld répétitions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld common.seconds" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld second"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld seconds"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld seconde"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld secondes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld common.times" : {
       "localizations" : {
         "en" : {
@@ -67,9 +147,6 @@
     "%lld repetitions" : {
 
     },
-    "%lld sec" : {
-
-    },
     "%lld seconds" : {
 
     },
@@ -111,16 +188,10 @@
     "Add a step" : {
 
     },
-    "Back" : {
-
-    },
     "Body only" : {
 
     },
     "Cancel" : {
-
-    },
-    "Category" : {
 
     },
     "Change amount" : {
@@ -139,9 +210,6 @@
 
     },
     "Choose the period you want\nto get subscribed." : {
-
-    },
-    "Clear All" : {
 
     },
     "Close" : {
@@ -208,6 +276,22 @@
         }
       }
     },
+    "common.clearAll" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear all"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser"
+          }
+        }
+      }
+    },
     "common.close" : {
       "localizations" : {
         "en" : {
@@ -252,6 +336,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supprimer"
+          }
+        }
+      }
+    },
+    "common.details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails"
           }
         }
       }
@@ -601,18 +701,41 @@
       }
     },
     "common.seconds" : {
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%lld seconds"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld second"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld seconds"
+                }
+              }
+            }
           }
         },
         "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld secondes"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld seconde"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld secondes"
+                }
+              }
+            }
           }
         }
       }
@@ -679,9 +802,6 @@
     "Continue" : {
 
     },
-    "Count" : {
-
-    },
     "Creating a routine" : {
 
     },
@@ -691,16 +811,10 @@
     "Days" : {
 
     },
-    "Details" : {
-
-    },
     "Discard" : {
 
     },
     "Discard Changes?" : {
-
-    },
-    "Done" : {
 
     },
     "Drag steps here" : {
@@ -721,9 +835,6 @@
     "End Routine?" : {
 
     },
-    "Equipment" : {
-
-    },
     "error.unkownExercise" : {
       "localizations" : {
         "en" : {
@@ -740,22 +851,10 @@
     "Explanation here" : {
 
     },
-    "Filter Exercises" : {
-
-    },
     "Finish" : {
 
     },
-    "Force Type" : {
-
-    },
     "Info" : {
-
-    },
-    "Level" : {
-
-    },
-    "Mechanic" : {
 
     },
     "Month" : {
@@ -779,12 +878,6 @@
     "No duration to change for open rest." : {
 
     },
-    "No exercises available" : {
-
-    },
-    "No exercises found" : {
-
-    },
     "No Steps Yet" : {
 
     },
@@ -795,9 +888,6 @@
 
     },
     "Previous Step" : {
-
-    },
-    "Primary Muscle" : {
 
     },
     "Ready for some exercise?" : {
@@ -813,9 +903,6 @@
 
     },
     "Repeat" : {
-
-    },
-    "Repeat Count" : {
 
     },
     "reps" : {
@@ -916,6 +1003,22 @@
         }
       }
     },
+    "routine.edit.adjustFilters" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try adjusting your filters"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essaie de modifier tes critères de recherche"
+          }
+        }
+      }
+    },
     "routine.edit.chooseMode" : {
       "localizations" : {
         "en" : {
@@ -964,6 +1067,22 @@
         }
       }
     },
+    "routine.edit.filterExercises.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filter Exercises"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filtrer"
+          }
+        }
+      }
+    },
     "routine.edit.howLong" : {
       "localizations" : {
         "en" : {
@@ -992,6 +1111,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Combien de fois ?"
+          }
+        }
+      }
+    },
+    "routine.edit.noExerciseFound" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing found"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun résultat"
           }
         }
       }
@@ -1108,6 +1243,38 @@
         }
       }
     },
+    "routine.edit.searchAgain" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try searching for something else"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Essaie de rechercher autre chose"
+          }
+        }
+      }
+    },
+    "routine.edit.selectExercise" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select an exercise"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisis un exercice"
+          }
+        }
+      }
+    },
     "routine.edit.timed" : {
       "localizations" : {
         "en" : {
@@ -1139,15 +1306,6 @@
           }
         }
       }
-    },
-    "Search exercises" : {
-
-    },
-    "Seconds" : {
-
-    },
-    "Select Exercise" : {
-
     },
     "Settings" : {
       "localizations" : {
@@ -1255,12 +1413,6 @@
       }
     },
     "Tap the button below to start building your routine" : {
-
-    },
-    "Timed" : {
-
-    },
-    "Try adjusting your filters" : {
 
     },
     "Unknown Exercise" : {
