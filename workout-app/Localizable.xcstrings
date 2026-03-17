@@ -150,9 +150,6 @@
     "%lld seconds" : {
 
     },
-    "%lld times" : {
-
-    },
     "activity.description" : {
       "localizations" : {
         "en" : {
@@ -195,9 +192,6 @@
 
     },
     "Change amount" : {
-
-    },
-    "Change repeat count" : {
 
     },
     "Change type" : {
@@ -368,6 +362,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Terminé"
+          }
+        }
+      }
+    },
+    "common.duplicate" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dupliquer"
           }
         }
       }
@@ -817,9 +827,6 @@
     "Discard Changes?" : {
 
     },
-    "Drag steps here" : {
-
-    },
     "Duplicate" : {
 
     },
@@ -896,13 +903,7 @@
     "Remove from repeat" : {
 
     },
-    "Remove repeat" : {
-
-    },
     "Remove step" : {
-
-    },
-    "Repeat" : {
 
     },
     "reps" : {
@@ -1163,6 +1164,38 @@
         }
       }
     },
+    "routine.edit.repeat.changeCount" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change repeat count"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier le nombre de séries"
+          }
+        }
+      }
+    },
+    "routine.edit.repeat.delete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete repeat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer la série"
+          }
+        }
+      }
+    },
     "routine.edit.repeat.description" : {
       "localizations" : {
         "en" : {
@@ -1175,6 +1208,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Répéter plusieurs fois les étapes sélectionnées."
+          }
+        }
+      }
+    },
+    "routine.edit.repeat.dragStepsHere" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag steps here"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glisse les étapes ici"
           }
         }
       }
