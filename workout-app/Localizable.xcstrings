@@ -4,6 +4,16 @@
     "%lld" : {
 
     },
+    "%lld common.times" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld times"
+          }
+        }
+      }
+    },
     "%lld min" : {
 
     },
@@ -260,6 +270,26 @@
         }
       }
     },
+    "common.repeat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat"
+          }
+        }
+      }
+    },
+    "common.rest" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rest"
+          }
+        }
+      }
+    },
     "common.search" : {
       "localizations" : {
         "en" : {
@@ -368,7 +398,20 @@
     "Equipment" : {
 
     },
+    "error.unkownExercise" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown Exercise"
+          }
+        }
+      }
+    },
     "exerciseDetails.title" : {
+
+    },
+    "Explanation here" : {
 
     },
     "Filter Exercises" : {
@@ -417,9 +460,6 @@
 
     },
     "No Steps" : {
-
-    },
-    "No steps in this repeat" : {
 
     },
     "No Steps Yet" : {
@@ -472,6 +512,16 @@
     },
     "Routine Name" : {
 
+    },
+    "routine.detail.emptyRepeat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No steps in this repeat"
+          }
+        }
+      }
     },
     "Search exercises" : {
 

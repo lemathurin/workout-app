@@ -10,13 +10,13 @@ struct DetailRepeatGroupView: View {
             // Header
             HStack {
                 Image(systemName: "repeat")
-                    .foregroundColor(.secondary)
-                Text("Repeat")
+                    .foregroundStyle(.secondary)
+                Text("common.repeat")
                     .font(.title3)
-                    .foregroundColor(.primary)
-                Text("\(repeatCount) times")
+                    .foregroundStyle(.primary)
+                Text("\(repeatCount) common.times")
                     .font(.callout)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
 
                 Spacer()
             }
@@ -29,9 +29,9 @@ struct DetailRepeatGroupView: View {
                     Divider()
 
                     HStack(spacing: 12) {
-                        Text("No steps in this repeat")
+                        Text("routine.detail.emptyRepeat")
                             .font(.callout)
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                     .padding(.all, 17)
                 }
@@ -52,20 +52,20 @@ struct DetailRepeatGroupView: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color(UIColor.secondarySystemGroupedBackground))
         )
-        .cornerRadius(20)
+        .clipShape(.rect(cornerRadius: 20))
     }
 
     private func getStepName(for step: RoutineStep) -> String {
         switch step.type {
         case .exercise:
             if let exerciseId = step.exerciseId {
-                return exercises.first { $0.id == exerciseId }?.getName() ?? "Unknown Exercise"
+                return exercises.first { $0.id == exerciseId }?.getName() ?? String(localized: "error.unkownExercise")
             }
-            return "Unknown Exercise"
+            return String(localized: "error.unkownExercise")
         case .rest:
-            return "Rest"
+            return String(localized: "common.rest")
         case .repeats:
-            return "Repeat"
+            return String(localized: "common.repeat")
         }
     }
 
