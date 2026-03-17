@@ -124,16 +124,6 @@
         }
       }
     },
-    "%lld minutes and %lld seconds remaining" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld minutes and %2$lld seconds remaining"
-          }
-        }
-      }
-    },
     "%lld of %lld" : {
       "localizations" : {
         "en" : {
@@ -143,9 +133,6 @@
           }
         }
       }
-    },
-    "%lld repetitions" : {
-
     },
     "activity.description" : {
       "localizations" : {
@@ -190,22 +177,6 @@
     },
     "Choose the period you want\nto get subscribed." : {
 
-    },
-    "Close" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fermer"
-          }
-        }
-      }
     },
     "common.back" : {
       "localizations" : {
@@ -283,6 +254,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fermer"
+          }
+        }
+      }
+    },
+    "common.continue" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
           }
         }
       }
@@ -463,6 +450,22 @@
         }
       }
     },
+    "common.finish" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminer"
+          }
+        }
+      }
+    },
     "common.force" : {
       "localizations" : {
         "en" : {
@@ -527,6 +530,22 @@
         }
       }
     },
+    "common.next" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivant"
+          }
+        }
+      }
+    },
     "common.noEquipment" : {
       "localizations" : {
         "en" : {
@@ -559,6 +578,22 @@
         }
       }
     },
+    "common.pause" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        }
+      }
+    },
     "common.primaryMuscle" : {
       "localizations" : {
         "en" : {
@@ -587,6 +622,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Série"
+          }
+        }
+      }
+    },
+    "common.repetition" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "repetition"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "répétition"
           }
         }
       }
@@ -631,6 +682,22 @@
         }
       }
     },
+    "common.repetitions.plural" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "repetitions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "répétitions"
+          }
+        }
+      }
+    },
     "common.rest" : {
       "localizations" : {
         "en" : {
@@ -643,6 +710,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Repos"
+          }
+        }
+      }
+    },
+    "common.restart" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommencer"
+          }
+        }
+      }
+    },
+    "common.resume" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprendre"
           }
         }
       }
@@ -807,9 +906,6 @@
         }
       }
     },
-    "Complete when ready" : {
-
-    },
     "Continue" : {
 
     },
@@ -825,12 +921,6 @@
     "Duration" : {
 
     },
-    "End Routine" : {
-
-    },
-    "End Routine?" : {
-
-    },
     "error.unkownExercise" : {
       "localizations" : {
         "en" : {
@@ -841,13 +931,13 @@
         }
       }
     },
+    "Exercise" : {
+
+    },
     "exerciseDetails.title" : {
 
     },
     "Explanation here" : {
-
-    },
-    "Finish" : {
 
     },
     "Info" : {
@@ -862,12 +952,6 @@
     "New Routine" : {
 
     },
-    "Next" : {
-
-    },
-    "Next Step" : {
-
-    },
     "No amount to change for open mode." : {
 
     },
@@ -877,28 +961,10 @@
     "Open" : {
 
     },
-    "Pause" : {
-
-    },
-    "Previous Step" : {
-
-    },
     "Ready for some exercise?" : {
 
     },
-    "reps" : {
-
-    },
     "Reps" : {
-
-    },
-    "Restart" : {
-
-    },
-    "Resume" : {
-
-    },
-    "Routine Complete!" : {
 
     },
     "routine.detail.emptyRepeat" : {
@@ -1493,6 +1559,134 @@
         }
       }
     },
+    "routine.player.completeWhenReady" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete when ready"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Termine quand tu veux"
+          }
+        }
+      }
+    },
+    "routine.player.countdown.minutesAndSeconds %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld minutes and %2$lld seconds remaining"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld minutes et %2$lld secondes restantes"
+          }
+        }
+      }
+    },
+    "routine.player.endRoutine" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminer la routine"
+          }
+        }
+      }
+    },
+    "routine.player.endRoutine.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your progress will be lost"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton progrès sera perdu"
+          }
+        }
+      }
+    },
+    "routine.player.endRoutine.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End routine?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminer la routine ?"
+          }
+        }
+      }
+    },
+    "routine.player.nextStep" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next step"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étape suivante"
+          }
+        }
+      }
+    },
+    "routine.player.previousStep" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous step"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étape précédente"
+          }
+        }
+      }
+    },
+    "routine.player.routineComplete.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routine completed!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routine terminée !"
+          }
+        }
+      }
+    },
     "routine.title.editRoutine" : {
       "localizations" : {
         "en" : {
@@ -1628,9 +1822,6 @@
       }
     },
     "Unknown Exercise" : {
-
-    },
-    "Your progress will be lost." : {
 
     }
   },

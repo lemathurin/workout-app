@@ -34,7 +34,7 @@ struct RoutinePlayerView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Close", systemImage: "xmark", role: .destructive) {
+                    Button("common.close", systemImage: "xmark", role: .destructive) {
                         wasPlayingBeforeInterruption = viewModel.state == .playing
                         if wasPlayingBeforeInterruption {
                             viewModel.togglePause()
@@ -47,20 +47,20 @@ struct RoutinePlayerView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     if viewModel.state == .paused {
-                        Button("Resume", systemImage: "play") {
+                        Button("common.resume", systemImage: "play") {
                             viewModel.togglePause()
                         }
                         .buttonStyle(.glassProminent)
                         .tint(pausedFillColor)
                     } else {
-                        Button("Pause", systemImage: "pause") {
+                        Button("common.pause", systemImage: "pause") {
                             viewModel.togglePause()
                         }
                     }
                 }
                 if viewModel.state == .completed {
                     ToolbarItem(placement: .bottomBar) {
-                        Button("Restart") {
+                        Button("common.restart") {
                             viewModel.restart()
                         }
                     }
@@ -80,7 +80,7 @@ struct RoutinePlayerView: View {
                     ToolbarSpacer(.fixed, placement: .bottomBar)
 
                     ToolbarItem(placement: .bottomBar) {
-                        Button("Finish", role: .confirm) {
+                        Button("common.finish", role: .confirm) {
                             dismiss()
                         }
                         .buttonStyle(.glassProminent)
@@ -88,7 +88,7 @@ struct RoutinePlayerView: View {
                     }
                 } else {
                     ToolbarItem(placement: .bottomBar) {
-                        Button("Previous Step", systemImage: "chevron.left") {
+                        Button("routine.player.previousStep", systemImage: "chevron.left") {
                             viewModel.goToPreviousStep()
                         }
                         .disabled(viewModel.currentStepIndex == 0)
@@ -110,7 +110,7 @@ struct RoutinePlayerView: View {
 
                     if let step = viewModel.currentStep, step.mode.isManualCompletion {
                         ToolbarItem(placement: .bottomBar) {
-                            Button("Next") {
+                            Button("common.next") {
                                 viewModel.completeCurrentStep()
                             }
                             .buttonStyle(.glassProminent)
@@ -119,7 +119,7 @@ struct RoutinePlayerView: View {
                         }
                     } else {
                         ToolbarItem(placement: .bottomBar) {
-                            Button("Next Step", systemImage: "chevron.right") {
+                            Button("routine.player.nextStep", systemImage: "chevron.right") {
                                 viewModel.completeCurrentStep()
                             }
                             .transition(.blurReplace)
@@ -169,16 +169,16 @@ struct RoutinePlayerView: View {
             }
         }
         .confirmationDialog(
-            "End Routine?",
+            "routine.player.endRoutine.title",
             isPresented: $showCancelConfirmation,
             titleVisibility: .visible
         ) {
-            Button("End Routine", role: .destructive) {
+            Button("routine.player.endRoutine", role: .destructive) {
                 viewModel.cancelRoutine()
             }
-            Button("Continue") {}
+            Button("common.continue") {}
         } message: {
-            Text("Your progress will be lost.")
+            Text("routine.player.endRoutine.description")
         }
     }
 
@@ -188,13 +188,13 @@ struct RoutinePlayerView: View {
         VStack(spacing: 24) {
             if let step = viewModel.currentStep {
                 stepModeDisplay(for: step)
-
+                
                 Text(stepName(for: step))
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .fontDesign(.rounded)
                     .multilineTextAlignment(.center)
-                    .accessibilityLabel(step.isRest ? "Rest" : stepName(for: step))
+                .accessibilityLabel(step.isRest ? String(localized: "common.rest") : stepName(for: step))
             }
         }
     }
@@ -210,14 +210,14 @@ struct RoutinePlayerView: View {
                     .font(.system(size: 80, weight: .semibold, design: .rounded))
                     .font(.caption)
                     .foregroundStyle(.primary)
-                Text("reps")
+                Text(count == 1 ? "common.repetition" : "common.repetitions.plural")
                     .font(.title)
                     .foregroundStyle(.secondary)
             }
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(count) repetitions")
+            .accessibilityLabel(String(localized: "\(count) common.repetitions"))
         case .exerciseOpen, .restOpen:
-            Text("Complete when ready")
+            Text("routine.player.completeWhenReady")
                 .font(.title3)
                 .foregroundStyle(.secondary)
         }
@@ -233,7 +233,7 @@ struct RoutinePlayerView: View {
                 .font(.system(size: 100))
                 .foregroundStyle(.green)
 
-            Text("Routine Complete!")
+            Text("routine.player.routineComplete.title")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .fontDesign(.rounded)
@@ -303,12 +303,12 @@ struct RoutinePlayerView: View {
 
     private func stepName(for step: PlayableStep) -> String {
         if step.isRest {
-            return "Rest"
+            return String(localized: "common.rest")
         }
         guard let exerciseId = step.exerciseId else {
-            return "Exercise"
+            return String(localized: "common.exercise")
         }
-        return exercises.first { $0.id == exerciseId }?.getName() ?? "Exercise"
+        return exercises.first { $0.id == exerciseId }?.getName() ?? String(localized: "common.exercise")
     }
 }
 
@@ -327,14 +327,21 @@ struct CountdownDisplayView: View {
             .monospacedDigit()
             .contentTransition(.numericText())
             .animation(.easeInOut(duration: 0.2), value: seconds)
-            .accessibilityLabel("\(minutes) minutes and \(remainingSeconds) seconds remaining")
+            .accessibilityLabel(accessibilityText)
     }
 
     private var formattedTime: String {
         if minutes > 0 {
-            return String(format: "%d:%02d", minutes, remainingSeconds)
+            return "\(minutes):\(String(format: "%02d", remainingSeconds))"
         }
         return "\(remainingSeconds)"
+    }
+
+    private var accessibilityText: String {
+        if minutes > 0 {
+            return String(localized: "routine.player.countdown.minutesAndSeconds \(minutes) \(remainingSeconds)")
+        }
+        return String(localized: "\(remainingSeconds) common.seconds")
     }
 }
 
