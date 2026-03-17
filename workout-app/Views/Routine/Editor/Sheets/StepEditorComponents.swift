@@ -204,9 +204,9 @@ struct ExercisePickerView: View {
     private var filteredExercises: [Exercise] {
         var result = exercises
 
-        // Only show exercises with English translations
+        // Only show exercises that have a translation
         result = result.filter { exercise in
-            exercise.translations.contains { $0.languageCode == "en" }
+            !exercise.translations.isEmpty
         }
 
         // Apply filters
@@ -232,9 +232,8 @@ struct ExercisePickerView: View {
         // Apply search
         if isSearching {
             result = result.filter { exercise in
-                exercise.getName(for: "en")
-                    .lowercased()
-                    .contains(searchText.lowercased())
+                exercise.getName()
+                    .localizedCaseInsensitiveContains(searchText)
             }
         }
 
@@ -245,7 +244,7 @@ struct ExercisePickerView: View {
 
     private var groupedExercises: [String: [Exercise]] {
         Dictionary(grouping: filteredExercises) { exercise in
-            String(exercise.getName(for: "en").prefix(1)).uppercased()
+            String(exercise.getName().prefix(1)).uppercased()
         }
     }
 
@@ -431,10 +430,8 @@ struct ExerciseFilterSheet: View {
             || selectedCategory != nil || selectedMechanic != nil || selectedMuscle != nil
     }
 
-    // Helper function to get English translation
-    private func getEnglishText(_ translations: [Translation], fallback: String) -> String {
-        translations.first(where: { $0.languageCode == "en" })?.text.capitalized
-            ?? fallback.capitalized
+    private func getLocalizedText(_ translations: [Translation], fallback: String) -> String {
+        translations.localizedText(fallback: fallback).capitalized
     }
 
     var body: some View {
@@ -451,7 +448,7 @@ struct ExerciseFilterSheet: View {
                             }
                         } label: {
                             HStack {
-                                Text(getEnglishText(item.translations, fallback: item.id))
+                                Text(getLocalizedText(item.translations, fallback: item.id))
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedEquipment.contains(item.id) {
@@ -470,7 +467,7 @@ struct ExerciseFilterSheet: View {
                             selectedLevel = selectedLevel == item.id ? nil : item.id
                         } label: {
                             HStack {
-                                Text(getEnglishText(item.translations, fallback: item.id))
+                                Text(getLocalizedText(item.translations, fallback: item.id))
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedLevel == item.id {
@@ -489,7 +486,7 @@ struct ExerciseFilterSheet: View {
                             selectedForce = selectedForce == item.id ? nil : item.id
                         } label: {
                             HStack {
-                                Text(getEnglishText(item.translations, fallback: item.id))
+                                Text(getLocalizedText(item.translations, fallback: item.id))
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedForce == item.id {
@@ -508,7 +505,7 @@ struct ExerciseFilterSheet: View {
                             selectedCategory = selectedCategory == item.id ? nil : item.id
                         } label: {
                             HStack {
-                                Text(getEnglishText(item.translations, fallback: item.id))
+                                Text(getLocalizedText(item.translations, fallback: item.id))
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedCategory == item.id {
@@ -527,7 +524,7 @@ struct ExerciseFilterSheet: View {
                             selectedMechanic = selectedMechanic == item.id ? nil : item.id
                         } label: {
                             HStack {
-                                Text(getEnglishText(item.translations, fallback: item.id))
+                                Text(getLocalizedText(item.translations, fallback: item.id))
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedMechanic == item.id {
@@ -546,7 +543,7 @@ struct ExerciseFilterSheet: View {
                             selectedMuscle = selectedMuscle == item.id ? nil : item.id
                         } label: {
                             HStack {
-                                Text(getEnglishText(item.translations, fallback: item.id))
+                                Text(getLocalizedText(item.translations, fallback: item.id))
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedMuscle == item.id {

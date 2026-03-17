@@ -52,31 +52,31 @@ struct ExerciseDetailView: View {
     }
     
     private func getEquipmentName() -> String {
-        return equipment.first { $0.id == exercise.equipmentId }?.translations.first { $0.languageCode == "en" }?.text ?? exercise.equipmentId
+        equipment.first { $0.id == exercise.equipmentId }?.translations.localizedText(fallback: exercise.equipmentId) ?? exercise.equipmentId
     }
     
     private func getLevelName() -> String {
-        return levels.first { $0.id == exercise.levelId }?.translations.first { $0.languageCode == "en" }?.text ?? exercise.levelId
+        levels.first { $0.id == exercise.levelId }?.translations.localizedText(fallback: exercise.levelId) ?? exercise.levelId
     }
     
     private func getForceName() -> String {
-        return forces.first { $0.id == exercise.forceId }?.translations.first { $0.languageCode == "en" }?.text ?? exercise.forceId
+        forces.first { $0.id == exercise.forceId }?.translations.localizedText(fallback: exercise.forceId) ?? exercise.forceId
     }
     
     private func getCategoryName() -> String {
-        return categories.first { $0.id == exercise.categoryId }?.translations.first { $0.languageCode == "en" }?.text ?? exercise.categoryId
+        categories.first { $0.id == exercise.categoryId }?.translations.localizedText(fallback: exercise.categoryId) ?? exercise.categoryId
     }
     
     private func getMechanicName() -> String {
-        return mechanics.first { $0.id == exercise.mechanicId }?.translations.first { $0.languageCode == "en" }?.text ?? exercise.mechanicId
+        mechanics.first { $0.id == exercise.mechanicId }?.translations.localizedText(fallback: exercise.mechanicId) ?? exercise.mechanicId
     }
     
     private func getPrimaryMuscleName() -> String {
-        return muscles.first { $0.id == exercise.primaryMuscleId }?.translations.first { $0.languageCode == "en" }?.text ?? exercise.primaryMuscleId
+        muscles.first { $0.id == exercise.primaryMuscleId }?.translations.localizedText(fallback: exercise.primaryMuscleId) ?? exercise.primaryMuscleId
     }
     
     private func getMuscleName(for muscleId: String) -> String {
-        return muscles.first { $0.id == muscleId }?.translations.first { $0.languageCode == "en" }?.text ?? muscleId
+        muscles.first { $0.id == muscleId }?.translations.localizedText(fallback: muscleId) ?? muscleId
     }
 }
 

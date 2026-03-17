@@ -78,6 +78,13 @@ class Translation {
     }
 }
 
+extension [Translation] {
+    func localizedText(fallback: String = "") -> String {
+        let code = Locale.current.language.languageCode?.identifier ?? "en"
+        return first { $0.languageCode == code }?.text ?? first?.text ?? fallback
+    }
+}
+
 @Model
 class ExerciseTranslation {
     var languageCode: String
@@ -114,7 +121,7 @@ class Exercise {
         self.translations = translations
     }
     
-    func getName(for languageCode: String = "en") -> String {
+    func getName(for languageCode: String = Locale.current.language.languageCode?.identifier ?? "en") -> String {
         return translations.first { $0.languageCode == languageCode }?.name ?? translations.first?.name ?? id
     }
 }

@@ -74,7 +74,7 @@ struct StepListSheet: View {
         else { return nil }
         guard exercise.equipmentId != "body_only" else { return nil }
         return equipment.first { $0.id == exercise.equipmentId }?
-            .translations.first { $0.languageCode == "en" }?.text
+            .translations.localizedText()
     }
 }
 

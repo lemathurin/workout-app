@@ -37,7 +37,7 @@ class Routine {
     }
 
     // Get localized name
-    func getName(for languageCode: String = "en") -> String {
+    func getName(for languageCode: String = Locale.current.language.languageCode?.identifier ?? "en") -> String {
         return translations.first { $0.languageCode == languageCode }?.name
             ?? translations.first?.name
             ?? "Unnamed Routine"

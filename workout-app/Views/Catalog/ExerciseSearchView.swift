@@ -119,7 +119,7 @@ struct ExerciseSearchView: View {
 
     private var groupedExercises: [String: [Exercise]] {
         Dictionary(grouping: filteredExercises) { exercise in
-            String(exercise.getName(for: "en").prefix(1)).uppercased()
+            String(exercise.getName().prefix(1)).uppercased()
         }
     }
 
