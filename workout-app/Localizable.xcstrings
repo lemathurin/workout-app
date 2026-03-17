@@ -198,6 +198,54 @@
         }
       }
     },
+    "common.created" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Created"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créé"
+          }
+        }
+      }
+    },
+    "common.duration" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duration"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durée"
+          }
+        }
+      }
+    },
+    "common.edit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier"
+          }
+        }
+      }
+    },
     "common.equipment" : {
       "localizations" : {
         "en" : {
@@ -479,6 +527,22 @@
         }
       }
     },
+    "common.steps" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steps"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Étapes"
+          }
+        }
+      }
+    },
     "common.steps %lld" : {
       "localizations" : {
         "en" : {
@@ -528,9 +592,6 @@
     "Count" : {
 
     },
-    "Created" : {
-
-    },
     "Creating a routine" : {
 
     },
@@ -562,9 +623,6 @@
 
     },
     "Duration" : {
-
-    },
-    "Edit" : {
 
     },
     "Edit Routine" : {
@@ -640,9 +698,6 @@
     "No exercises found" : {
 
     },
-    "No Steps" : {
-
-    },
     "No Steps Yet" : {
 
     },
@@ -700,6 +755,60 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No steps in this repeat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune étape dans cette série"
+          }
+        }
+      }
+    },
+    "routine.detail.noSteps.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a step by editing this routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoute une étape en modifiant cette routine"
+          }
+        }
+      }
+    },
+    "routine.detail.noSteps.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Steps"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune étape"
+          }
+        }
+      }
+    },
+    "routine.detail.startRoutine" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start routine"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancer la routine"
           }
         }
       }
@@ -780,9 +889,6 @@
     "Sort by" : {
 
     },
-    "Start routine" : {
-
-    },
     "Steps" : {
 
     },
@@ -824,13 +930,13 @@
     "Tap the button below to start building your routine" : {
 
     },
-    "This routine doesn't have any steps yet" : {
-
-    },
     "Timed" : {
 
     },
     "Try adjusting your filters" : {
+
+    },
+    "Unknown Exercise" : {
 
     },
     "Your changes won't be saved." : {

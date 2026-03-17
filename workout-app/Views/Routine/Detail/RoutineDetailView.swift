@@ -19,7 +19,7 @@ struct RoutineDetailView: View {
 
                 HStack(spacing: 20) {
                     VStack(alignment: .leading) {
-                        Text("Steps")
+                        Text("common.steps")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
@@ -32,7 +32,7 @@ struct RoutineDetailView: View {
                     }
 
                     VStack(alignment: .leading) {
-                        Text("Duration")
+                        Text("common.duration")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
@@ -46,7 +46,7 @@ struct RoutineDetailView: View {
                     }
 
                     VStack(alignment: .leading) {
-                        Text("Created")
+                        Text("common.created")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
@@ -73,9 +73,9 @@ struct RoutineDetailView: View {
 
                 if routine.steps.isEmpty {
                     ContentUnavailableView(
-                        "No Steps",
+                        "routine.detail.noSteps.title",
                         systemImage: "figure.walk",
-                        description: Text("This routine doesn't have any steps yet")
+                        description: Text("routine.detail.noSteps.description")
                     )
                     .padding(.vertical, 200)
                 } else {
@@ -98,14 +98,14 @@ struct RoutineDetailView: View {
                     showEditView = true
 
                 }) {
-                    Text("Edit")
+                    Text("common.edit")
                 }
             }
             ToolbarItem(placement: .bottomBar) {
                 Button(action: {
                     showPlayer = true
                 }) {
-                    Text("Start routine").padding()
+                    Text("routine.detail.startRoutine").padding()
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
@@ -138,7 +138,7 @@ struct RoutineDetailView: View {
             )
         case .rest:
             DetailStepRowView(
-                stepName: "Rest",
+                stepName: String(localized: "common.rest"),
                 stepMode: routineStepToStepMode(step)
             )
         case .repeats:
@@ -156,9 +156,9 @@ struct RoutineDetailView: View {
 
     private func getExerciseName(for exerciseId: String?) -> String {
         guard let exerciseId = exerciseId else {
-            return "Unknown Exercise"
+            return String(localized: "Unknown Exercise")
         }
-        return exercises.first { $0.id == exerciseId }?.getName() ?? "Unknown Exercise"
+        return exercises.first { $0.id == exerciseId }?.getName() ?? String(localized: "Unknown Exercise")
     }
 
     private func routineStepToStepMode(_ step: RoutineStep) -> StepMode {
