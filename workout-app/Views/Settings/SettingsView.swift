@@ -9,9 +9,56 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Text("settings.language")
+                Section("settings.general") {
+                    NavigationLink("settings.iCloudSync") {
+//
+                    }
+                    .disabled(true)
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        LabeledContent("settings.language") {
+                            Image(systemName: "arrow.up.forward")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .foregroundStyle(.primary)
+                }
+                
+                Section("settings.appearance") {
+                    NavigationLink("settings.theme") {
+//
+                    }
+                    .disabled(true)
+                    NavigationLink("settings.appIcon") {
+//
+                    }
+                    .disabled(true)
+                }
+                
+                Section("settings.about") {
+                    NavigationLink("settings.acknowledgements") {
+                        AcknowledgementsView()
+                    }
+                    NavigationLink("settings.aboutMe") {
+//
+                    }
+                    .disabled(true)
+                }
+                
+                Section("settings.legal") {
+                    NavigationLink("settings.termsOfUse") {
+//
+                    }
+                    NavigationLink("settings.privacyPolicy") {
+//
+                    }
+                }
+                .disabled(true)
 
-                Section {
+                Section("common.danger") {
                     Button("settings.deleteData", role: .destructive) {
                         Task {
                             await handleDeleteAllData()
@@ -21,6 +68,7 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("settings.title")
+            .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("common.close", systemImage: "xmark") {

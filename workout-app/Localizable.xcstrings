@@ -278,6 +278,22 @@
         }
       }
     },
+    "common.danger" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danger"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danger"
+          }
+        }
+      }
+    },
     "common.delete" : {
       "localizations" : {
         "en" : {
@@ -972,6 +988,9 @@
       }
     },
     "Explanation here" : {
+
+    },
+    "First person" : {
 
     },
     "home.welcome" : {
@@ -1748,6 +1767,89 @@
         }
       }
     },
+    "Second person" : {
+
+    },
+    "settings.about" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À Propos"
+          }
+        }
+      }
+    },
+    "settings.aboutMe" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About Me"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À Propos de Moi"
+          }
+        }
+      }
+    },
+    "settings.acknowledgements" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acknowledgements"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remerciements"
+          }
+        }
+      }
+    },
+    "settings.appearance" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apparence"
+          }
+        }
+      }
+    },
+    "settings.appIcon" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Icon"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icône"
+          }
+        }
+      }
+    },
     "settings.deleteData" : {
       "localizations" : {
         "en" : {
@@ -1764,6 +1866,38 @@
         }
       }
     },
+    "settings.general" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Général"
+          }
+        }
+      }
+    },
+    "settings.iCloudSync" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Sync"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisation iCloud"
+          }
+        }
+      }
+    },
     "settings.language" : {
       "localizations" : {
         "en" : {
@@ -1775,7 +1909,71 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Langue de l'application"
+            "value" : "Langue"
+          }
+        }
+      }
+    },
+    "settings.legal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legal"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mentions Légales"
+          }
+        }
+      }
+    },
+    "settings.privacyPolicy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Politique de confidentialité"
+          }
+        }
+      }
+    },
+    "settings.termsOfUse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conditions d’utilisation"
+          }
+        }
+      }
+    },
+    "settings.theme" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Theme"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thème"
           }
         }
       }
