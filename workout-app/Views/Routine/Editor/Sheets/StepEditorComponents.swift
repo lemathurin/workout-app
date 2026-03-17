@@ -572,8 +572,10 @@ struct ExerciseFilterSheet: View {
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("common.done") {
+                    Button {
                         dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                     .fontWeight(.semibold)
                 }
