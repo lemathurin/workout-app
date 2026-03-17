@@ -11,6 +11,12 @@
             "state" : "translated",
             "value" : "%lld times"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld fois"
+          }
         }
       }
     },
@@ -254,6 +260,22 @@
         }
       }
     },
+    "common.open" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libre"
+          }
+        }
+      }
+    },
     "common.primaryMuscle" : {
       "localizations" : {
         "en" : {
@@ -277,6 +299,29 @@
             "state" : "translated",
             "value" : "Repeat"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Série"
+          }
+        }
+      }
+    },
+    "common.repetitions" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%lld repetitions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld répétitions"
+          }
         }
       }
     },
@@ -286,6 +331,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rest"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repos"
           }
         }
       }
@@ -334,6 +385,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muscles Accessoires"
+          }
+        }
+      }
+    },
+    "common.seconds" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%lld seconds"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld secondes"
           }
         }
       }

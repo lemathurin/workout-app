@@ -10,28 +10,27 @@ struct DetailStepRowView: View {
     private var modeDescription: String {
         switch stepMode {
         case .exerciseTimed(let seconds):
-            return "\(seconds) seconds"
+            return String(localized: "common.seconds", defaultValue: "\(seconds) seconds")
         case .exerciseReps(let count):
-            return "\(count) reps"
+            return String(localized: "common.repetitions", defaultValue: "\(count) repetitions")
         case .exerciseOpen:
-            return "Open"
+            return String(localized: "common.open")
         case .restTimed(let seconds):
-            return "\(seconds) seconds"
+            return String(localized: "common.seconds", defaultValue: "\(seconds) seconds")
         case .restOpen:
-            return "Open"
+            return String(localized: "common.open")
         }
     }
 
-    // Extract row content so we can reuse it with two styles (standalone vs embedded)
     private var rowContent: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(stepName)
                     .font(.title3)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                 Text(modeDescription)
                     .font(.callout)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
@@ -52,7 +51,7 @@ struct DetailStepRowView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color(UIColor.secondarySystemGroupedBackground))
                 )
-                .cornerRadius(20)
+                .clipShape(.rect(cornerRadius: 20))
         }
     }
 }
