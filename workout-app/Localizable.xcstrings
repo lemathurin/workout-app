@@ -147,9 +147,6 @@
     "%lld repetitions" : {
 
     },
-    "%lld seconds" : {
-
-    },
     "activity.description" : {
       "localizations" : {
         "en" : {
@@ -183,12 +180,6 @@
       }
     },
     "Body only" : {
-
-    },
-    "Change amount" : {
-
-    },
-    "Change type" : {
 
     },
     "Choose Period" : {
@@ -831,9 +822,6 @@
     "Days" : {
 
     },
-    "Duplicate" : {
-
-    },
     "Duration" : {
 
     },
@@ -896,12 +884,6 @@
 
     },
     "Ready for some exercise?" : {
-
-    },
-    "Remove from repeat" : {
-
-    },
-    "Remove step" : {
 
     },
     "reps" : {
@@ -1411,6 +1393,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choisis un exercice"
+          }
+        }
+      }
+    },
+    "routine.edit.step.changeAmount" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change amount"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changer la valeur"
+          }
+        }
+      }
+    },
+    "routine.edit.step.changeType" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change type"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changer le type"
+          }
+        }
+      }
+    },
+    "routine.edit.step.deleteStep" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete step"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l’étape"
+          }
+        }
+      }
+    },
+    "routine.edit.step.removeFromRepeat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from repeat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer de la série"
           }
         }
       }
