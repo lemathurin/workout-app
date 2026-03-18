@@ -11,6 +11,14 @@ class RoutineEditViewModel {
     var routineName: String = ""
     var items: [StepItem] = []
 
+    // Initial state for change tracking
+    private var initialRoutineName: String = ""
+    private var initialItems: [StepItem] = []
+
+    var hasChanges: Bool {
+        routineName != initialRoutineName || items != initialItems
+    }
+
     // Drag state
     var draggingItem: RepeatItem? = nil
     var draggingFromRepeat: UUID? = nil
@@ -344,6 +352,8 @@ class RoutineEditViewModel {
         editingRoutine = routine
         routineName = routine.getName()
         items = routine.steps.sorted(by: { $0.order < $1.order }).map { convertRoutineStepToStepItem($0, exercises: exercises) }
+        initialRoutineName = routineName
+        initialItems = items
     }
     
     private func convertRoutineStepToStepItem(_ step: RoutineStep, exercises: [Exercise]) -> StepItem {

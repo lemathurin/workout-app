@@ -15,6 +15,7 @@ struct RoutineEditView: View {
     }
 
     @State private var showDiscardAlert = false
+    @State private var showDeleteRoutineDialog = false
 
     var body: some View {
         NavigationStack {
@@ -163,21 +164,50 @@ struct RoutineEditView: View {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                        Button(action: {
+                    Button(action: {
+                        if viewModel.hasChanges {
                             showDiscardAlert = true
-                        }) {
-                            Image(systemName: "xmark")
+                        } else {
+                            dismiss()
                         }
-                        .confirmationDialog(
-                            "routine.edit.discardChanges.description",
-                            isPresented: $showDiscardAlert,
-                            titleVisibility: .visible
-                        ) {
-                            Button("common.discard", role: .destructive) {
-                                dismiss()
-                            }
+                    }) {
+                        Image(systemName: "xmark")
+                    }
+                    .confirmationDialog(
+                        "routine.edit.discardChanges.description",
+                        isPresented: $showDiscardAlert,
+                        titleVisibility: .visible
+                    ) {
+                        Button("common.discard", role: .destructive) {
+                            dismiss()
                         }
                     }
+                }
+                
+                if routine != nil {
+                    ToolbarItem(placement: .destructiveAction) {
+                        Button(role: .destructive, action: {
+                            showDeleteRoutineDialog = true
+                        }) {
+                            Image(systemName: "trash")
+                        }
+                        .accessibilityLabel(Text("common.delete"))
+                        .confirmationDialog(
+                            "routine.edit.deleteRoutine.title",
+                            isPresented: $showDeleteRoutineDialog,
+                            titleVisibility: .visible
+                        ) {
+                            Button("common.delete", role: .destructive) {
+                                if let routine {
+                                    modelContext.delete(routine)
+                                    dismiss()
+                                }
+                            }
+                        } message: {
+                            Text("routine.edit.deleteRoutine.description")
+                        }
+                    }
+                }
 
                 ToolbarItem(placement: .confirmationAction) {
                     let isValid =
@@ -555,5 +585,48 @@ struct RoutineEditView: View {
 }
 
 #Preview {
-    RoutineEditView()
+    let sampleExercises = [
+        Exercise(
+            id: "push-up",
+            forceId: "push",
+            levelId: "beginner",
+            mechanicId: "compound",
+            equipmentId: "bodyweight",
+            categoryId: "strength",
+            primaryMuscleId: "chest",
+            secondaryMuscles: ["shoulders", "triceps"],
+            translations: [ExerciseTranslation(languageCode: "en", name: "Push Up")]
+        ),
+        Exercise(
+            id: "squat",
+            forceId: "pull",
+            levelId: "beginner",
+            mechanicId: "compound",
+            equipmentId: "bodyweight",
+            categoryId: "strength",
+            primaryMuscleId: "legs",
+            secondaryMuscles: ["glutes", "core"],
+            translations: [ExerciseTranslation(languageCode: "en", name: "Squat")]
+        )
+    ]
+    
+    let sampleSteps = [
+        RoutineStep(type: .exercise, exerciseId: "push-up", duration: 30, order: 0),
+        RoutineStep(type: .rest, duration: 15, order: 1),
+        RoutineStep(type: .exercise, exerciseId: "squat", duration: 30, order: 2),
+        RoutineStep(type: .repeats, count: 3, steps: [
+            RoutineStep(type: .exercise, exerciseId: "push-up", duration: 20, order: 0),
+            RoutineStep(type: .rest, duration: 10, order: 1)
+        ], order: 3)
+    ]
+    
+    let sampleRoutine = Routine(
+        translations: [RoutineTranslation(languageCode: "en", name: "Sample Workout")],
+        steps: sampleSteps,
+        isSystemRoutine: false
+    )
+    sampleRoutine.updateMetadata(exercises: sampleExercises)
+    
+    return RoutineEditView(routine: sampleRoutine)
+        .modelContainer(for: [Exercise.self, Routine.self], inMemory: true)
 }

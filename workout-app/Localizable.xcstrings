@@ -1127,6 +1127,38 @@
         }
       }
     },
+    "routine.edit.deleteRoutine.description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This routine will be deleted permanently."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette routine sera supprimée définitivement."
+          }
+        }
+      }
+    },
+    "routine.edit.deleteRoutine.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete routine?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer la routine ?"
+          }
+        }
+      }
+    },
     "routine.edit.deleteStepConfirmation" : {
       "localizations" : {
         "en" : {
@@ -1148,13 +1180,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your changes won’t be saved, they will be lost forever"
+            "value" : "Your changes won’t be saved"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes modifications ne seront pas enregistrées ; elles seront perdues à jamais"
+            "value" : "Les modifications ne seront pas enregistrées"
           }
         }
       }

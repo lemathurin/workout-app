@@ -4,6 +4,7 @@ import SwiftUI
 struct RoutineDetailView: View {
     let routine: Routine
     @Query private var exercises: [Exercise]
+    @Environment(\.dismiss) private var dismiss
     @State private var showEditView = false
     @State private var showPlayer = false
 
@@ -124,6 +125,11 @@ struct RoutineDetailView: View {
             }
         }
         .toolbar(.hidden, for: .tabBar)
+        .onChange(of: routine.isDeleted) {
+            if routine.isDeleted {
+                dismiss()
+            }
+        }
     }
 
     // MARK: - View Builders
